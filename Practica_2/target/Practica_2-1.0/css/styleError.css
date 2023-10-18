@@ -1,113 +1,30 @@
 /*
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
+
     Created on : 15 oct 2023, 19:05:47
     Author     : alumne
 */
 
-
-.content { 
-    margin: 40px;
-    background-color: #f2f2f2;
-    padding: 20px;
-    border: 1px solid #ddd;
-    align-content: center;
-    text-align: center;
-}
-
 html {
     font-family: Verdana, Arial;
-    background-color: #f2f2f2;
-    background-image: url("./imgs/wallRetro.jpg");
+    background-color: #c5c5c5;
+    /*background-image: url("./imgs/wallCat.jpg");*/
     background-size: cover;  
     background-position: center center;
     background-repeat: no-repeat;
-
-
 }
-
-@font-face{
-  font-family: Verdana;
-  src: url("./fonts/Verdana.ttf");
-}
-
-
-h1 {
-    color: #333;
-    font-size: 80px;
-    text-align: center;
-    font-family: Verdana;
-    color: #222244;
-    font-weight: bold;
-}
-
-h2 {
-    color: #666;
-    font-size: 40px;
-    text-align: center;
-    font-family: Verdana;
-    color: #222255;
-    font-weight: bold;
+/* Estilos para los elementos div */
+div {
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding: 10px;
 }
 
 body {
     width: 600px;
-    margin: auto;
-    padding: 10px 10px 10px;
-    font-size: 16px;
-    text-align: center;
-    align-items: center;
-
-
-    align-content: right;
-    line-height: 1.5;
-}
-
-/* Estilos para los elementos div */
-div {
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-}
-
-/* Estilos para los campos de entrada (input) */
-input {
-    width: 20%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 50px;
-    align-content: center;
-}
-
-/* Estilos para los botones con la clase .boto */
-.boto {
-    background-color: #ffe2c6;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 16px;
-    text-align: center;
-    display: inline-block;
-}
-
-/* Cambiar el color del botón al pasar el mouse sobre él */
-.boto:hover {
-    background-color: #ffc9ab;
-}
-
-a {
-    text-decoration: none;
-    color: #007BFF;
-}
-
-a:hover {
-    color: #0056b3;
+    padding: 35px 10px 10px;
 }
 
 .error-message {
@@ -116,9 +33,5 @@ a:hover {
     border: 1px solid #ff6666;
     border-radius: 5px;
     color: #ff0000;
-    margin-top: 20px;
-}
-
-.return-link {
     margin-top: 20px;
 }

@@ -9,10 +9,11 @@
 <% String tipus_error = (String) request.getAttribute("tipus_error"); %>
 <% String msg_error = (String) request.getAttribute("msg_error"); %>
 <html>
-    <head>
+    <head class="site-icon">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Error</title>
-        <link rel="stylesheet" type="text/css" href="./css/styleError.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleLogin.css">
 
     </head>
     <body>

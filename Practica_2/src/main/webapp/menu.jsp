@@ -45,6 +45,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Menú:</title>
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
     </head>
     <body>
         <div align="center">
@@ -58,7 +59,7 @@
         
         <br>
         <form action="logout.jsp" method = "POST">
-            <button type="submit"> Tancar Sessió </button>
+            <button type="submit" class="boto"> Tancar Sessió </button>
         </form>
         </div>
     </body>

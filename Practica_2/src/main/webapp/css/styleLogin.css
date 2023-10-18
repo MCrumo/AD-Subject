@@ -7,65 +7,27 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : alumne
 */
 
-
-.content { 
-    margin: 40px;
-    background-color: #f2f2f2;
-    padding: 20px;
-    border: 1px solid #ddd;
-    align-content: center;
-    text-align: center;
-}
-
 html {
     font-family: Verdana, Arial;
-    background-color: #f2f2f2;
-    background-image: url("./imgs/wallpaper.jpg");
-    
+    background-color: #f0f0f0;
+    /*background-image: url("./imgs/wallCat.jpg");*/
     background-size: cover;  
     background-position: center center;
     background-repeat: no-repeat;
 }
 
-@font-face{
-  font-family: Verdana;
-  src: url("./fonts/Verdana.ttf");
-}
-
-
-h1 {
-    color: #333;
-    font-size: 80px;
-    text-align: center;
-    font-family: Verdana;
-    color: #222244;
-    font-weight: bold;
+/*h1 {
+    font-weight: bold; 
     text-shadow: 
         -1px -1px 0 #fff, 
         1px -1px 0 #fff,  
         -1px 1px 0 #fff,  
         1px 1px 0 #fff;   
-
-}
-
-h2 {
-    color: #666;
-    font-size: 40px;
-    text-align: center;
-    font-family: Verdana;
-    color: #222255;
-    font-weight: bold;
-}
+}*/
 
 body {
-    width: 1200px;
-    margin: auto;
-    padding: 30px 10px 10px;
-    font-size: 26px;
-    text-align: center;
-    align-items: center;
-    align-content: right;
-    line-height: 1.5;
+    width: 800px;
+    padding: 35px 10px 10px;
     font-weight: bold;
     text-shadow: 
         -2px -2px 0 #fff, 
@@ -73,41 +35,3 @@ body {
         -2px 2px 0 #fff,  
         2px 2px 0 #fff;  
 }
-
-/* Estilos para los elementos div */
-div {
-    margin-bottom: 20px;
-    padding: 10px;
-    /*background-color: #fff;
-    border: 1px solid #ddd;*/
-}
-
-/* Estilos para los campos de entrada (input) */
-input {
-    width: 20%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 50px;
-    align-content: center;
-}
-
-/* Estilos para los botones con la clase .boto */
-.boto {
-    background-color: #ffe2c6;
-    color: #000;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 16px;
-    text-align: center;
-    display: inline-block;
-}
-
-/* Cambiar el color del botón al pasar el mouse sobre él */
-.boto:hover {
-    background-color: #ffc9ab;
-}
-
-
