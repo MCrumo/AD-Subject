@@ -1,9 +1,0 @@
-DB/Database.class
-AD/logout.class
-AD/login.class
-test/practica_2/resources/JakartaEE91Resource.class
-test/practica_2/JakartaRestConfiguration.class
-AD/modificarImagen.class
-AD/eliminarImagen.class
-AD/registrarImagen.class
-AD/buscarImagen.class
