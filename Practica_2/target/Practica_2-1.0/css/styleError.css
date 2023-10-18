@@ -1,0 +1,37 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+
+    Created on : 15 oct 2023, 19:05:47
+    Author     : alumne
+*/
+
+html {
+    font-family: Verdana, Arial;
+    background-color: #c5c5c5;
+    /*background-image: url("./imgs/wallCat.jpg");*/
+    background-size: cover;  
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+/* Estilos para los elementos div */
+div {
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+body {
+    width: 600px;
+    padding: 35px 10px 10px;
+}
+
+.error-message {
+    background-color: #ffcccb;
+    padding: 10px;
+    border: 1px solid #ff6666;
+    border-radius: 5px;
+    color: #ff0000;
+    margin-top: 20px;
+}
