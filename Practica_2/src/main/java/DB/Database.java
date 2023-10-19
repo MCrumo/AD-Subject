@@ -106,5 +106,26 @@ public class Database {
         return existeix;
     }
     
-    
+    //Retorna el id de la última foto introduïda
+    public int getMaxId() {
+        int id = 0;
+        openConnection();
+        
+        String sql = "SELECT MAX(ID) AS max_id FROM PR2.IMAGE";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            
+            if (rs.next()) {
+                id = rs.getInt("max_id");
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        
+        closeConnection();
+        return id;
+    } 
 }

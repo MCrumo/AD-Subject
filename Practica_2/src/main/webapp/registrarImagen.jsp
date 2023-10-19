@@ -66,9 +66,30 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
         <h1>Registrar Imatge:</h1>
         <button onclick="goBack()">Enrere</button>
         </div>
-        
-        <!--Aquí val el codi HTML-->
-        
+        <p>
+            <div align="center">
+                <form action="registrarImagen" method="POST" enctype="multipart/form-data">
+                    <p><input type="text" id="title" name="title" placeholder="Introdueix el títol" required></p>
+
+                    <p><input type="text" id="description" name="description" placeholder="Introdueix la descripció" required></p>
+
+                    <p><input type="text" id="keywords" name="keywords" placeholder="Introdueix les paraules clau" required></p>
+
+                    <p><input type="text" id="author" name="author" placeholder="Introdueix l'usuari autor" required></p>
+
+                    <p>
+                        <label for="capture_date">Data de captura:</label>
+                        <input type="date" id="capture_date" name="capture_date" required>
+                    </p>
+                    
+                    <p>
+                        <label for="image">Arxiu:</label>
+                        <input type="file" id="image" name="image" required>
+                    </p>
+                    <input type="submit" value="Registra la imatge">
+                </form>
+            </div>
+        <p/>
         <script>
         function goBack() {
             // Utiliza window.history par retrocedir una pàgina en el navegador

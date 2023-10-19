@@ -16,19 +16,19 @@
     </head>
     <body>
         <div align="center">
-        <h1>LOGIN:</h1>
+        <h1>Inici de sessió:</h1>
         <form action = "login" method = "POST">
             <p>
-                Username: <input type="text" name="username" required>
+                <input type="text" name="username" placeholder="Nom d'usuari" required>
             </p>
             <p>
-                Password: <input type="password" name="password" required>
+                <input type="password" name="password" placeholder="Contrasenya" required>
             </p>
-            <input type="submit" value="Inicia Sesió" class="boto">
+            <input type="submit" value="Inicia Sesió">
         </form>  
-        <br>
+        <br><br>
         <form action="logout.jsp" method = "POST">
-            <button type="submit" class="boto"> Tancar Sessió </button>
+            <button type="submit"> Tancar Sessió </button>
         </form>
         </div>
     </body>

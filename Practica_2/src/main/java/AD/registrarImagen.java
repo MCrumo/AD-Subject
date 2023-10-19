@@ -16,6 +16,13 @@ import jakarta.servlet.http.HttpSession;
 
 //importamos la classe Database
 import DB.Database;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +33,9 @@ import java.util.logging.Logger;
     mostrará un mensaje y dará la opción de volver al menú o registrar otra imagen. En
     caso de error, redireccionará al usuario a la página de error.
  */
+
 @WebServlet(name = "registrarImagen", urlPatterns = {"/registrarImagen"})
+@MultipartConfig
 public class registrarImagen extends HttpServlet {
 
     /**
@@ -53,7 +62,56 @@ public class registrarImagen extends HttpServlet {
             out.println("</body>");
             out.println("</html>");
             
-            //AQUI VA EL CODI
+            HttpSession sessio = request.getSession(false);
+            String username = (String) sessio.getAttribute("username");
+            
+            //Error si no s'ha iniciat sessió o no és vàlida
+            if(sessio != null && username != null) {
+                request.setAttribute("tipus_error", "autenticacio");
+                request.setAttribute("msg_error", "La sessió no està iniciada.");
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
+            }
+            
+            String title = request.getParameter("title");
+            String description = request.getParameter("description");
+            String keywords = request.getParameter("keywords");
+            String author = request.getParameter("author");
+            String capture_date = request.getParameter("capture_date");
+            Part image = request.getPart("image");
+            
+            Database db = new Database();
+            int max_id = db.getMaxId();
+            
+            Part filePart = request.getPart("image");
+            InputStream fileContent = filePart.getInputStream();
+            
+            /*if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+                // Manejar el caso cuando el tipo de archivo no es permitido
+                response.getWriter().println("Solo se permiten archivos JPEG y PNG.");
+                return;
+            }*/
+            // Construir la ruta donde se guardará la imagen
+            String fileName = "image_" + max_id + ".jpg"; // Modifica la extensión según el tipo de archivo
+            String uploadPath = getServletContext().getRealPath("/Images/") + File.separator + fileName;
+
+            try (OutputStream outputStream = new FileOutputStream(uploadPath)) {
+                // Crear un OutputStream para guardar la imagen
+                int bytesRead;
+                byte[] buffer = new byte[8192];
+
+                // Escribir los datos de la imagen en el OutputStream
+                while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                // Cerrar los flujos
+                fileContent.close();
+            }
+            
+            
+            
+            
         }
     }
 
