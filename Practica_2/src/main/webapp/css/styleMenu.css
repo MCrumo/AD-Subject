@@ -55,6 +55,6 @@ body {
     position: fixed;
     bottom: 200px;
     right: 640px;
-    background-color: #c0c0c0;
-    border-color: #000;
+    background-color: #c9c9c9;
+    border: 1px solid #000;
 }
