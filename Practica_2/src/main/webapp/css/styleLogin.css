@@ -10,10 +10,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 html {
     font-family: Verdana, Arial;
     background-color: #f0f0f0;
-    /*background-image: url("./imgs/wallCat.jpg");*/
-    background-size: cover;  
+    background-image: url("./imgs/wallMap.jpg");
+    /*background-size: 100% 220%;*/
+    background-size: cover;
     background-position: center center;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat; 
+    background-attachment: fixed;
 }
 
 /*h1 {
@@ -26,9 +28,9 @@ html {
 }*/
 
 body {
-    width: 800px;
+    width: 600px;
     padding: 35px 10px 10px;
-    font-weight: bold;
+    /*font-weight: bold;*/
     text-shadow: 
         -2px -2px 0 #fff, 
         2px -2px 0 #fff,  

@@ -22,7 +22,7 @@ body {
 /* Estilos para los elementos div */
 div {
     height: 500px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.75);
     border: 1px solid #ddd;
     margin-bottom: 20px;
     padding: 10px;
@@ -50,9 +50,11 @@ body {
         1px 1px 0 #000;   
 }
 
- .boto {
+.boto {
     margin-top: 20px;
     position: fixed;
     bottom: 200px;
     right: 640px;
+    background-color: #c0c0c0;
+    border-color: #000;
 }
