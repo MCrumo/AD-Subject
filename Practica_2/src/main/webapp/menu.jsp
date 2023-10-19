@@ -46,17 +46,18 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Menú:</title>
         <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleMenu.css">
         <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
     </head>
     <body>
         <div align="center">
         <h1>Menú principal</h1>
         
-        <%   out.println("<h3>Benvingut " + sessio.getAttribute("username") + "!</h3>");%>
+        <%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");%>
         
-        <p><a href="registrarImagen.jsp">Registrar Imatge</a></p>
-        <p><a href="listImg.jsp">Llistar Imatges</a></p>
-        <p><a href="buscarImagen.jsp">Buscar Imatges</a></p>
+        <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
+        <p><a href="listImg.jsp" class="enllaçMenu">Llistar Imatges</a></p>
+        <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
         
         <br>
         <form action="logout.jsp" method = "POST">
