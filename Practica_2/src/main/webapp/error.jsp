@@ -14,6 +14,7 @@
         <title>Error</title>
         <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
         <link rel="stylesheet" type="text/css" href="./css/styleLogin.css">
+        <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
 
     </head>
     <body>
