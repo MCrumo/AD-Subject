@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 //importamos la classe Database
 import DB.Database;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.FileOutputStream;
