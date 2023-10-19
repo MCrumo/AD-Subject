@@ -59,7 +59,7 @@
         <p><a href="listImg.jsp" class="enllaçMenu">Llistar Imatges</a></p>
         <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
         
-        <br>
+        <br>    
         <form action="logout.jsp" method = "POST">
             <button type="submit" class="boto"> Tancar Sessió </button>
         </form>

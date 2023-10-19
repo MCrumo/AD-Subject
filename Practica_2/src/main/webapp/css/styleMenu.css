@@ -40,6 +40,19 @@ body {
 }
 
 .enllaçMenu:hover {
-    color: grey;
+    color: white;
     font-size: 22px;
+    font-weight: bold; 
+    text-shadow: 
+        -1px -1px 0 #000, 
+        1px -1px 0 #000,  
+        -1px 1px 0 #000,  
+        1px 1px 0 #000;   
+}
+
+ .boto {
+    margin-top: 20px;
+    position: fixed;
+    bottom: 200px;
+    right: 640px;
 }
