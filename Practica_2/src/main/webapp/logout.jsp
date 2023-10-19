@@ -17,7 +17,7 @@
     </head>
     <body>
         <div align ="center">
-        <h1>LOGOUT</h1>
+        <h1>Logout</h1>
         <%
         
         HttpSession sessio = request.getSession(false);

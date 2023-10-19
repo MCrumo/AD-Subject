@@ -16,7 +16,7 @@
     </head>
     <body>
         <div align="center">
-        <h1>Inici de sessió:</h1>
+        <h1>Inici de sessió</h1>
         <form action = "login" method = "POST">
             <p>
                 <input type="text" name="username" placeholder="Nom d'usuari" required>
@@ -24,11 +24,11 @@
             <p>
                 <input type="password" name="password" placeholder="Contrasenya" required>
             </p>
-            <input type="submit" value="Inicia Sesió">
+            <input type="submit" value="Inicia Sesió" class="boto">
         </form>  
         <br><br>
         <form action="logout.jsp" method = "POST">
-            <button type="submit"> Tancar Sessió </button>
+            <button type="submit" class="boto"> Tancar Sessió </button>
         </form>
         </div>
     </body>

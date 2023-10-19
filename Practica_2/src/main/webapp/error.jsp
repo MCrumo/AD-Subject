@@ -19,7 +19,7 @@
     </head>
     <body>
         <div align="center">
-        <h1>Error:</h1>
+        <h1>Error</h1>
         <% 
         if (tipus_error == null) {
             if(msg_error != null) {

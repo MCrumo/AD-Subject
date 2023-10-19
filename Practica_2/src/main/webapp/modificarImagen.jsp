@@ -51,6 +51,8 @@ páginas de listado o búsqueda, que se explican más adelante. -->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Modificar Imatge</title>
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
     </head>
     <body>
         <div align="center">
