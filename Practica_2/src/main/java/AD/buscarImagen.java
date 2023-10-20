@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 //importamos la classe Database
 import DB.Database;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,6 +52,34 @@ public class buscarImagen extends HttpServlet {
             out.println("<h1>Servlet buscarImagen at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
+            
+            HttpSession sessio = request.getSession(false);
+            String username = (String) sessio.getAttribute("username");
+            
+            //Error si no s'ha iniciat sessió o no és vàlida
+            if(sessio != null && username != null) {
+                request.setAttribute("tipus_error", "autenticacio");
+                request.setAttribute("msg_error", "La sessió no està iniciada.");
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
+            }
+            
+            String description = request.getParameter("description");
+            String[] keyWords = description.split(",");
+            for(int i = 0; i < keyWords.length; ++i){ 
+                Database db = new Database();
+                List<List<String>> imgsInfo = db.getSetImages(keyWords[i]);
+                request.setAttribute("list",imgsInfo.get(0));
+                request.setAttribute("titol",imgsInfo.get(1));
+                request.setAttribute("descripcio",imgsInfo.get(2));
+                request.setAttribute("tags",imgsInfo.get(3));
+                request.setAttribute("autor",imgsInfo.get(4));
+                request.setAttribute("datac",imgsInfo.get(5));
+                request.setAttribute("user",imgsInfo.get(6));
+                request.setAttribute("id",imgsInfo.get(7));
+                RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
+                rd.forward(request, response);  
+            }
         }
     }
 
