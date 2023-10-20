@@ -16,6 +16,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -128,4 +130,78 @@ public class Database {
         closeConnection();
         return id;
     } 
+    
+    //Retorna la informació de les fotos que quadren amb alfun dels tags de "references"
+    public List<List<String>> getSetImages(String reference){
+        openConnection();
+        
+        String sql = "SELECT filename,titol,descripcio,tags,autor,datac,username,id FROM imatges WHERE titol LIKE ? OR descripcio LIKE ? OR autor LIKE ? OR datac LIKE ? OR tags LIKE ? ORDER BY datac DESC";
+        
+        ArrayList<String> filename = new ArrayList<String>();
+        ArrayList<String> tittle = new ArrayList<String>();
+        ArrayList<String> description = new ArrayList<String>();
+        ArrayList<String> tags = new ArrayList<String>();
+        ArrayList<String> author = new ArrayList<String>();
+        ArrayList<String> date = new ArrayList<String>();
+        ArrayList<String> user = new ArrayList<String>();
+        ArrayList<Integer> id = new ArrayList<Integer>();
+        
+        List<List<String>> result = new ArrayList<>();
+       
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            
+            String referencia = '%' + reference + '%';
+            preparedStatement.setString(1, referencia);
+            preparedStatement.setString(2, referencia);
+            preparedStatement.setString(3, referencia);
+            preparedStatement.setString(4, referencia);
+            preparedStatement.setString(5, referencia);
+            
+            ResultSet rs = preparedStatement.executeQuery();
+            
+            if (!rs.next()) {
+                //filename.add("Error400");
+                ;
+            }
+            else{
+                filename.add(rs.getString(1));
+                tittle.add(rs.getString(2));
+                description.add(rs.getString(3));
+                tags.add(rs.getString(4));
+                author.add(rs.getString(5));
+                date.add(rs.getString(6));
+                user.add(rs.getString(7));
+                id.add(rs.getInt(8));
+            }
+            while(rs.next()){
+                filename.add(rs.getString(1));
+                tittle.add(rs.getString(2));
+                description.add(rs.getString(3));
+                tags.add(rs.getString(4));
+                author.add(rs.getString(5));
+                date.add(rs.getString(6));
+                user.add(rs.getString(7));
+                id.add(rs.getInt(8));
+            }  
+            List<String> idStrings = new ArrayList<>();
+            for (Integer value : id) idStrings.add(value.toString());
+            
+            result.add(filename);
+            result.add(tittle);
+            result.add(description);
+            result.add(tags);
+            result.add(author);
+            result.add(date);
+            result.add(user);
+            result.add(idStrings);
+        }
+        
+        catch (Exception e){
+            System.err.println(e.getMessage());
+            //response.sendRedirect("menu.jsp");
+        }
+        
+        return result;
+    }
 }
