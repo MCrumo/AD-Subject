@@ -4,6 +4,15 @@
     Author     : alumne
 --%>
 
+<!--
+Tipus d'error possibles:
+    login
+    crear_usuari
+    autenticacio
+    registrar
+    eliminar    
+    modificar
+-->
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <% String tipus_error = (String) request.getAttribute("tipus_error"); %>

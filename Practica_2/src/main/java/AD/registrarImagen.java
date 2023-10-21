@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 //importamos la classe Database
 import DB.Database;
+import Aux.Imatge;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import java.io.File;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +50,71 @@ public class registrarImagen extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
+    //Path on es guardaran les imatges
+    private final String path = "/var/webapp/Practica_2/images";
+    private Imatge imatge = null;
+    
+    //Cal afegir els metodes de guardar la data , potser un metode que retorni l'extensio, tot lo de la db i taliqual
+    
+    
+    
+    //Crea un objecte Imatge i inicialitza els seus atributs
+    boolean guardaAuxImatge (HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        //guardem els atributs del formulari
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String keywords = request.getParameter("keywords");
+        String author = request.getParameter("author");
+        String captureDate = request.getParameter("captureDate");
+        Part imagePart = request.getPart("image");
+
+        //guardem el id de la foto
+        Database db = new Database();
+        int nextId = db.getNextId();
+        
+        //guardem el nom d'usuari
+        HttpSession sessio = request.getSession(false);
+        String username = (String) sessio.getAttribute("username");
+        
+        //guardem la data
+        LocalDate storageDate = LocalDate.now();
+        
+        //Verifiquem que la imatge es png, jpeg o gif
+        String contentType = imagePart.getContentType();
+        if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
+            request.setAttribute("tipus_error", "registrar");
+            request.setAttribute("msg_error", "El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
+            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+            rd.forward(request, response);
+
+            return false;
+        }
+
+        String extensio;
+        switch (contentType) {
+            case "image/gif":
+                extensio = "gif";
+                break;
+            case "image/png":
+                extensio = "png";
+                break;
+            default:
+                extensio = "jpeg";
+                break;
+        }
+
+        String filename = nextId + "_" + title + "." + extensio;
+        
+        
+        
+        imatge = new Imatge(String.valueOf(nextId), title, description, keywords, author, username, captureDate, storageDate, filename, imagePart);
+        
+        return true;
+    }
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -62,57 +129,53 @@ public class registrarImagen extends HttpServlet {
             out.println("<h1>Servlet registrarImagen at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
-            
-            HttpSession sessio = request.getSession(false);
-            String username = (String) sessio.getAttribute("username");
-            
-            //Error si no s'ha iniciat sessió o no és vàlida
-            if(sessio != null && username != null) {
-                request.setAttribute("tipus_error", "autenticacio");
-                request.setAttribute("msg_error", "La sessió no està iniciada.");
+
+            try { //Intentem guardar la imatge
+                System.out.println("Entrem al primer try:\n");
+                if (guardaAuxImatge(request, response)) {
+                    System.out.println("objecte imatge creat\n");
+                    File directori = new File(path);
+                    if (!directori.exists()) {
+                        directori.mkdirs();
+                        directori.setReadable(true);
+                        directori.setWritable(true);
+                        System.out.println("Creo directoris\n");
+                    }
+                    
+                    String uploadPath = path + File.separator + imatge.getFilename();
+                    try (OutputStream outputStream = new FileOutputStream(new File(uploadPath))) {
+                        // Creem un OutputStream per guardar la imatge
+                        int bytesRead;
+                        byte[] buffer = new byte[8192];
+
+                        Part imagePart = request.getPart("image");
+                        
+                        try (InputStream fileContent = imagePart.getInputStream()) {
+                            // Escribim les dades de la imatge al OutputStream
+                            while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
+                                outputStream.write(buffer, 0, bytesRead);
+                            }
+                            
+                            fileContent.close();
+                            System.out.println("imatge guardada a disc\n");
+                            Database db = new Database();
+                            db.registrarImatge(imatge);
+                            System.out.println("imatge a la db\n");
+                        }
+                        
+                    } catch (Exception e) {
+                        request.setAttribute("tipus_error", "registrar");
+                        request.setAttribute("msg_error", "El directori /var/webapp/Practica_2/images/ no existeix. Crea'l i posa tots els permisos");
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+                    }
+                }
+            } catch (Exception e) {
+                request.setAttribute("tipus_error", "registrar");
+                System.out.println(e.getMessage());
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
             }
-            
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String keywords = request.getParameter("keywords");
-            String author = request.getParameter("author");
-            String capture_date = request.getParameter("capture_date");
-            Part image = request.getPart("image");
-            
-            Database db = new Database();
-            int max_id = db.getMaxId();
-            
-            Part filePart = request.getPart("image");
-            InputStream fileContent = filePart.getInputStream();
-            
-            /*if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
-                // Manejar el caso cuando el tipo de archivo no es permitido
-                response.getWriter().println("Solo se permiten archivos JPEG y PNG.");
-                return;
-            }*/
-            // Construir la ruta donde se guardará la imagen
-            String fileName = "image_" + max_id + ".jpg"; // Modifica la extensión según el tipo de archivo
-            String uploadPath = getServletContext().getRealPath("/Images/") + File.separator + fileName;
-
-            try (OutputStream outputStream = new FileOutputStream(uploadPath)) {
-                // Crear un OutputStream para guardar la imagen
-                int bytesRead;
-                byte[] buffer = new byte[8192];
-
-                // Escribir los datos de la imagen en el OutputStream
-                while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            } finally {
-                // Cerrar los flujos
-                fileContent.close();
-            }
-            
-            
-            
-            
         }
     }
 
