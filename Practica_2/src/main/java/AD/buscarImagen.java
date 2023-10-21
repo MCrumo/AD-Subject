@@ -68,7 +68,7 @@ public class buscarImagen extends HttpServlet {
             String[] keyWords = description.split(",");
             for(int i = 0; i < keyWords.length; ++i){ 
                 Database db = new Database();
-                List<List<String>> imgsInfo = db.getSetImages(keyWords[i]);
+                List<List<String>> imgsInfo = db.getSetImatges(keyWords[i]);
                 request.setAttribute("list",imgsInfo.get(0));
                 request.setAttribute("titol",imgsInfo.get(1));
                 request.setAttribute("descripcio",imgsInfo.get(2));
