@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 //importamos la classe Database
 import DB.Database;
+import Aux.Imatge;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import java.io.File;
@@ -48,6 +49,63 @@ public class registrarImagen extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
+    //Path on es guardaran les imatges
+    private final String path = "/var/webapp/Practica_2/images";
+    private Imatge imatge = null;
+    
+    //Cal afegir els metodes de guardar la data , potser un metode que retorni l'extensio, tot lo de la db i taliqual
+    
+    
+    
+    //Crea un objecte Imatge i inicialitza els seus atributs
+    boolean guardaAuxImatge (HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String keywords = request.getParameter("keywords");
+        String author = request.getParameter("author");
+        String captureDate = request.getParameter("captureDate");
+        Part imagePart = request.getPart("image");
+
+        Database db = new Database();
+        int nextId = db.getNextId();
+
+        //Verifiquem que la imatge es png, jpeg o gif
+        String contentType = imagePart.getContentType();
+        if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
+            request.setAttribute("tipus_error", "registrar");
+            request.setAttribute("msg_error", "El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
+            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+            rd.forward(request, response);
+
+            return false;
+        }
+
+        String extensio;
+        switch (contentType) {
+            case "image/gif":
+                extensio = "gif";
+                break;
+            case "image/png":
+                extensio = "png";
+                break;
+            default:
+                extensio = "jpeg";
+                break;
+        }
+
+        String filename = nextId + title + "." + extensio;
+        
+        HttpSession sessio = request.getSession(false);
+        String username = (String) sessio.getAttribute("username");
+        
+        imatge = new Imatge(String.valueOf(nextId), title, description, keywords, author, username, captureDate, storageDate, filename, imagePart);
+
+        
+    }
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -72,44 +130,44 @@ public class registrarImagen extends HttpServlet {
                 request.setAttribute("msg_error", "La sessió no està iniciada.");
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
-            }
-            
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String keywords = request.getParameter("keywords");
-            String author = request.getParameter("author");
-            String capture_date = request.getParameter("capture_date");
-            Part image = request.getPart("image");
-            
-            Database db = new Database();
-            int max_id = db.getMaxId();
-            
-            Part filePart = request.getPart("image");
-            InputStream fileContent = filePart.getInputStream();
-            
-            /*if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
-                // Manejar el caso cuando el tipo de archivo no es permitido
-                response.getWriter().println("Solo se permiten archivos JPEG y PNG.");
                 return;
-            }*/
-            // Construir la ruta donde se guardará la imagen
-            String fileName = "image_" + max_id + ".jpg"; // Modifica la extensión según el tipo de archivo
-            String uploadPath = getServletContext().getRealPath("/Images/") + File.separator + fileName;
-
-            try (OutputStream outputStream = new FileOutputStream(uploadPath)) {
-                // Crear un OutputStream para guardar la imagen
-                int bytesRead;
-                byte[] buffer = new byte[8192];
-
-                // Escribir los datos de la imagen en el OutputStream
-                while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            } finally {
-                // Cerrar los flujos
-                fileContent.close();
             }
             
+            
+            try { //Intentem guardar la imatge
+                if (guardaAuxImatge(request, response)) {
+                
+                    String uploadPath = path + File.separator + imatge.getFilename();
+
+                    try (OutputStream outputStream = new FileOutputStream(uploadPath)) {
+                        // Creem un OutputStream per guardar la imatge
+                        int bytesRead;
+                        byte[] buffer = new byte[8192];
+
+                        Part imagePart = request.getPart("image");
+                        InputStream fileContent = imagePart.getInputStream();
+
+                        // Escribim les dades de la imatge al OutputStream
+                        while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
+                        }
+                    } catch (Exception e) {
+                        request.setAttribute("tipus_error", "registrar");
+                        request.setAttribute("msg_error", "El directori /var/webapp/Practica_2/images/ no existeix. Crea'l i posa tots els permisos");
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+
+                        return;
+                    } finally {
+                        // Tanquem els fluxes
+                        fileContent.close();
+                    }
+                }
+            } catch (Exception e) {
+                request.setAttribute("tipus_error", "registrar");
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
+            }
             
             
             

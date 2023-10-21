@@ -109,7 +109,7 @@ public class Database {
     }
     
     //Retorna el id de la última foto introduïda
-    public int getMaxId() {
+    public int getNextId() {
         int id = 0;
         openConnection();
         
@@ -128,7 +128,7 @@ public class Database {
         }
         
         closeConnection();
-        return id;
+        return id + 1;
     } 
     
     //Retorna la informació de les fotos que quadren amb alfun dels tags de "references"
