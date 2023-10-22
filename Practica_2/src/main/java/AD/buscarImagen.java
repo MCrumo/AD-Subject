@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Aux.Imatge;
+import java.util.ArrayList;
+
 /**
  *  Servlet que recoge los datos de búsqueda y devuelve el
     resultado de la búsqueda en forma de listado. Si la búsqueda no devuelve ningún
@@ -64,22 +67,20 @@ public class buscarImagen extends HttpServlet {
                 rd.forward(request, response);
             }
             
-            String description = request.getParameter("description");
+            String description = request.getParameter("modeBusqueda"); //keyword, title, author
             String[] keyWords = description.split(",");
+            List<Imatge> setImatges = new ArrayList();
             for(int i = 0; i < keyWords.length; ++i){ 
+                
                 Database db = new Database();
-                List<List<String>> imgsInfo = db.getSetImatges(keyWords[i]);
-                request.setAttribute("list",imgsInfo.get(0));
-                request.setAttribute("titol",imgsInfo.get(1));
-                request.setAttribute("descripcio",imgsInfo.get(2));
-                request.setAttribute("tags",imgsInfo.get(3));
-                request.setAttribute("autor",imgsInfo.get(4));
-                request.setAttribute("datac",imgsInfo.get(5));
-                request.setAttribute("user",imgsInfo.get(6));
-                request.setAttribute("id",imgsInfo.get(7));
-                RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
-                rd.forward(request, response);  
+                List<Imatge> imgsInfo = db.getSetImatges(keyWords[i]);
+                setImatges.addAll(imgsInfo);
             }
+            
+            request.setAttribute("setImatges", setImatges);
+            RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
+            rd.forward(request, response);  
+
         }
     }
 
