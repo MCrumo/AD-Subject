@@ -67,17 +67,32 @@ public class buscarImagen extends HttpServlet {
                 rd.forward(request, response);
             }
             
-            String description = request.getParameter("modeBusqueda"); //keyword, title, author
-            String[] keyWords = description.split(",");
-            List<Imatge> setImatges = new ArrayList();
-            for(int i = 0; i < keyWords.length; ++i){ 
-                
-                Database db = new Database();
-                List<Imatge> imgsInfo = db.getSetImatges(keyWords[i]);
-                setImatges.addAll(imgsInfo);
+            String modeBusqueda = request.getParameter("modeBusqueda"); //keyword, title, author
+            String description = request.getParameter("descripcio");
+            
+            if (modeBusqueda == null || description == null) {
+                response.sendRedirect("menu.jsp");
+                return;
             }
             
-            request.setAttribute("setImatges", setImatges);
+            List<Imatge> setImatges = new ArrayList();
+
+            if (!description.isEmpty()){
+            
+                String[] keyWords = description.split(",");
+                for(int i = 0; i < keyWords.length; ++i){ 
+                    Database db = new Database();
+                    List<Imatge> imgsInfo = db.getImatgesByKeyword(keyWords[i]);//getSetImatges(keyWords[i]);
+                    setImatges.addAll(imgsInfo);
+                }
+                if(setImatges.isEmpty()) request.setAttribute("busquedaBuida", 1);
+                request.setAttribute("setImatges", setImatges);
+            }
+            else {
+                request.setAttribute("setImatges", null);
+                request.setAttribute("", null);
+            }
+            
             RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
             rd.forward(request, response);  
 
