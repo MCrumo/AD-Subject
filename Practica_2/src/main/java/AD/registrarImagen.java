@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 //importamos la classe Database
 import DB.Database;
 import Aux.Imatge;
+import Aux.SessioUtil;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
@@ -54,12 +55,8 @@ public class registrarImagen extends HttpServlet {
     
     //Path on es guardaran les imatges
     private final String path = "/var/webapp/Practica_2/images";
-    private Imatge imatge = null;
-    
-    //Cal afegir els metodes de guardar la data , potser un metode que retorni l'extensio, tot lo de la db i taliqual
-    
-    
-    
+    private Imatge imatge = null;    
+        
     //Crea un objecte Imatge i inicialitza els seus atributs
     boolean guardaAuxImatge (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -138,47 +135,53 @@ public class registrarImagen extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            try { //Intentem guardar la imatge
-                if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
-                    File directori = new File(path);
-                    if (!directori.exists()) {
-                        try {
-                            directori.mkdirs();
-                            directori.setReadable(true);
-                            directori.setWritable(true);
+        if (SessioUtil.validaSessio(request.getSession(false))) {
+            try (PrintWriter out = response.getWriter()) {
+                try { //Intentem guardar la imatge
+                    if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
+                        File directori = new File(path);
+                        if (!directori.exists()) {
+                            try {
+                                directori.mkdirs();
+                                directori.setReadable(true);
+                                directori.setWritable(true);
+                            } catch (Exception e) {
+                                request.setAttribute("tipus_error", "registrar");
+                                request.setAttribute("msg_error", "No existeix la ruta /var/webapp/Practica_2/images/ . Crea-la i otorga-li els permisos necessaris");
+                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                rd.forward(request, response);
+                            }
+                        }
+
+                        Part imagePart = request.getPart("image");
+                        File file = new File(path, imatge.getFilename());
+
+                        try (InputStream input = imagePart.getInputStream()) {
+                            Files.copy(input, file.toPath());
                         } catch (Exception e) {
                             request.setAttribute("tipus_error", "registrar");
-                            request.setAttribute("msg_error", "No existeix la ruta /var/webapp/Practica_2/images/ . Crea-la i otorga-li els permisos necessaris");
+                            request.setAttribute("msg_error", "Ha succeït un error, revisa que el directori /var/webapp/Practica_2/images/ existeixi i que els permisos son adeqüats");
                             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                             rd.forward(request, response);
                         }
-                    }
-                    
-                    Part imagePart = request.getPart("image");
-                    File file = new File(path, imatge.getFilename());
 
-                    try (InputStream input = imagePart.getInputStream()) {
-                        Files.copy(input, file.toPath());
-                    } catch (Exception e) {
-                        request.setAttribute("tipus_error", "registrar");
-                        request.setAttribute("msg_error", "Ha succeït un error, revisa que el directori /var/webapp/Practica_2/images/ existeixi i que els permisos son adeqüats");
-                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                        rd.forward(request, response);
+                        Database db = new Database();
+                        db.registrarImatge(imatge);
+
+                        response.sendRedirect("registreOk.jsp");
                     }
-                    
-                    Database db = new Database();
-                    db.registrarImatge(imatge);
-                    
-                    response.sendRedirect("registreOk.jsp");
+                } catch (Exception e) {
+                    request.setAttribute("tipus_error", "registrar");
+                    System.out.println(e.getMessage());
+                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                    rd.forward(request, response);
                 }
-            } catch (Exception e) {
-                request.setAttribute("tipus_error", "registrar");
-                System.out.println(e.getMessage());
+            }
+        } else {
+                request.setAttribute("tipus_error", "autenticacio");
+                request.setAttribute("msg_error", "La sessió no és vàlida.");
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
-            }
         }
     }
 

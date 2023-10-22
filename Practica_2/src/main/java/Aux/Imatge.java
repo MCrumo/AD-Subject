@@ -27,7 +27,7 @@ public class Imatge {
 
     
     //Retorna la data en el format adequat per guardar yyyy/MM/dd
-    private String validaFormatStringData (String data) {
+    private static String validaFormatStringData (String data) {
         String auxData = data;
         if (data.contains("-")) {
             DateTimeFormatter formatOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -41,10 +41,17 @@ public class Imatge {
     }
     
     //Converteix de LocalDate a String formatat com yyyy/MM/dd
-    private String formataDataAString (LocalDate data) {
+    private static String formataDataAString (LocalDate data) {
         DateTimeFormatter formatData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String dataFormatada = data.format(formatData);        
         return dataFormatada;
+    }
+    
+    private static String reemplasaEspais(String input) {
+        // Reemplaça múltiples espais per una coma, s'assegura de no duplicar comes
+        String res = input;
+        if (input.isBlank()) res = input.replaceAll("\\s+,\\s*", ", ");
+        return res;
     }
     
     public Imatge() {
@@ -55,7 +62,7 @@ public class Imatge {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.keywords = keywords;
+        this.keywords = reemplasaEspais(keywords);
         this.author = author;
         this.creator = creator;
         this.captureDate = validaFormatStringData(captureDate);
@@ -69,7 +76,7 @@ public class Imatge {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.keywords = keywords;
+        this.keywords = reemplasaEspais(keywords);
         this.author = author;
         this.creator = creator;
         this.captureDate = validaFormatStringData(captureDate);
@@ -107,7 +114,7 @@ public class Imatge {
     }
 
     public void setKeywords(String keywords) {
-        this.keywords = keywords;
+        this.keywords = reemplasaEspais(keywords);
     }
 
     public String getAuthor() {
