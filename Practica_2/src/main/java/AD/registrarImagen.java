@@ -136,46 +136,44 @@ public class registrarImagen extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (SessioUtil.validaSessio(request.getSession(false))) {
-            try (PrintWriter out = response.getWriter()) {
-                try { //Intentem guardar la imatge
-                    if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
-                        File directori = new File(path);
-                        if (!directori.exists()) {
-                            try {
-                                directori.mkdirs();
-                                directori.setReadable(true);
-                                directori.setWritable(true);
-                            } catch (Exception e) {
-                                request.setAttribute("tipus_error", "registrar");
-                                request.setAttribute("msg_error", "No existeix la ruta /var/webapp/Practica_2/images/ . Crea-la i otorga-li els permisos necessaris");
-                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                                rd.forward(request, response);
-                            }
-                        }
-
-                        Part imagePart = request.getPart("image");
-                        File file = new File(path, imatge.getFilename());
-
-                        try (InputStream input = imagePart.getInputStream()) {
-                            Files.copy(input, file.toPath());
+            try { //Intentem guardar la imatge
+                if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
+                    File directori = new File(path);
+                    if (!directori.exists()) {
+                        try {
+                            directori.mkdirs();
+                            directori.setReadable(true);
+                            directori.setWritable(true);
                         } catch (Exception e) {
                             request.setAttribute("tipus_error", "registrar");
-                            request.setAttribute("msg_error", "Ha succeït un error, revisa que el directori /var/webapp/Practica_2/images/ existeixi i que els permisos son adeqüats");
+                            request.setAttribute("msg_error", "No existeix la ruta /var/webapp/Practica_2/images/ . Crea-la i otorga-li els permisos necessaris");
                             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                             rd.forward(request, response);
                         }
-
-                        Database db = new Database();
-                        db.registrarImatge(imatge);
-
-                        response.sendRedirect("registreOk.jsp");
                     }
-                } catch (Exception e) {
-                    request.setAttribute("tipus_error", "registrar");
-                    System.out.println(e.getMessage());
-                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                    rd.forward(request, response);
+
+                    Part imagePart = request.getPart("image");
+                    File file = new File(path, imatge.getFilename());
+
+                    try (InputStream input = imagePart.getInputStream()) {
+                        Files.copy(input, file.toPath());
+                    } catch (Exception e) {
+                        request.setAttribute("tipus_error", "registrar");
+                        request.setAttribute("msg_error", "Ha succeït un error, revisa que el directori /var/webapp/Practica_2/images/ existeixi i que els permisos son adeqüats");
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+                    }
+
+                    Database db = new Database();
+                    db.registrarImatge(imatge);
+
+                    response.sendRedirect("registreOk.jsp");
                 }
+            } catch (Exception e) {
+                request.setAttribute("tipus_error", "registrar");
+                //System.out.println(e.getMessage());
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
             }
         } else {
                 request.setAttribute("tipus_error", "autenticacio");

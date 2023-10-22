@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 
 //importamos la classe Database
 import DB.Database;
+import Aux.Imatge;
+import Aux.SessioUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,20 +39,41 @@ public class eliminarImagen extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private boolean elimina(String filename) {
+        true;
+    }
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet eliminarImagen</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet eliminarImagen at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        if (SessioUtil.validaSessio(request.getSession(false))) {
+            String id = request.getParameter("id");
+            
+            if (id == null) {
+                response.sendRedirect("login.jsp");
+            } else {
+                Database db = new Database();
+                Imatge imatge = db.BuscaId(id);
+                
+                HttpSession sessio = request.getSession(false);
+                String username = (String) sessio.getAttribute("username");
+                if (imatge.getCreator().equals(username) && elimina(imatge.getFilename())) {
+                    db.eliminaImatge(id);
+                    //out.println("Deleted the file: " + "Images/" + img.filename);
+                    response.sendRedirect("menu.jsp");
+                } else {
+                    request.setAttribute("tipus_error", "eliminar");
+                    request.setAttribute("msg_error", "Has intentat eliminar una imatgte que no era teva o no s'ha pogut eliminar de disc, torna-ho a intentar més tard");
+                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                    rd.forward(request, response);
+                }
+            }
+            
+        } else {
+            request.setAttribute("tipus_error", "autenticacio");
+            request.setAttribute("msg_error", "La sessió no és vàlida.");
+            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+            rd.forward(request, response);
         }
     }
 
