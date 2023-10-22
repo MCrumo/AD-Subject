@@ -25,6 +25,7 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
     <!-- Verificació de la sessio HTTP-->
     <%@ page import="DB.Database" %>
     <%@ page import="jakarta.servlet.http.HttpSession" %>
+    <%@ page import="java.util.List" %>
 
     
     <%
@@ -66,7 +67,9 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
     <body>
         <div align="center">
         <h1>Registrar Imatge:</h1>
-        <button onclick="goBack()">Enrere</button>
+        <form action="menu.jsp">
+            <button type="submit" class="boto">Enrere</button>
+        </form>
         </div>
         <p>
             <div align="center">
@@ -90,13 +93,19 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
                     </p>
                     <input type="submit" value="Registra la imatge">
                 </form>
+                
+                <%-- Mostrar missatges d'error si existeixen --%>
+                <% List<String> errors = (List<String>)request.getAttribute("errors"); %>
+                <% if (errors != null && !errors.isEmpty()) { %>
+                    <div style="color: red;">
+                        <ul>
+                            <% for (String error : errors) { %>
+                                <li><%= error %></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                <% } %>
             </div>
         <p/>
-        <script>
-        function goBack() {
-            // Utiliza window.history par retrocedir una pàgina en el navegador
-            window.history.back();
-        }
-        </script>
     </body>
 </html>

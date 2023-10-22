@@ -17,14 +17,15 @@ import jakarta.servlet.http.HttpSession;
 //importamos la classe Database
 import DB.Database;
 import Aux.Imatge;
+
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +64,7 @@ public class registrarImagen extends HttpServlet {
     boolean guardaAuxImatge (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        //guardem els atributs del formulari
+        //guardem els atributs del formulari en variables
         String title = request.getParameter("title");
         String description = request.getParameter("description");
         String keywords = request.getParameter("keywords");
@@ -71,6 +72,13 @@ public class registrarImagen extends HttpServlet {
         String captureDate = request.getParameter("captureDate");
         Part imagePart = request.getPart("image");
 
+        //Array per si algun argument és incorrecte poder mostrar l'error en pantalla
+        List<String> errors = new ArrayList<>();
+        
+        if (title != null && title.contains(" ")) {
+            errors.add("El títol no pot contenir espais");
+        }
+        
         //guardem el id de la foto
         Database db = new Database();
         int nextId = db.getNextId();
@@ -82,15 +90,22 @@ public class registrarImagen extends HttpServlet {
         //guardem la data
         LocalDate storageDate = LocalDate.now();
         
+        //Verifico que la data introduida no és posterior a la data d'avui
+        LocalDate dataFormulari = LocalDate.parse(captureDate);
+        if (dataFormulari.isAfter(storageDate)) {
+            errors.add("La imatge que vols penjar no s'ha pogut prendre en el futur!");
+        }
+        
         //Verifiquem que la imatge es png, jpeg o gif
         String contentType = imagePart.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
-            request.setAttribute("tipus_error", "registrar");
+            /*request.setAttribute("tipus_error", "registrar");
             request.setAttribute("msg_error", "El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
             rd.forward(request, response);
 
-            return false;
+            return false;*/
+            errors.add("El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
         }
 
         String extensio;
@@ -108,7 +123,13 @@ public class registrarImagen extends HttpServlet {
 
         String filename = nextId + "_" + title + "." + extensio;
         
-        
+        //Si hi ha errors, sortim i retornem false. Els printarem a la pàgina web
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("registrarImagen.jsp");
+            dispatcher.forward(request, response);
+            return false;
+        }
         
         imatge = new Imatge(String.valueOf(nextId), title, description, keywords, author, username, captureDate, storageDate, filename, imagePart);
         
@@ -119,56 +140,38 @@ public class registrarImagen extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet registrarImagen</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet registrarImagen at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-
             try { //Intentem guardar la imatge
-                System.out.println("Entrem al primer try:\n");
-                if (guardaAuxImatge(request, response)) {
-                    System.out.println("objecte imatge creat\n");
+                if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
                     File directori = new File(path);
                     if (!directori.exists()) {
-                        directori.mkdirs();
-                        directori.setReadable(true);
-                        directori.setWritable(true);
-                        System.out.println("Creo directoris\n");
+                        try {
+                            directori.mkdirs();
+                            directori.setReadable(true);
+                            directori.setWritable(true);
+                        } catch (Exception e) {
+                            request.setAttribute("tipus_error", "registrar");
+                            request.setAttribute("msg_error", "No existeix la ruta /var/webapp/Practica_2/images/ . Crea-la i otorga-li els permisos necessaris");
+                            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                            rd.forward(request, response);
+                        }
                     }
                     
-                    String uploadPath = path + File.separator + imatge.getFilename();
-                    try (OutputStream outputStream = new FileOutputStream(new File(uploadPath))) {
-                        // Creem un OutputStream per guardar la imatge
-                        int bytesRead;
-                        byte[] buffer = new byte[8192];
+                    Part imagePart = request.getPart("image");
+                    File file = new File(path, imatge.getFilename());
 
-                        Part imagePart = request.getPart("image");
-                        
-                        try (InputStream fileContent = imagePart.getInputStream()) {
-                            // Escribim les dades de la imatge al OutputStream
-                            while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
-                                outputStream.write(buffer, 0, bytesRead);
-                            }
-                            
-                            fileContent.close();
-                            System.out.println("imatge guardada a disc\n");
-                            Database db = new Database();
-                            db.registrarImatge(imatge);
-                            System.out.println("imatge a la db\n");
-                        }
-                        
+                    try (InputStream input = imagePart.getInputStream()) {
+                        Files.copy(input, file.toPath());
                     } catch (Exception e) {
                         request.setAttribute("tipus_error", "registrar");
-                        request.setAttribute("msg_error", "El directori /var/webapp/Practica_2/images/ no existeix. Crea'l i posa tots els permisos");
+                        request.setAttribute("msg_error", "Ha succeït un error, revisa que el directori /var/webapp/Practica_2/images/ existeixi i que els permisos son adeqüats");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
                     }
+                    
+                    Database db = new Database();
+                    db.registrarImatge(imatge);
+                    
+                    response.sendRedirect("registreOk.jsp");
                 }
             } catch (Exception e) {
                 request.setAttribute("tipus_error", "registrar");
