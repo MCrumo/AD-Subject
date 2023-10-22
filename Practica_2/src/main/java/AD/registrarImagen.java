@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +63,7 @@ public class registrarImagen extends HttpServlet {
     boolean guardaAuxImatge (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        //guardem els atributs del formulari
         String title = request.getParameter("title");
         String description = request.getParameter("description");
         String keywords = request.getParameter("keywords");
@@ -69,9 +71,17 @@ public class registrarImagen extends HttpServlet {
         String captureDate = request.getParameter("captureDate");
         Part imagePart = request.getPart("image");
 
+        //guardem el id de la foto
         Database db = new Database();
         int nextId = db.getNextId();
-
+        
+        //guardem el nom d'usuari
+        HttpSession sessio = request.getSession(false);
+        String username = (String) sessio.getAttribute("username");
+        
+        //guardem la data
+        LocalDate storageDate = LocalDate.now();
+        
         //Verifiquem que la imatge es png, jpeg o gif
         String contentType = imagePart.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
@@ -96,14 +106,13 @@ public class registrarImagen extends HttpServlet {
                 break;
         }
 
-        String filename = nextId + title + "." + extensio;
+        String filename = nextId + "_" + title + "." + extensio;
         
-        HttpSession sessio = request.getSession(false);
-        String username = (String) sessio.getAttribute("username");
+        
         
         imatge = new Imatge(String.valueOf(nextId), title, description, keywords, author, username, captureDate, storageDate, filename, imagePart);
-
         
+        return true;
     }
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -120,57 +129,53 @@ public class registrarImagen extends HttpServlet {
             out.println("<h1>Servlet registrarImagen at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
-            
-            HttpSession sessio = request.getSession(false);
-            String username = (String) sessio.getAttribute("username");
-            
-            //Error si no s'ha iniciat sessió o no és vàlida
-            if(sessio != null && username != null) {
-                request.setAttribute("tipus_error", "autenticacio");
-                request.setAttribute("msg_error", "La sessió no està iniciada.");
-                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                rd.forward(request, response);
-                return;
-            }
-            
-            
-            try { //Intentem guardar la imatge
-                if (guardaAuxImatge(request, response)) {
-                
-                    String uploadPath = path + File.separator + imatge.getFilename();
 
-                    try (OutputStream outputStream = new FileOutputStream(uploadPath)) {
+            try { //Intentem guardar la imatge
+                System.out.println("Entrem al primer try:\n");
+                if (guardaAuxImatge(request, response)) {
+                    System.out.println("objecte imatge creat\n");
+                    File directori = new File(path);
+                    if (!directori.exists()) {
+                        directori.mkdirs();
+                        directori.setReadable(true);
+                        directori.setWritable(true);
+                        System.out.println("Creo directoris\n");
+                    }
+                    
+                    String uploadPath = path + File.separator + imatge.getFilename();
+                    try (OutputStream outputStream = new FileOutputStream(new File(uploadPath))) {
                         // Creem un OutputStream per guardar la imatge
                         int bytesRead;
                         byte[] buffer = new byte[8192];
 
                         Part imagePart = request.getPart("image");
-                        InputStream fileContent = imagePart.getInputStream();
-
-                        // Escribim les dades de la imatge al OutputStream
-                        while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
-                            outputStream.write(buffer, 0, bytesRead);
+                        
+                        try (InputStream fileContent = imagePart.getInputStream()) {
+                            // Escribim les dades de la imatge al OutputStream
+                            while ((bytesRead = fileContent.read(buffer, 0, 8192)) != -1) {
+                                outputStream.write(buffer, 0, bytesRead);
+                            }
+                            
+                            fileContent.close();
+                            System.out.println("imatge guardada a disc\n");
+                            Database db = new Database();
+                            db.registrarImatge(imatge);
+                            System.out.println("imatge a la db\n");
                         }
+                        
                     } catch (Exception e) {
                         request.setAttribute("tipus_error", "registrar");
                         request.setAttribute("msg_error", "El directori /var/webapp/Practica_2/images/ no existeix. Crea'l i posa tots els permisos");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
-
-                        return;
-                    } finally {
-                        // Tanquem els fluxes
-                        fileContent.close();
                     }
                 }
             } catch (Exception e) {
                 request.setAttribute("tipus_error", "registrar");
+                System.out.println(e.getMessage());
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
             }
-            
-            
-            
         }
     }
 

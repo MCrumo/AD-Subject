@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Aux.Imatge;
+
 /**
  *
  * @author miquel i nacho
@@ -202,6 +204,33 @@ public class Database {
             //response.sendRedirect("menu.jsp");
         }
         
+        closeConnection();
         return result;
+    }
+    
+    public void registrarImatge(Imatge imatge) {
+        openConnection();
+                
+        try {
+            String sql = "INSERT INTO PR2.IMAGE (TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, imatge.getTitle());
+            preparedStatement.setString(2, imatge.getDescription());
+            preparedStatement.setString(3, imatge.getKeywords());
+            preparedStatement.setString(4, imatge.getAuthor());
+            preparedStatement.setString(5, imatge.getCreator());
+            preparedStatement.setString(6, imatge.getCaptureDate());
+            preparedStatement.setString(7, imatge.getStorageDate());
+            preparedStatement.setString(8, imatge.getFilename());
+            
+            preparedStatement.executeUpdate();        
+
+        } catch (SQLException e) {
+            // connection close failed.
+            System.err.println(e.getMessage());
+        }
+        
+        closeConnection();
     }
 }

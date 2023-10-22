@@ -4,8 +4,10 @@
  */
 package Aux;
 
+import jakarta.mail.internet.ParseException;
 import jakarta.servlet.http.Part;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -18,24 +20,60 @@ public class Imatge {
     private String keywords = "";
     private String author = "";
     private String creator = "";
-    private Date captureDate = null;
-    private Date storageDate = null;
+    private String captureDate = null;
+    private String storageDate = null;
     private String filename = "";
     private Part part;
 
+    
+    //Retorna la data en el format adequat per guardar yyyy/MM/dd
+    private String validaFormatStringData (String data) {
+        String auxData = data;
+        if (data.contains("-")) {
+            DateTimeFormatter formatOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate dataLocal = LocalDate.parse(data, formatOriginal);
+
+            DateTimeFormatter nouFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            auxData = dataLocal.format(nouFormat);
+        }
+        
+        return auxData;
+    }
+    
+    //Converteix de LocalDate a String formatat com yyyy/MM/dd
+    private String formataDataAString (LocalDate data) {
+        DateTimeFormatter formatData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String dataFormatada = data.format(formatData);        
+        return dataFormatada;
+    }
+    
     public Imatge() {
     }
 
     public Imatge(String id, String title, String description, String keywords, String author,
-                  String creator, Date captureDate, Date storageDate, String filename, Part part) {
+                  String creator, String captureDate, String storageDate, String filename, Part part) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.keywords = keywords;
         this.author = author;
         this.creator = creator;
-        this.captureDate = captureDate;
-        this.storageDate = storageDate;
+        this.captureDate = validaFormatStringData(captureDate);
+        this.storageDate = validaFormatStringData(storageDate);
+        this.filename = filename;
+        this.part = part;
+    }
+    
+    public Imatge(String id, String title, String description, String keywords, String author,
+                  String creator, String captureDate, LocalDate storageDate, String filename, Part part) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.keywords = keywords;
+        this.author = author;
+        this.creator = creator;
+        this.captureDate = validaFormatStringData(captureDate);
+        this.storageDate = formataDataAString(storageDate);
         this.filename = filename;
         this.part = part;
     }
@@ -87,33 +125,29 @@ public class Imatge {
     public void setCreator(String creator) {
         this.creator = creator;
     }
-        
-    /** Puc passar la data com a Date com a String i me la converteix, també li puc fer el get sobre els dos formats**/
-    
-    public Date getCaptureDate() {
+            
+    public String getCaptureDate() {
         return captureDate;
     }
-
-    public void setCaptureDate(Date captureDate) {
+    
+    public String getStorageDate() {
+        return storageDate;
+    }
+    
+    public void setCaptureDate(String captureDate) {
         this.captureDate = captureDate;
     }
 
-    public Date getStorageDate() {
-        return storageDate;
+    public void setStorageDate(String storageDate) {
+        this.storageDate = storageDate;        
     }
-
-    public void setStorageDate(Date storageDate) {
-        this.storageDate = storageDate;
-        /*
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        try {
-            Date fechaNacimiento = dateFormat.parse(fechaNacimientoStr);
-            // Ahora tienes la fecha como un objeto Date
-        } catch (ParseException e) {
-            // Manejo de la excepción en caso de que la cadena no sea una fecha válida
-            e.printStackTrace();
-        }*/
+    
+    public void setCaptureDate(LocalDate captureDate) {
+        this.captureDate = formataDataAString(captureDate);
+    }
+    
+    public void setStorageDate(LocalDate storageDate) {
+        this.captureDate = formataDataAString(storageDate);;
     }
 
     public String getFilename() {
