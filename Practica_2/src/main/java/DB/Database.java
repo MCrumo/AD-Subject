@@ -134,31 +134,23 @@ public class Database {
     } 
     
     //Retorna la informació de les fotos que quadren amb alfun dels tags de "references"
-    public List<List<String>> getSetImages(String reference){
+    public ArrayList<Imatge> getSetImatges(String reference){
         openConnection();
+                        //  filename,titol,descripcio,tags,autor,datac,username,id 
+
+        String sql = "SELECT FILENAME,TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE FROM imatges WHERE TITLE LIKE ? OR DESCRIPTION LIKE ? OR AUTHOR LIKE ? OR CAPTURE_DATE LIKE ? OR KEYWORDS LIKE ? ORDER BY STORAGE_DATE DESC";
         
-        String sql = "SELECT filename,titol,descripcio,tags,autor,datac,username,id FROM imatges WHERE titol LIKE ? OR descripcio LIKE ? OR autor LIKE ? OR datac LIKE ? OR tags LIKE ? ORDER BY datac DESC";
-        
-        ArrayList<String> filename = new ArrayList<String>();
-        ArrayList<String> tittle = new ArrayList<String>();
-        ArrayList<String> description = new ArrayList<String>();
-        ArrayList<String> tags = new ArrayList<String>();
-        ArrayList<String> author = new ArrayList<String>();
-        ArrayList<String> date = new ArrayList<String>();
-        ArrayList<String> user = new ArrayList<String>();
-        ArrayList<Integer> id = new ArrayList<Integer>();
-        
-        List<List<String>> result = new ArrayList<>();
+        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
        
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             
             String referencia = '%' + reference + '%';
-            preparedStatement.setString(1, referencia);
-            preparedStatement.setString(2, referencia);
-            preparedStatement.setString(3, referencia);
-            preparedStatement.setString(4, referencia);
-            preparedStatement.setString(5, referencia);
+            preparedStatement.setString(1, referencia); // TITLE
+            preparedStatement.setString(2, referencia); // DESCRIPTION
+            preparedStatement.setString(3, referencia); // AUTHOR
+            preparedStatement.setString(4, referencia); // CAPTURE_DATE
+            preparedStatement.setString(5, referencia); // KEYWORDS
             
             ResultSet rs = preparedStatement.executeQuery();
             
@@ -167,36 +159,16 @@ public class Database {
                 ;
             }
             else{
-                filename.add(rs.getString(1));
-                tittle.add(rs.getString(2));
-                description.add(rs.getString(3));
-                tags.add(rs.getString(4));
-                author.add(rs.getString(5));
-                date.add(rs.getString(6));
-                user.add(rs.getString(7));
-                id.add(rs.getInt(8));
+                // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+                Imatge imatgeTrobada = new Imatge(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),
+                rs.getString(6),rs.getString(7),rs.getString(8), rs.getString(9), null);
+                setImatges.add(imatgeTrobada);
             }
             while(rs.next()){
-                filename.add(rs.getString(1));
-                tittle.add(rs.getString(2));
-                description.add(rs.getString(3));
-                tags.add(rs.getString(4));
-                author.add(rs.getString(5));
-                date.add(rs.getString(6));
-                user.add(rs.getString(7));
-                id.add(rs.getInt(8));
+                Imatge imatgeTrobada = new Imatge(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),
+                rs.getString(6),rs.getString(7),rs.getString(8), rs.getString(9), null);
+                setImatges.add(imatgeTrobada);
             }  
-            List<String> idStrings = new ArrayList<>();
-            for (Integer value : id) idStrings.add(value.toString());
-            
-            result.add(filename);
-            result.add(tittle);
-            result.add(description);
-            result.add(tags);
-            result.add(author);
-            result.add(date);
-            result.add(user);
-            result.add(idStrings);
         }
         
         catch (Exception e){
@@ -205,7 +177,7 @@ public class Database {
         }
         
         closeConnection();
-        return result;
+        return setImatges;
     }
     
     public void registrarImatge(Imatge imatge) {

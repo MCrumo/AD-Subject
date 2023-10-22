@@ -37,6 +37,7 @@ body {
     color: black;
     text-decoration: none;
     font-size: 16px;
+    transition: font-size 0.2s;
 }
 
 .enllaçMenu:hover {
@@ -51,10 +52,10 @@ body {
 }
 
 .boto {
-    margin-top: 20px;
+    margin-top: 60px;
+    /*bottom: -20px;
     position: fixed;
-    bottom: 200px;
-    right: 640px;
+    right: 50%;*/
     background-color: #c9c9c9;
     border: 1px solid #000;
 }
