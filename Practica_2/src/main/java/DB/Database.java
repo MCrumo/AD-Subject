@@ -133,6 +133,44 @@ public class Database {
         return id + 1;
     } 
     
+    public ArrayList<Imatge> getImatgesByKeyword(String keyword){
+            openConnection();
+            Connection con = null;
+            ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+            try {
+                PreparedStatement statement;
+                String stringSQL = "SELECT * FROM image WHERE KEYWORDS LIKE ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(stringSQL);
+                statement = con.prepareStatement(stringSQL);
+                
+                statement.setString(1, "%" +keyword+ "%");
+                ResultSet rs = statement.executeQuery();      
+                           
+                // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+                while(rs.next()) {
+                    Imatge img = new Imatge(
+                           rs.getString("ID"),
+                            rs.getString("TITLE"),
+                            rs.getString("DESCRIPTION"),
+                            rs.getString("KEYWORDS"),
+                            rs.getString("AUTHOR"),
+                            rs.getString("CREATOR"),
+                            rs.getString("CAPTURE_DATE"),
+                            rs.getString("STORAGE_DATE"),
+                            rs.getString("FILENAME"),
+                            null);                      
+                    setImatges.add(img);
+                }                
+                closeConnection();  
+                return setImatges;
+                
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+                closeConnection();
+            }
+            return null;
+        }
+    
     //Retorna la informació de les fotos que quadren amb alfun dels tags de "references"
     public ArrayList<Imatge> getSetImatges(String reference){
         openConnection();

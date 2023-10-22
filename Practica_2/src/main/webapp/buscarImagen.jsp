@@ -18,7 +18,7 @@
     <%@ page import="jakarta.servlet.http.HttpSession" %>
     <%@ page import="Aux.Imatge" %>
     <%@ page import="java.util.List" %>
-    <%@page import="java.util.ListIterator"%>
+    <%@ page import="java.util.ListIterator" %>
 
 
     
@@ -52,6 +52,7 @@
         }
     %>
     
+    
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Buscar Imatge</title>
@@ -59,11 +60,11 @@
     </head>
     <body>
         <div align="center">
-        <h1>Buscar Imatge:</h1>
-        <button onclick="goBack()">Enrere</button>
+        <h1>Buscar Imatge</h1>
+        <button onclick="goBack()" class="boto">Enrere</button>
         </div>
             <form action='buscarImagen' method = 'POST'>
-                <input type='text' name='value' placeholder="Introdueix l'usuari autor" required>
+                <input type='text' name='descripcio' placeholder="Buscador" required>
                 <select name='modeBusqueda'>
                     <option value='keyword'>Paraula clau</option>
                     <option value='title'>Títol</option>
@@ -74,9 +75,9 @@
             
             <%
                 List<Imatge> imatges = (List<Imatge>) request.getAttribute("setImatges");
-                //Integer emptysearch = (Integer) request.getAttribute("estatBusqueda");
-                if (setImatges.isEmpty()) out.println("Ho sentim, no hem trobat cap imatge");
-                else {               
+                Integer estatBusqueda = (Integer) request.getAttribute("busquedaBuida");
+                if (estatBusqueda != null && estatBusqueda == 1) out.println("<h2>Ho sentim, no hem trobat cap imatge</h2>");
+                if (!(imatges == null || imatges.isEmpty())) {               
                     out.println("<table class='table'>");
                     out.println("<tr>");
                     out.println("<th>Id</th>");
@@ -91,7 +92,7 @@
                     out.println("<th>Imagte</th>");
                     out.println("<th>Accions</th>");
                     out.println("</tr>");
-
+                
                     ListIterator<Imatge> listIterator = imatges.listIterator();
                     while(listIterator.hasNext()) {
                         Imatge i = listIterator.next();
@@ -105,10 +106,10 @@
                         out.println("<td>"+i.getStorageDate()+"</td>");
                         out.println("<td>"+i.getCaptureDate()+"</td>");
                         out.println("<td>"+i.getFilename()+"</td>");
-                        out.println("<td><a href='display.jsp?id="+i.id+"'><img src='Images/"+i.filename+"'width='75' height='50'></a></td>");
-                        if (user.equals(i.creator)) {
-                            out.println("<td><a href='modificarImagen.jsp?id="+i.id+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+i.id+"'>Delete</a></td>");
-                        }
+                        out.println("<td><a href='display.jsp?id="+i.getId()+"'><img src='/var/webapp/Practica_2/images/"+i.getFilename()+"'width='75' height='50'></a></td>");
+                        /*if (user.equals(i.getCreator())) {
+                            out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Delete</a></td>");
+                        }*/
                         out.println("</tr>");
                      }
                     out.println("</table>");
