@@ -61,7 +61,8 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Registrar Imatge</title>
-        <!--link rel="stylesheet" type="text/css" href="./css/styleGeneral.css"-->
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
         <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
     </head>
     <body>
@@ -70,9 +71,7 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
         <form action="menu.jsp">
             <button type="submit" class="boto">Enrere</button>
         </form>
-        </div>
         <p>
-            <div align="center">
                 <form action="registrarImagen" method="POST" enctype="multipart/form-data">
                     <p><input type="text" id="title" name="title" placeholder="Introdueix el títol" required></p>
 
@@ -84,14 +83,14 @@ dado de alta en la base de datos (foreign key en las tablas de la práctica 1). 
 
                     <p>
                         <label for="capture_date">Data de captura:</label>
-                        <input type="date" id="captureDate" name="captureDate" required>
+                        <input type="date" id="captureDate" class='tria' name="captureDate" required>
                     </p>
                     
                     <p>
                         <label for="image">Arxiu:</label>
-                        <input type="file" id="image" name="image" required>
+                        <input type="file" class='tria' id="image" name="image" required>
                     </p>
-                    <input type="submit" value="Registra la imatge">
+                    <input type="submit" class='boto' value="Registra la imatge">
                 </form>
                 
                 <%-- Mostrar missatges d'error si existeixen --%>
