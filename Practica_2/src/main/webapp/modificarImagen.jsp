@@ -16,6 +16,7 @@ páginas de listado o búsqueda, que se explican más adelante. -->
     <!-- Verificació de la sessio HTTP-->
     <%@ page import="DB.Database" %>
     <%@ page import="Aux.Imatge" %>
+    <%@ page import="java.util.List" %>
     <%@ page import="jakarta.servlet.http.HttpSession" %>
 
     
@@ -60,7 +61,7 @@ páginas de listado o búsqueda, que se explican más adelante. -->
                 Database db = new Database();
                 imatge = db.getImatgeAmbId(id);
                 if (imatge != null) {
-                    if (!imatge.getAuthor().equals(username)) {
+                    if (!imatge.getCreator().equals(username)) {
                         request.setAttribute("tipus_error", "eliminar");
                         request.setAttribute("msg_error", "Estas intentant modificar una imatge que no és teva...");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
@@ -93,6 +94,29 @@ páginas de listado o búsqueda, que se explican más adelante. -->
             <button onclick="goBack()">Enrere</button>
         
             <br>
+            <%-- Mostrar missatges d'error si existeixen --%>
+            <% List<String> errors = (List<String>)request.getAttribute("errors"); %>
+            <% if (errors != null && !errors.isEmpty()) { %>
+                <div style="color: red;">
+                    <ul>
+                        <% for (String error : errors) { %>
+                            <p><%= error %></p>
+                        <% } %>
+                    </ul>
+                    <p><a href='menu.jsp' class="enllaçMenu">Tornar al menu principal</a></p>
+                </div>
+            <% } %>
+            <%
+                Boolean okObject = (Boolean) request.getAttribute("ok");
+                if (okObject != null && okObject.booleanValue()) {
+            %>
+                <div style="color: green;">
+                    <p>
+                        Les modificacions s'han enregistrat correctament
+                        <p><a href='menu.jsp' class="enllaçMenu">Tornar al menu principal</a></p>
+                    </p>
+                </div>
+            <% } %>
             <form action="modificarImagen" method="POST">
                 <p>
                     <label for="capture_date">Títol:</label>
@@ -120,7 +144,7 @@ páginas de listado o búsqueda, que se explican más adelante. -->
                 </p>
                 
                 <p>
-                    <a href='images/<%= imatge.getFilename() %>'>
+                    <a href='showImg.jsp?id="+i.getId()+"'>
                         <img src='images/<%= imatge.getFilename() %>' width='400' height='400'>
                     </a>
                 </p>

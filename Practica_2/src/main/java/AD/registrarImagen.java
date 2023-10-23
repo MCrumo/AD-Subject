@@ -96,12 +96,6 @@ public class registrarImagen extends HttpServlet {
         //Verifiquem que la imatge es png, jpeg o gif
         String contentType = imagePart.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
-            /*request.setAttribute("tipus_error", "registrar");
-            request.setAttribute("msg_error", "El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
-            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-            rd.forward(request, response);
-
-            return false;*/
             errors.add("El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
         }
 

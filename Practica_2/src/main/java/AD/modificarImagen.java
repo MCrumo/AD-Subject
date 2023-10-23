@@ -18,6 +18,10 @@ import jakarta.servlet.http.HttpSession;
 //importamos la classe Database
 import DB.Database;
 import Aux.SessioUtil;
+import java.io.File;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,14 +43,50 @@ public class modificarImagen extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
+    private boolean modificaTitol(Imatge imatge, String titleMod) {
+        String filename = imatge.getFilename(); //es de la forma "1_nombre.png"
+        
+        String extensio = filename.substring(filename.lastIndexOf('.') + 1); //obte l'extensio de l'arxiu
+        String filenameMod = imatge.getId() + "_" + titleMod + "." + extensio;
+        
+        String pathAntic = Imatge.getPath() + "/" + filename; System.out.println(pathAntic);
+        String pathNou = Imatge.getPath() + "/" + filenameMod; System.out.println(pathNou);
+        
+        File arxiuAntic = new File(pathAntic);
+        File arxiuNou = new File(pathNou);
+
+        // Renombrar l'arxiu
+        System.out.println("abans de renombrar");
+        if (arxiuAntic.renameTo(arxiuNou)) {
+            // Actualizar el nombre en la instancia de Imatge
+            imatge.setFilename(filenameMod);
+            // Actualizar el título en la instancia de Imatge
+            imatge.setTitle(titleMod);
+            System.out.println("hem renombrat");
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    //Verifica que la data no és més enllà de la data d'avui
+    private boolean verificaData(String captureDate) {
+        LocalDate storageDate = LocalDate.now();
+        
+        LocalDate dataFormulari = LocalDate.parse(captureDate);
+        
+        return !dataFormulari.isAfter(storageDate);
+    }
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (SessioUtil.validaSessio(request.getSession(false))) {
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String keywords = request.getParameter("keywords");
-            String author = request.getParameter("author");
-            String captureDate = request.getParameter("captureDate");
+            String titleMod = request.getParameter("title");
+            String descriptionMod = request.getParameter("description");
+            String keywordsMod = request.getParameter("keywords");
+            String authorMod = request.getParameter("author");
+            String captureDateMod = request.getParameter("captureDate");
             
             String id = request.getParameter("id");
             
@@ -58,8 +98,67 @@ public class modificarImagen extends HttpServlet {
                 
                 HttpSession sessio = request.getSession(false);
                 String username = (String) sessio.getAttribute("username");
+                
+                boolean modified = false;
                 if (imatge.getCreator().equals(username)) {
+                    List<String> errors = new ArrayList<>();
                     
+                    //Si s'ha modificat el titol i és valid, actualitzem també el nom de l'arxiu
+                    if (!titleMod.equals(imatge.getTitle())) {
+                        if (titleMod.contains(" ")) {
+                            errors.add("El títol no pot contenir espais");
+                        } else {
+                            if (modificaTitol(imatge, titleMod)) modified = true;
+                            else {
+                                request.setAttribute("tipus_error", "modificar");
+                                request.setAttribute("msg_error", "Hi ha hagut un error en modificar el titol de la imatge, torna-ho a provar més tard");
+                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                rd.forward(request, response);
+                            }
+                        }
+                    }
+                    //Si ha canviat la desccripció, ho actualitzem a l'objecte imatge
+                    if (!descriptionMod.equals(imatge.getDescription())) {
+                        imatge.setDescription(descriptionMod);
+                        modified = true;
+                    }
+                    //Si han canviat les keywords, ho actualitzem a l'objecte imatge
+                    if (!keywordsMod.equals(imatge.getKeywords())) {
+                        imatge.setKeywords(keywordsMod);
+                        modified = true;
+                    }
+                    //Si ha canviat l'autor, ho actualitzem a l'objecte imatge
+                    if (!authorMod.equals(imatge.getAuthor())) {
+                        imatge.setAuthor(authorMod);
+                        modified = true;
+                    }
+                    //Si ha canviat la data de captura, ho modifiquem a l'objecte imatge
+                    if (!captureDateMod.equals(imatge.getCaptureDate())) {
+                        if (verificaData(captureDateMod)){
+                            imatge.setCaptureDate(captureDateMod);
+                            modified = true;
+                        } else {
+                            errors.add("La data de captura no pot ser en el futur!");
+                        }
+                    }
+                    
+                    //Si hi ha errors, els mostrem per pantalla
+                    if (!errors.isEmpty()) { 
+                        request.setAttribute("errors", errors);
+                        RequestDispatcher dispatcher = request.getRequestDispatcher("modificarImagen.jsp?id=" + id);
+                        dispatcher.forward(request, response);
+                    } else if (modified) { //sinó, modifiquem tots els valors a la base de dades.
+                        boolean ok = db.modificaImatge(imatge);
+                        if (!ok) {
+                            request.setAttribute("tipus_error", "modificar");
+                            request.setAttribute("msg_error", "Hi ha hagut un error en modificar les dades a la base de dades");
+                            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                            rd.forward(request, response);
+                        }
+                        request.setAttribute("ok", ok);
+                        RequestDispatcher dispatcher = request.getRequestDispatcher("modificarImagen.jsp?id=" + id);
+                        dispatcher.forward(request, response);
+                    }
                 
                 } else {
                     request.setAttribute("tipus_error", "modificar");

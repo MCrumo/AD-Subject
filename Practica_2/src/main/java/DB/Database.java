@@ -157,23 +157,11 @@ public class Database {
 
                 // Crea l'objecte imatge
                 imatge = new Imatge(identificador, title, description, keywords, author, creator, captureDate, storageDate, filename, null);
-
-                System.out.println("Objeto Imatge creado exitosamente: " + imatge.getTitle());
-            } else {
-                System.out.println("No se encontraron resultados para el identificador: " + identificador);
             }
-            
-            /*System.out.println("statement executat\n");
-            imatge = new Imatge(identificador, rs.getString(1),rs.getString(2),
-                    rs.getString(3),rs.getString(4),rs.getString(5),
-                 rs.getString(6),rs.getString(7),rs.getString(8), null);
-            System.out.println("imatge null? " + imatge.getTitle());*/
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
             closeConnection();
         }
-        
-        
         
         closeConnection();
         return imatge;
@@ -311,5 +299,32 @@ public class Database {
         }
         
         closeConnection();
+    }
+    
+    public boolean modificaImatge(Imatge imatge) {
+        openConnection();
+        
+        try {
+            String sql = "UPDATE PR2.IMAGE SET TITLE = ?, DESCRIPTION = ?, KEYWORDS = ?, CREATOR = ?, CAPTURE_DATE = ?, FILENAME = ? WHERE ID = ?";
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, imatge.getTitle());
+            preparedStatement.setString(2, imatge.getDescription());
+            preparedStatement.setString(3, imatge.getKeywords());
+            preparedStatement.setString(4, imatge.getCreator());
+            preparedStatement.setString(5, imatge.getCaptureDate());
+            preparedStatement.setString(6, imatge.getFilename());
+            preparedStatement.setString(7, imatge.getId());
+            
+            preparedStatement.executeUpdate();
+            System.out.println("es fa el update");
+        } catch (SQLException e) {
+            // connection close failed.
+            System.err.println(e.getMessage());
+            return false;
+        }
+        
+        closeConnection();
+        return true;
     }
 }

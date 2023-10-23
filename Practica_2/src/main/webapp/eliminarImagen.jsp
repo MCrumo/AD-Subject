@@ -60,9 +60,16 @@ eliminar. -->
             try {
                 Database db = new Database();
                 imatge = db.getImatgeAmbId(id);
-                if (!imatge.getAuthor().equals(username)) {
+                if (imatge != null) {
+                    if (!imatge.getCreator().equals(username)) {
+                        request.setAttribute("tipus_error", "eliminar");
+                        request.setAttribute("msg_error", "Estas intentant eliminar una imatge que no és teva...");
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+                    }
+                } else {
                     request.setAttribute("tipus_error", "eliminar");
-                    request.setAttribute("msg_error", "Estas intentant eliminar una imatge que no és teva...");
+                    request.setAttribute("msg_error", "Hi ha hagut un error en llegir la imatge de la base de dades.");
                     RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                     rd.forward(request, response);
                 }
