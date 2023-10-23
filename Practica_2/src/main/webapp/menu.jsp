@@ -56,7 +56,7 @@
         <%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");%>
         
         <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
-        <p><a href="listImg.jsp" class="enllaçMenu">Llistar Imatges</a></p>
+        <p><a href="list.jsp" class="enllaçMenu">Llistar Imatges</a></p>
         <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
         
         <br>    
