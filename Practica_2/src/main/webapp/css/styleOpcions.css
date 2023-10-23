@@ -22,7 +22,7 @@ body {
 
 /* Estilos para los elementos div */
 div {
-    height: 600px;
+    height: 700px;
     /*width: 1000px;*/
     background-color: rgba(255, 255, 255, 0.70);
     border: 1px solid #ddd;
@@ -103,11 +103,55 @@ a:hover {
 }
 
 .table a {
-    color: blue; /* Cambia el color de los enlaces a azul */
-    text-decoration: none; /* Quita la subrayado predeterminado */
+    color: blue;
+    text-decoration: none; 
 }
 
 /* Cambia el color de los enlaces cuando se pasan por encima (hover) */
 .table a:hover {
-    color: red; /* Cambia el color a rojo cuando se pasa el cursor por encima */
+    color: red; 
 }
+
+.tria {
+    font-family: Verdana, Arial; 
+    font-size: 14px; 
+    color: #333; 
+    background-color: #f2f2f2; 
+    padding: 8px 12px; 
+    border: 1px solid #ccc; 
+    border-radius: 15px;
+    display: inline-block; 
+    cursor: pointer; 
+    width: 250px; 
+}
+
+.tria:hover {
+    background-color: #b6b6b6;
+}
+
+.tria:focus {
+    outline: none; 
+}
+/*
+label {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+input[type="file"] {
+    border: 2px solid #ccc;
+    background-color: #f5f5f5; 
+    padding: 10px; 
+    border-radius: 10px; 
+}
+
+.container {
+    display: flex; 
+    align-items: center; 
+}
+
+input[type="file"]:hover {
+    background-color: #a0a0a0;
+}
+*/
