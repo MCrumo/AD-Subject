@@ -145,13 +145,36 @@ public class Database {
             
             ResultSet rs = preparedStatement.executeQuery();
             
+            if (rs.next()) {
+                String title = rs.getString("TITLE");
+                String description = rs.getString("DESCRIPTION");
+                String keywords = rs.getString("KEYWORDS");
+                String author = rs.getString("AUTHOR");
+                String creator = rs.getString("CREATOR");
+                String captureDate = rs.getString("CAPTURE_DATE");
+                String storageDate = rs.getString("STORAGE_DATE");
+                String filename = rs.getString("FILENAME");
+
+                // Crea l'objecte imatge
+                imatge = new Imatge(identificador, title, description, keywords, author, creator, captureDate, storageDate, filename, null);
+
+                System.out.println("Objeto Imatge creado exitosamente: " + imatge.getTitle());
+            } else {
+                System.out.println("No se encontraron resultados para el identificador: " + identificador);
+            }
+            
+            /*System.out.println("statement executat\n");
             imatge = new Imatge(identificador, rs.getString(1),rs.getString(2),
                     rs.getString(3),rs.getString(4),rs.getString(5),
                  rs.getString(6),rs.getString(7),rs.getString(8), null);
+            System.out.println("imatge null? " + imatge.getTitle());*/
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
             closeConnection();
         }
+        
+        
+        
         closeConnection();
         return imatge;
     }
@@ -163,6 +186,12 @@ public class Database {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identificador); //Identificador
+            
+            int rowsAffected = preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
+            if (rowsAffected == 0) {
+                //No s'ha eliminat cap fila perque no existia el id
+                return false;
+            }
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
             closeConnection();

@@ -60,7 +60,6 @@ eliminar. -->
             try {
                 Database db = new Database();
                 imatge = db.getImatgeAmbId(id);
-                //out.println(imatge.getTitle());
             } catch (NumberFormatException e) {
                 request.setAttribute("tipus_error", "eliminar");
                 request.setAttribute("msg_error", "No existeix cap fitxer amb tal id: " + id);
@@ -68,7 +67,6 @@ eliminar. -->
                 rd.forward(request, response);
             }
         }
-        
         
     %>
     
@@ -94,24 +92,34 @@ eliminar. -->
                     <th>Nom de l'arxiu</th>
                 </tr>
                 <tr>
-                    <%  
-                        if (imatge != null) {
-                            out.println("<td>"+imatge.getTitle()+"</td>");
-                            out.println("<td>"+imatge.getDescription()+"</td>");
-                            out.println("<td>"+imatge.getKeywords()+"</td>");
-                            out.println("<td>"+imatge.getAuthor()+"</td>");
-                            out.println("<td>"+imatge.getCreator()+"</td>");
-                            out.println("<td>"+imatge.getStorageDate()+"</td>");
-                            out.println("<td>"+imatge.getCaptureDate()+"</td>");
-                    %>
+                    <% if (imatge != null) { %>
+                        <td><%= imatge.getId() %></td>
+                        <td><%= imatge.getTitle() %></td>
+                        <td><%= imatge.getDescription() %></td>
+                        <td><%= imatge.getKeywords() %></td>
+                        <td><%= imatge.getAuthor() %></td>
+                        <td><%= imatge.getCreator() %></td>
+                        <td><%= imatge.getStorageDate() %></td>
+                        <td><%= imatge.getCaptureDate() %></td>
+                        <td><%= imatge.getFilename() %></td>
+                    <% } %>
                 </tr>
                 <tr>
-                    <%      out.println("<td><a href='images/"+imatge.getFilename()+"'><img src='images/"+imatge.getFilename()+"'width='100' height='75'></a></td>");}%>
+                    <% if (imatge != null) { %>
+                        <td colspan="9" style="text-align:center;">
+                            <a href='images/<%= imatge.getFilename() %>'>
+                                <img src='images/<%= imatge.getFilename() %>' width='100' height='75'>
+                            </a>
+                        </td>
+                    <% } %>
                 </tr>
                 <tr>
-                    <form action="eliminarImagen" method = "POST">
-                        <button type="submit" class="boto"> Eliminar imatge </button>
-                    </form>
+                    <td colspan="9" style="text-align:center;">
+                        <form action="eliminarImagen" method="POST">
+                            <input type="hidden" name="id" value="<%= imatge.getId() %>">
+                            <button type="submit" class="boto"> Eliminar imatge </button>
+                        </form>
+                    </td>
                 </tr>
             </table>
         </div>
