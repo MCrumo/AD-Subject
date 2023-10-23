@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Aux.Imatge;
+import Aux.SessioUtil;
 import java.util.ArrayList;
 
 /**
@@ -43,61 +44,58 @@ public class buscarImagen extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet buscarImagen</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet buscarImagen at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-            
-            HttpSession sessio = request.getSession(false);
-            String username = (String) sessio.getAttribute("username");
-            
-            //Error si no s'ha iniciat sessió o no és vàlida
-            if(sessio != null && username != null) {
-                request.setAttribute("tipus_error", "autenticacio");
-                request.setAttribute("msg_error", "La sessió no està iniciada.");
-                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                rd.forward(request, response);
-            }
-            
-            String modeBusqueda = request.getParameter("modeBusqueda"); //keyword, title, author
-            String description = request.getParameter("descripcio");
-            
-            if (modeBusqueda == null || description == null) {
-                response.sendRedirect("menu.jsp");
-                return;
-            }
-            
-            List<Imatge> setImatges = new ArrayList();
+        if (SessioUtil.validaSessio(request.getSession(false))) {
+            response.setContentType("text/html;charset=UTF-8");
+            try (PrintWriter out = response.getWriter()) {
+                /* TODO output your page here. You may use following sample code. */
+                out.println("<!DOCTYPE html>");
+                out.println("<html>");
+                out.println("<head>");
+                out.println("<title>Servlet buscarImagen</title>");            
+                out.println("</head>");
+                out.println("<body>");
+                out.println("<h1>Servlet buscarImagen at " + request.getContextPath() + "</h1>");
+                out.println("</body>");
+                out.println("</html>");
 
-            if (!description.isEmpty()){
-            
-                String[] keyWords = description.split(",");
-                for(int i = 0; i < keyWords.length; ++i){ 
-                    Database db = new Database();
-                    List<Imatge> imgsInfo = db.getImatgesByKeyword(keyWords[i]);//getSetImatges(keyWords[i]);
-                    setImatges.addAll(imgsInfo);
+                String modeBusqueda = request.getParameter("modeBusqueda"); //keyword, title, author
+                String description = request.getParameter("descripcio");
+
+                if (modeBusqueda == null || description == null) {
+                    response.sendRedirect("menu.jsp");
+                    return;
                 }
-                if(setImatges.isEmpty()) request.setAttribute("busquedaBuida", 1);
-                request.setAttribute("setImatges", setImatges);
-            }
-            else {
-                request.setAttribute("setImatges", null);
-                request.setAttribute("", null);
-            }
-            
-            RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
-            rd.forward(request, response);  
 
+                List<Imatge> setImatges = new ArrayList();
+
+                if (!description.isEmpty()){
+
+                    String[] keyWords = description.split(",");
+                    for(int i = 0; i < keyWords.length; ++i){ 
+                        Database db = new Database();
+                        List<Imatge> imgsInfo = db.getImatgesByKeyword(keyWords[i]);//getSetImatges(keyWords[i]);
+                        setImatges.addAll(imgsInfo);
+                    }
+                    if(setImatges.isEmpty()) request.setAttribute("busquedaBuida", 1);
+                    request.setAttribute("setImatges", setImatges);
+                }
+                else {
+                    request.setAttribute("setImatges", null);
+                    request.setAttribute("", null);
+                }
+                RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
+                rd.forward(request, response);  
+                
+            }
+        }
+        else {
+            request.setAttribute("tipus_error", "autenticacio");
+            request.setAttribute("msg_error", "La sessió no és vàlida.");
+            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+            rd.forward(request, response);
         }
     }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

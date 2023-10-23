@@ -62,22 +62,35 @@
         <div align="center">
         <h1>Buscar Imatge</h1>
         <button onclick="goBack()" class="boto">Enrere</button>
-        </div>
-            <form action='buscarImagen' method = 'POST'>
-                <input type='text' name='descripcio' placeholder="Buscador" required>
+        
+        <!--    <form action='buscarImagen' method = 'POST'>
+                <input type='text' name='descripcio' placeholder='Buscador' required />
                 <select name='modeBusqueda'>
                     <option value='keyword'>Paraula clau</option>
                     <option value='title'>Títol</option>
                     <option value='author'>Autor</option> <br/>
-                </select>    
-                <input type='submit' class="boto" value='Search' />
-            </form>
-            
+                </select>
+                <br>
+                <input type='submit' class='boto' value='Buscar' />
+            </form>     -->
+        
             <%
                 List<Imatge> imatges = (List<Imatge>) request.getAttribute("setImatges");
                 Integer estatBusqueda = (Integer) request.getAttribute("busquedaBuida");
                 if (estatBusqueda != null && estatBusqueda == 1) out.println("<h2>Ho sentim, no hem trobat cap imatge</h2>");
-                if (!(imatges == null || imatges.isEmpty())) {               
+                if (imatges == null || imatges.isEmpty()) {
+                    out.println("<form action='buscarImagen' method = 'POST'>");
+                    out.println("<input type='text' name='descripcio' placeholder='Buscador' required />");
+                    out.println("<select name='modeBusqueda'>");
+                    out.println("<option value='keyword'>Paraula clau</option>");
+                    out.println("<option value='title'>Títol</option>");
+                    out.println("<option value='author'>Autor</option>");
+                    out.println("</select>");
+                    out.println("<br>");
+                    out.println("<input type='submit' class='boto' value='Buscar' />");
+                    out.println("</form>");
+                }
+                else { //if (!(imatges == null || imatges.isEmpty())) {               
                     out.println("<table class='table'>");
                     out.println("<tr>");
                     out.println("<th>Id</th>");
@@ -116,6 +129,9 @@
                 }
                 
             %>
+            <br>
+            <a href="menu.jsp"class="boto">Menú</a>
+            </div>
         
         <script>
         function goBack() {
