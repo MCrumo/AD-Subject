@@ -18,6 +18,10 @@ import jakarta.servlet.http.HttpSession;
 import DB.Database;
 import Aux.Imatge;
 import Aux.SessioUtil;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +44,26 @@ public class eliminarImagen extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     private boolean elimina(String filename) {
-        true;
+
+        // Concatenem el path general i el nom de l'arxiu
+        String fullPath = Imatge.getPath() + File.separator + filename;
+
+        // Crea un File sobre la ruta completa
+        File imatge = new File(fullPath);
+
+        // Verifiquem que existeix
+        if (imatge.exists()) {
+            try {
+                Path archivoPath = Paths.get(fullPath);
+                Files.delete(archivoPath);
+            } catch (IOException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        
+        return true;
     }
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -53,14 +76,20 @@ public class eliminarImagen extends HttpServlet {
                 response.sendRedirect("login.jsp");
             } else {
                 Database db = new Database();
-                Imatge imatge = db.BuscaId(id);
+                Imatge imatge = db.getImatgeAmbId(id);
                 
                 HttpSession sessio = request.getSession(false);
                 String username = (String) sessio.getAttribute("username");
                 if (imatge.getCreator().equals(username) && elimina(imatge.getFilename())) {
-                    db.eliminaImatge(id);
+                    if (db.eliminaImatge(id)) {
                     //out.println("Deleted the file: " + "Images/" + img.filename);
                     response.sendRedirect("menu.jsp");
+                    } else {
+                        request.setAttribute("tipus_error", "eliminar");
+                        request.setAttribute("msg_error", "No s'ha pogut eliminar la imatge de la base de dades, torna-ho a intentar més tard");
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+                    }
                 } else {
                     request.setAttribute("tipus_error", "eliminar");
                     request.setAttribute("msg_error", "Has intentat eliminar una imatgte que no era teva o no s'ha pogut eliminar de disc, torna-ho a intentar més tard");

@@ -14,6 +14,9 @@ import java.time.format.DateTimeFormatter;
  * @author nacho
  */
 public class Imatge {
+    //Path on es guardaran les imatges
+    private static String path = "/var/webapp/Practica_2/images";
+    
     private String id = "";
     private String title = "";
     private String description = "";
@@ -85,6 +88,10 @@ public class Imatge {
         this.part = part;
     }
 
+    public static String getPath() {
+        return path;
+    }
+    
     public String getId() {
         return id;
     }

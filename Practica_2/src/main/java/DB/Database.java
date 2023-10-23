@@ -133,6 +133,46 @@ public class Database {
         return id + 1;
     } 
     
+    public Imatge getImatgeAmbId (String identificador) {
+        openConnection();
+        
+        Imatge imatge = null; 
+        
+        String sql = "SELECT TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE,FILENAME FROM PR2.IMAGE WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, identificador); //Identificador
+            
+            ResultSet rs = preparedStatement.executeQuery();
+            
+            imatge = new Imatge(identificador, rs.getString(1),rs.getString(2),
+                    rs.getString(3),rs.getString(4),rs.getString(5),
+                 rs.getString(6),rs.getString(7),rs.getString(8), null);
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            closeConnection();
+        }
+        closeConnection();
+        return imatge;
+    }
+    
+    public boolean eliminaImatge (String identificador) {
+        openConnection();
+        
+        String sql = "DELETE FROM PR2.IMAGE WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, identificador); //Identificador
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            closeConnection();
+            return false;
+        }
+        
+        closeConnection();
+        return true;
+    }
+    
     public ArrayList<Imatge> getImatgesByKeyword(String keyword){
             openConnection();
             Connection con = null;

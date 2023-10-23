@@ -53,8 +53,8 @@ public class registrarImagen extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     
-    //Path on es guardaran les imatges
-    private final String path = "/var/webapp/Practica_2/images";
+    
+    //private final String path = "/var/webapp/Practica_2/images";
     private Imatge imatge = null;    
         
     //Crea un objecte Imatge i inicialitza els seus atributs
@@ -138,7 +138,7 @@ public class registrarImagen extends HttpServlet {
         if (SessioUtil.validaSessio(request.getSession(false))) {
             try { //Intentem guardar la imatge
                 if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
-                    File directori = new File(path);
+                    File directori = new File(Imatge.getPath());
                     if (!directori.exists()) {
                         try {
                             directori.mkdirs();
@@ -153,7 +153,7 @@ public class registrarImagen extends HttpServlet {
                     }
 
                     Part imagePart = request.getPart("image");
-                    File file = new File(path, imatge.getFilename());
+                    File file = new File(Imatge.getPath(), imatge.getFilename());
 
                     try (InputStream input = imagePart.getInputStream()) {
                         Files.copy(input, file.toPath());
