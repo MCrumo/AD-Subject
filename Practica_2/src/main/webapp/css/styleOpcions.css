@@ -1,0 +1,113 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 23 oct 2023, 19:00:16
+    Author     : alumne
+*/
+
+html {
+    font-family: Verdana, Arial;
+    background-color: #c5c5c5;
+    background-image: url("./imgs/wallCam2.jpg");
+    background-size: cover;  
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+body {
+    height: 1200px;
+}
+
+/* Estilos para los elementos div */
+div {
+    height: 600px;
+    /*width: 1000px;*/
+    background-color: rgba(255, 255, 255, 0.70);
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding: 10px;
+    overflow: auto;
+}
+
+body {
+    width: 1200px;
+    padding: 35px 10px 10px;
+}
+
+.boto {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    background-color: #c9c9c9;
+    border: 1px solid #525252;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+a:hover {
+    color: #000;
+}
+
+.select {
+    width: 20%; /* Ancho del select */
+    padding: 10px; /* Espacio interno del select */
+    font-size: 14px; /* Tamaño de fuente */
+    border: 1px solid #999; /* Borde del select */
+    border-radius: 15px; /* Borde redondeado */
+    background-color: #fff; /* Color de fondo */
+    color: #000; /* Color del texto */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse */
+    text-align: center;
+}
+
+.select:hover {
+    background-color: #aaa;
+}
+
+.table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 20px 0; 
+    font-family: Verdana, Arial;
+}
+
+/* Estilo para las filas impares (opcional) */
+.table tr:nth-child(odd) {
+    background-color: #f2f2f2; 
+}
+
+/* Estilo para las celdas del encabezado */
+.table th {
+    background-color: #333; 
+    color: #fff; 
+    font-weight: bold;
+}
+
+/* Estilo para las celdas de datos */
+.table td, .table th {
+    padding: 10px; 
+    text-align: left; 
+    border: 1px solid #ddd; 
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Hover sobre las filas (opcional) */
+.table tr:hover {
+    background-color: #ddd; 
+}
+
+.table a {
+    color: blue; /* Cambia el color de los enlaces a azul */
+    text-decoration: none; /* Quita la subrayado predeterminado */
+}
+
+/* Cambia el color de los enlaces cuando se pasan por encima (hover) */
+.table a:hover {
+    color: red; /* Cambia el color a rojo cuando se pasa el cursor por encima */
+}
