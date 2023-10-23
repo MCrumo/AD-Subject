@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.Imatge;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -41,8 +42,32 @@ public class modificarImagen extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (SessioUtil.validaSessio(request.getSession(false))) {
+            String title = request.getParameter("title");
+            String description = request.getParameter("description");
+            String keywords = request.getParameter("keywords");
+            String author = request.getParameter("author");
+            String captureDate = request.getParameter("captureDate");
             
+            String id = request.getParameter("id");
             
+            if (id == null) {
+                response.sendRedirect("login.jsp");
+            } else {
+                Database db = new Database();
+                Imatge imatge = db.getImatgeAmbId(id);
+                
+                HttpSession sessio = request.getSession(false);
+                String username = (String) sessio.getAttribute("username");
+                if (imatge.getCreator().equals(username)) {
+                    
+                
+                } else {
+                    request.setAttribute("tipus_error", "modificar");
+                    request.setAttribute("msg_error", "Has intentat modificar una imatgte que no era teva...");
+                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                    rd.forward(request, response);
+                }
+            }
             
         } else {
             request.setAttribute("tipus_error", "autenticacio");
