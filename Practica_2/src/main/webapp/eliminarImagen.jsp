@@ -23,11 +23,12 @@ eliminar. -->
     <%
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
-
+        String username = "";
+        
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
         if (sessio != null && sessio.getAttribute("username") != null) {
             // Obté el nom d'usuari de la sessió
-            String username = (String) sessio.getAttribute("username");
+            username = (String) sessio.getAttribute("username");
 
             // Crea una instància de ls classe Database
             Database db = new Database();
@@ -48,10 +49,9 @@ eliminar. -->
             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
             rd.forward(request, response);
         }
-    %>
-    
-    <%
-        //agafo el valor de id de la URL
+        
+        
+        //Guardo la imatge amb id en un objecte imatge i verifico que l'autor és qui la intenta eliminar
         String id = request.getParameter("id");
         Imatge imatge = null;
 
@@ -60,6 +60,12 @@ eliminar. -->
             try {
                 Database db = new Database();
                 imatge = db.getImatgeAmbId(id);
+                if (!imatge.getAuthor().equals(username)) {
+                    request.setAttribute("tipus_error", "eliminar");
+                    request.setAttribute("msg_error", "Estas intentant eliminar una imatge que no és teva...");
+                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                    rd.forward(request, response);
+                }
             } catch (NumberFormatException e) {
                 request.setAttribute("tipus_error", "eliminar");
                 request.setAttribute("msg_error", "No existeix cap fitxer amb tal id: " + id);
@@ -108,7 +114,7 @@ eliminar. -->
                     <% if (imatge != null) { %>
                         <td colspan="9" style="text-align:center;">
                             <a href='images/<%= imatge.getFilename() %>'>
-                                <img src='images/<%= imatge.getFilename() %>' width='100' height='75'>
+                                <img src='images/<%= imatge.getFilename() %>' width='400' height='400'>
                             </a>
                         </td>
                     <% } %>

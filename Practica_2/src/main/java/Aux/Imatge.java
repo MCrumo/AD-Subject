@@ -144,6 +144,16 @@ public class Imatge {
         return captureDate;
     }
     
+    //Retorna la data en format ISO
+    public String getCaptureDateISO() {
+        DateTimeFormatter formatPropi = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter formatISO = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+        LocalDate dataPropia = LocalDate.parse(captureDate, formatPropi);
+        
+        return dataPropia.format(formatISO);
+    }
+    
     public String getStorageDate() {
         return storageDate;
     }
