@@ -41,6 +41,7 @@ public class buscarImagen extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * 
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -68,12 +69,27 @@ public class buscarImagen extends HttpServlet {
 
                 List<Imatge> setImatges = new ArrayList();
                 if (!description.isEmpty()){
-
                     String[] keyWords = description.split(",");
+                    
                     for(int i = 0; i < keyWords.length; ++i){ 
                         Database db = new Database();
-                        List<Imatge> imgsInfo = db.getImatgesByKeyword(keyWords[i]);//getSetImatges(keyWords[i]);
-                        setImatges.addAll(imgsInfo);
+                        
+                        if (modeBusqueda.equals("keyword")){
+                             List<Imatge> imgsInfo = db.getImatgesByKeyword(keyWords[i]);
+                             setImatges.addAll(imgsInfo);
+                        }
+                        else if (modeBusqueda.equals("title")){
+                            List<Imatge> imgsInfo = db.getImatgesByTitle(keyWords[i]);
+                            setImatges.addAll(imgsInfo);
+                        }
+                        else if (modeBusqueda.equals("author")){
+                            List<Imatge> imgsInfo = db.getImatgesByAuthor(keyWords[i]);
+                            setImatges.addAll(imgsInfo);
+                        }
+                        else { // .equals("all")
+                            List<Imatge> imgsInfo = db.getSetImatges(keyWords[i]);
+                            setImatges.addAll(imgsInfo);
+                        }
                     }
                     if(setImatges.isEmpty()) request.setAttribute("busquedaBuida", 1);
                     request.setAttribute("setImatges", setImatges);

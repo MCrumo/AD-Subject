@@ -26,13 +26,14 @@ eliminarImagen). -->
 
     
     <%
+        String username = "";
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
 
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
         if (sessio != null && sessio.getAttribute("username") != null) {
             // Obté el nom d'usuari de la sessió
-            String username = (String) sessio.getAttribute("username");
+            username = (String) sessio.getAttribute("username");
 
             // Crea una instància de ls classe Database
             Database db = new Database();
@@ -58,11 +59,14 @@ eliminarImagen). -->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Llistat</title>
+        <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
     </head>
     <body>
         <div align="center">
         <h1>Llistat d'Imatges</h1>
-        <button onclick="goBack()">Enrere</button>
+        <button onclick="goBack()" class='boto'>Enrere</button>
         
         <table border='1' class="table">
             <thread>
@@ -82,10 +86,7 @@ eliminarImagen). -->
             </thread>
         <%  
             Database db = new Database();
-            //List<Imatge> setImagtes = db.getImatgesByKeyword("a");
-            Imatge imatgeProva = new Imatge("202","Un gat","Una gat com cat"," gat nit","Jo","JO","17/10/20023","17/10/20023","202_Gat",null);
-            List<Imatge> setImatges = new ArrayList();
-            setImatges.add(imatgeProva);
+            List<Imatge> setImatges = db.getAllImatges();
             ListIterator<Imatge> listIterator = setImatges.listIterator();
             out.println("<tbody>");
             while(listIterator.hasNext()) {
@@ -100,10 +101,10 @@ eliminarImagen). -->
                 out.println("<td>"+i.getStorageDate()+"</td>");
                 out.println("<td>"+i.getCaptureDate()+"</td>");
                 out.println("<td>"+i.getFilename()+"</td>");
-                out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='/var/webapp/Practica_2/images/"+i.getFilename()+".jpeg"+"'width='75' height='50'></a></td>");
-                /*if (user.equals(i.getCreator())) {
-                    out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Delete</a></td>");
-                }*/
+                out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='images/"+i.getFilename()+"'width='75' height='50'></a></td>");
+                if (username.equals(i.getCreator())) {
+                    out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
+                }
                 out.println("</tr>");
             }
             out.println("</tbody>");

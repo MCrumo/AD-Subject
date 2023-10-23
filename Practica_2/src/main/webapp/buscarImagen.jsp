@@ -25,11 +25,11 @@
     <%
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
-
+         String username = "";
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
         if (sessio != null && sessio.getAttribute("username") != null) {
             // Obté el nom d'usuari de la sessió
-            String username = (String) sessio.getAttribute("username");
+            username = (String) sessio.getAttribute("username");
 
             // Crea una instància de ls classe Database
             Database db = new Database();
@@ -57,12 +57,15 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Buscar Imatge</title>
         <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
     </head>
     <body>
         <div align="center">
         <h1>Buscar Imatge</h1>
-        <button onclick="goBack()" class="boto">Enrere</button>
-        
+        <button onclick="goBack()" class="boto" >Enrere</button>
+        <br>
+
         <!--    <form action='buscarImagen' method = 'POST'>
                 <input type='text' name='descripcio' placeholder='Buscador' required />
                 <select name='modeBusqueda'>
@@ -81,7 +84,9 @@
                 if (imatges == null || imatges.isEmpty()) {
                     out.println("<form action='buscarImagen' method = 'POST'>");
                     out.println("<input type='text' name='descripcio' placeholder='Buscador' required />");
-                    out.println("<select name='modeBusqueda'>");
+                    out.println("<br>");
+                    out.println("<select class='select' name='modeBusqueda'>");
+                    out.println("<option value='all'>Totes</option>");
                     out.println("<option value='keyword'>Paraula clau</option>");
                     out.println("<option value='title'>Títol</option>");
                     out.println("<option value='author'>Autor</option>");
@@ -106,7 +111,7 @@
                     out.println("<th>Imagte</th>");
                     out.println("<th>Accions</th>");
                     out.println("</tr>");
-                    out.println("</thread>")
+                    out.println("</thread>");
                 
                     ListIterator<Imatge> listIterator = imatges.listIterator();
                     out.println("<tbody>");
@@ -122,10 +127,10 @@
                         out.println("<td>"+i.getStorageDate()+"</td>");
                         out.println("<td>"+i.getCaptureDate()+"</td>");
                         out.println("<td>"+i.getFilename()+"</td>");
-                        out.println("<td><a href='display.jsp?id="+i.getId()+"'><img src='/var/webapp/Practica_2/images/"+i.getFilename()+"'width='75' height='50'></a></td>");
-                        /*if (user.equals(i.getCreator())) {
-                            out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Delete</a></td>");
-                        }*/
+                        out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='images/"+i.getFilename()+"'width='75' height='50'></a></td>");                        
+                        if (username.equals(i.getCreator())) {
+                            out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
+                        }
                         out.println("</tr>");
                      }
                      out.println("</tbody>");
