@@ -100,7 +100,7 @@ eliminarImagen). -->
                 out.println("<td>"+i.getStorageDate()+"</td>");
                 out.println("<td>"+i.getCaptureDate()+"</td>");
                 out.println("<td>"+i.getFilename()+"</td>");
-                out.println("<td><a href='display.jsp?id="+i.getId()+"'><img src='/var/webapp/Practica_2/images/"+i.getFilename()+"'width='75' height='50'></a></td>");
+                out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='/var/webapp/Practica_2/images/"+i.getFilename()+".jpeg"+"'width='75' height='50'></a></td>");
                 /*if (user.equals(i.getCreator())) {
                     out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Delete</a></td>");
                 }*/
