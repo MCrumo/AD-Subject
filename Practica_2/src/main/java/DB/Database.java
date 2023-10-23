@@ -133,7 +133,7 @@ public class Database {
         return id + 1;
     } 
     
-    public Imatge getImatgeAmbId (String identificador) {
+    public Imatge getImatgeAmbId(String identificador) {
         openConnection();
         
         Imatge imatge = null; 
@@ -187,6 +187,10 @@ public class Database {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identificador); //Identificador
             
+            preparedStatement.setString(1, identificador); //Identificador
+            
+            ResultSet rs = preparedStatement.executeQuery();
+            
             int rowsAffected = preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
             if (rowsAffected == 0) {
                 //No s'ha eliminat cap fila perque no existia el id
@@ -202,50 +206,142 @@ public class Database {
         return true;
     }
     
-    public ArrayList<Imatge> getImatgesByKeyword(String keyword){
-            openConnection();
-            Connection con = null;
-            ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
-            try {
-                PreparedStatement statement;
-                String stringSQL = "SELECT * FROM image WHERE KEYWORDS LIKE ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(stringSQL);
-                statement = con.prepareStatement(stringSQL);
-                
-                statement.setString(1, "%" +keyword+ "%");
-                ResultSet rs = statement.executeQuery();      
+    public ArrayList<Imatge> getAllImatges(){
+        openConnection();
+        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        String stringSQL = "SELECT * FROM PR2.image ORDER BY STORAGE_DATE DESC";
+        try {
+            PreparedStatement statement = connection.prepareStatement(stringSQL);
+            ResultSet rs = statement.executeQuery();      
                            
-                // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
-                while(rs.next()) {
-                    Imatge img = new Imatge(
-                           rs.getString("ID"),
-                            rs.getString("TITLE"),
-                            rs.getString("DESCRIPTION"),
-                            rs.getString("KEYWORDS"),
-                            rs.getString("AUTHOR"),
-                            rs.getString("CREATOR"),
-                            rs.getString("CAPTURE_DATE"),
-                            rs.getString("STORAGE_DATE"),
-                            rs.getString("FILENAME"),
-                            null);                      
-                    setImatges.add(img);
-                }                
-                closeConnection();  
-                return setImatges;
+            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+            while(rs.next()) {
+                String id = rs.getString("ID");
+                String title = rs.getString("TITLE");
+                String description = rs.getString("DESCRIPTION");
+                String keywords = rs.getString("KEYWORDS");
+                String author = rs.getString("AUTHOR");
+                String creator = rs.getString("CREATOR");
+                String cdate = rs.getString("CAPTURE_DATE");
+                String sdate = rs.getString("STORAGE_DATE");
+                String filename = rs.getString("FILENAME");
+                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
+                setImatges.add(img);
+            }                
+            closeConnection();  
+            return setImatges;
                 
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
-                closeConnection();
-            }
-            return null;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            closeConnection();
         }
+        return null;
+    }
+    
+    public ArrayList<Imatge> getImatgesByTitle(String titol){
+        openConnection();
+        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        String stringSQL = "SELECT * FROM PR2.image WHERE TITLE LIKE ? ORDER BY STORAGE_DATE DESC";
+        try {
+            PreparedStatement statement = connection.prepareStatement(stringSQL);
+            statement.setString(1, "%" +titol+ "%");
+            ResultSet rs = statement.executeQuery();      
+                           
+            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+            while(rs.next()) {
+                String id = rs.getString("ID");
+                String title = rs.getString("TITLE");
+                String description = rs.getString("DESCRIPTION");
+                String keywords = rs.getString("KEYWORDS");
+                String author = rs.getString("AUTHOR");
+                String creator = rs.getString("CREATOR");
+                String cdate = rs.getString("CAPTURE_DATE");
+                String sdate = rs.getString("STORAGE_DATE");
+                String filename = rs.getString("FILENAME");
+                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
+                setImatges.add(img);
+            }                
+            closeConnection();  
+            return setImatges;
+                
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            closeConnection();
+        }
+        return null;
+    }
+    
+    public ArrayList<Imatge> getImatgesByAuthor(String autor){
+        openConnection();
+        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        String stringSQL = "SELECT * FROM PR2.image WHERE AUTHOR LIKE ? ORDER BY STORAGE_DATE DESC";
+        try {
+            PreparedStatement statement = connection.prepareStatement(stringSQL);
+            statement.setString(1, "%" +autor+ "%");
+            ResultSet rs = statement.executeQuery();      
+                           
+            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+            while(rs.next()) {
+                String id = rs.getString("ID");
+                String title = rs.getString("TITLE");
+                String description = rs.getString("DESCRIPTION");
+                String keywords = rs.getString("KEYWORDS");
+                String author = rs.getString("AUTHOR");
+                String creator = rs.getString("CREATOR");
+                String cdate = rs.getString("CAPTURE_DATE");
+                String sdate = rs.getString("STORAGE_DATE");
+                String filename = rs.getString("FILENAME");
+                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
+                setImatges.add(img);
+            }                
+            closeConnection();  
+            return setImatges;
+                
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            closeConnection();
+        }
+        return null;
+    }
+    
+    public ArrayList<Imatge> getImatgesByKeyword(String keyword){
+        openConnection();
+        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        String stringSQL = "SELECT * FROM PR2.image WHERE KEYWORDS LIKE ? ORDER BY STORAGE_DATE DESC";
+        try {
+            PreparedStatement statement = connection.prepareStatement(stringSQL);
+            statement.setString(1, "%" +keyword+ "%");
+            ResultSet rs = statement.executeQuery();      
+                           
+            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+            while(rs.next()) {
+                String id = rs.getString("ID");
+                String title = rs.getString("TITLE");
+                String description = rs.getString("DESCRIPTION");
+                String keywords = rs.getString("KEYWORDS");
+                String author = rs.getString("AUTHOR");
+                String creator = rs.getString("CREATOR");
+                String cdate = rs.getString("CAPTURE_DATE");
+                String sdate = rs.getString("STORAGE_DATE");
+                String filename = rs.getString("FILENAME");
+                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
+                setImatges.add(img);
+            }                
+            closeConnection();  
+            return setImatges;
+                
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            closeConnection();
+        }
+        return null;
+    }
     
     //Retorna la informació de les fotos que quadren amb alfun dels tags de "references"
     public ArrayList<Imatge> getSetImatges(String reference){
         openConnection();
-                        //  filename,titol,descripcio,tags,autor,datac,username,id 
-
-        String sql = "SELECT FILENAME,TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE FROM imatges WHERE TITLE LIKE ? OR DESCRIPTION LIKE ? OR AUTHOR LIKE ? OR CAPTURE_DATE LIKE ? OR KEYWORDS LIKE ? ORDER BY STORAGE_DATE DESC";
+        // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+        String sql = "SELECT ID,TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE,FILENAME FROM PR2.image WHERE TITLE LIKE ? OR DESCRIPTION LIKE ? OR AUTHOR LIKE ? OR CAPTURE_DATE LIKE ? OR KEYWORDS LIKE ? ORDER BY STORAGE_DATE DESC";
         
         ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
        
@@ -261,20 +357,18 @@ public class Database {
             
             ResultSet rs = preparedStatement.executeQuery();
             
-            if (!rs.next()) {
-                //filename.add("Error400");
-                ;
-            }
-            else{
-                // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
-                Imatge imatgeTrobada = new Imatge(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),
-                rs.getString(6),rs.getString(7),rs.getString(8), rs.getString(9), null);
-                setImatges.add(imatgeTrobada);
-            }
-            while(rs.next()){
-                Imatge imatgeTrobada = new Imatge(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),
-                rs.getString(6),rs.getString(7),rs.getString(8), rs.getString(9), null);
-                setImatges.add(imatgeTrobada);
+            while(rs.next()) {
+                String id = rs.getString("ID");
+                String title = rs.getString("TITLE");
+                String description = rs.getString("DESCRIPTION");
+                String keywords = rs.getString("KEYWORDS");
+                String author = rs.getString("AUTHOR");
+                String creator = rs.getString("CREATOR");
+                String cdate = rs.getString("CAPTURE_DATE");
+                String sdate = rs.getString("STORAGE_DATE");
+                String filename = rs.getString("FILENAME");
+                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
+                setImatges.add(img);
             }  
         }
         
