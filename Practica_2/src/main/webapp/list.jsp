@@ -16,7 +16,12 @@ eliminarImagen). -->
 <html>
     
     <!-- Verificació de la sessio HTTP-->
+    <%@ page import="java.util.ListIterator"%>
+    <%@ page import="java.util.List"%>
+    
     <%@ page import="DB.Database" %>
+    <%@ page import="Aux.Imatge" %>
+    <%@ page import="java.util.ArrayList" %>
     <%@ page import="jakarta.servlet.http.HttpSession" %>
 
     
@@ -56,11 +61,60 @@ eliminarImagen). -->
     </head>
     <body>
         <div align="center">
-        <h1>Llistat d'Imatges:</h1>
+        <h1>Llistat d'Imatges</h1>
         <button onclick="goBack()">Enrere</button>
-        </div>
         
-        <!--Aquí val el codi HTML-->
+        <table border='1' class="table">
+            <thread>
+                <tr>
+                    <th>Id</th>
+                    <th>Títol</th>
+                    <th>Descripció</th>
+                    <th>Paraules Clau</th>
+                    <th>Autor</th>
+                    <th>Creador</th>
+                    <th>Data de pujada</th>
+                    <th>Data de captura</th>
+                    <th>Filename</th>
+                    <th>Imatge</th>
+                    <th>Accions</th>
+                </tr>
+            </thread>
+        <%  
+            Database db = new Database();
+            //List<Imatge> setImagtes = db.getImatgesByKeyword("a");
+            Imatge imatgeProva = new Imatge("202","Un gat","Una gat com cat"," gat nit","Jo","JO","17/10/20023","17/10/20023","202_Gat",null);
+            List<Imatge> setImatges = new ArrayList();
+            setImatges.add(imatgeProva);
+            ListIterator<Imatge> listIterator = setImatges.listIterator();
+            out.println("<tbody>");
+            while(listIterator.hasNext()) {
+                Imatge i = listIterator.next();
+                out.println("<tr>");
+                out.println("<td>"+i.getId()+"</td>");
+                out.println("<td>"+i.getTitle()+"</td>");
+                out.println("<td>"+i.getDescription()+"</td>");
+                out.println("<td>"+i.getKeywords()+"</td>");
+                out.println("<td>"+i.getAuthor()+"</td>");
+                out.println("<td>"+i.getCreator()+"</td>");
+                out.println("<td>"+i.getStorageDate()+"</td>");
+                out.println("<td>"+i.getCaptureDate()+"</td>");
+                out.println("<td>"+i.getFilename()+"</td>");
+                out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='/var/webapp/Practica_2/images/"+i.getFilename()+".jpeg"+"'width='75' height='50'></a></td>");
+                /*if (user.equals(i.getCreator())) {
+                    out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Delete</a></td>");
+                }*/
+                out.println("</tr>");
+            }
+            out.println("</tbody>");
+            out.println("</table>");
+        %>
+        
+        </table>
+        
+        <br>
+        <a href="menu.jsp"class="boto">Menú</a>
+        </div>
         
         <script>
         function goBack() {

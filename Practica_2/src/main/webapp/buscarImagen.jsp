@@ -91,7 +91,8 @@
                     out.println("</form>");
                 }
                 else { //if (!(imatges == null || imatges.isEmpty())) {               
-                    out.println("<table class='table'>");
+                    out.println("<table border='1' class='table'>");
+                    out.println("<thread>");
                     out.println("<tr>");
                     out.println("<th>Id</th>");
                     out.println("<th>Títol</th>");
@@ -105,8 +106,10 @@
                     out.println("<th>Imagte</th>");
                     out.println("<th>Accions</th>");
                     out.println("</tr>");
+                    out.println("</thread>")
                 
                     ListIterator<Imatge> listIterator = imatges.listIterator();
+                    out.println("<tbody>");
                     while(listIterator.hasNext()) {
                         Imatge i = listIterator.next();
                         out.println("<tr>");
@@ -125,6 +128,7 @@
                         }*/
                         out.println("</tr>");
                      }
+                     out.println("</tbody>");
                     out.println("</table>");
                 }
                 

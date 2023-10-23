@@ -67,7 +67,6 @@ public class buscarImagen extends HttpServlet {
                 }
 
                 List<Imatge> setImatges = new ArrayList();
-
                 if (!description.isEmpty()){
 
                     String[] keyWords = description.split(",");
