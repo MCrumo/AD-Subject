@@ -82,8 +82,8 @@ public class eliminarImagen extends HttpServlet {
                 String username = (String) sessio.getAttribute("username");
                 if (imatge.getCreator().equals(username) && elimina(imatge.getFilename())) {
                     if (db.eliminaImatge(id)) {
-                    //out.println("Deleted the file: " + "Images/" + img.filename);
-                    response.sendRedirect("menu.jsp");
+                        //out.println("Deleted the file: " + "Images/" + img.filename);
+                        response.sendRedirect("menu.jsp");
                     } else {
                         request.setAttribute("tipus_error", "eliminar");
                         request.setAttribute("msg_error", "No s'ha pogut eliminar la imatge de la base de dades, torna-ho a intentar més tard");
