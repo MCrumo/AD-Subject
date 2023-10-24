@@ -86,11 +86,14 @@ eliminar. -->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Eliminar Imatge</title>
+        <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
+        <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
     </head>
     <body>
         <div align="center">
             <h1>Eliminar Imatge:</h1>
-            <button onclick="goBack()">Enrere</button>
+            <button onclick="goBack()" class='boto'>Enrere</button>
             <p></p>
             <table class='table'>
                 <tr>
@@ -118,14 +121,12 @@ eliminar. -->
                     <% } %>
                 </tr>
                 <tr>
-                    <% if (imatge != null) { %>
-                        <td colspan="9" style="text-align:center;">
-                            <a href='images/<%= imatge.getFilename() %>'>
-                                <img src='images/<%= imatge.getFilename() %>' width='400' height='400'>
-                            </a>
-                        </td>
-                    <% } %>
-                </tr>
+                    <% if (imatge != null) {
+                              out.println("<td colspan='9' style='text-align:center;'>"); 
+                              out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
+                              out.println("<img src='images/"+imatge.getFilename()+" 'style='max-width:300px; max-height: 300px'  ></a></td>");
+                    } %>
+                </tr>   
                 <tr>
                     <td colspan="9" style="text-align:center;">
                         <form action="eliminarImagen" method="POST">

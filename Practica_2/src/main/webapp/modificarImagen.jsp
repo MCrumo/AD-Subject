@@ -87,11 +87,12 @@ páginas de listado o búsqueda, que se explican más adelante. -->
         <title>Modificar Imatge</title>
         <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
         <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
+        <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
     </head>
     <body style="max-width: 800px;">
         <div align="center">
             <h1>Modificar Imatge</h1>
-            <button onclick="goBack()">Enrere</button>
+            <button onclick="goBack()" class='boto'>Enrere</button>
         
             <br>
             <%-- Mostrar missatges d'error si existeixen --%>
@@ -144,13 +145,13 @@ páginas de listado o búsqueda, que se explican más adelante. -->
                 </p>
                 
                 <p>
-                    <a href='showImg.jsp?id="+i.getId()+"'>
-                        <img src='images/<%= imatge.getFilename() %>' width='400' height='400'>
-                    </a>
+                    <% 
+                       out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
+                       out.println("<img src='images/"+imatge.getFilename()+" 'style='max-width:300px; max-height: 300px'></a>"); %>
                 </p>
                 
                 <input type="hidden" name="id" value="<%= imatge.getId() %>">
-                <input type="submit" value="Modificar detalls">
+                <input type="submit" class='boto' value="Modificar detalls">
             </form>
     </div>
         <script>
