@@ -119,31 +119,48 @@ páginas de listado o búsqueda, que se explican más adelante. -->
                 </div>
             <% } %>
             <form action="modificarImagen" method="POST">
-                <p>
-                    <label for="capture_date">Títol:</label>
-                    <input type="text" id="title" name="title" placeholder="Introdueix el títol" value="<%= imatge.getTitle() %>" required>
-                </p>
-
-                <p>
-                    <label for="capture_date">Descripció:</label>
-                    <input type="text" id="description" name="description" placeholder="Introdueix la descripció" value="<%= imatge.getDescription() %>" required>
-                </p>
-
-                <p>
-                    <label for="capture_date">Paraules clau:</label>
-                    <input type="text" id="keywords" name="keywords" placeholder="Introdueix les paraules clau" value="<%= imatge.getKeywords() %>" required>
-                </p>
-
-                <p>
-                    <label for="capture_date">Autor:</label>
-                    <input type="text" id="author" name="author" placeholder="Introdueix l'usuari autor" value="<%= imatge.getAuthor() %>" required>
-                </p>
-
-                <p>
-                    <label for="capture_date">Data de captura:</label>
-                    <input type="date" id="captureDate" name="captureDate" value="<%= imatge.getCaptureDateISO() %>" required>
-                </p>
-                
+                <table>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="title">Títol:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="title" name="title" placeholder="Introdueix el títol" value="<%= imatge.getTitle() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="description">Descripció:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="description" name="description" placeholder="Introdueix la descripció" value="<%= imatge.getDescription() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="keywords">Paraules clau:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="keywords" name="keywords" placeholder="Introdueix les paraules clau" value="<%= imatge.getKeywords() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="author">Autor:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="author" name="author" placeholder="Introdueix l'usuari autor" value="<%= imatge.getAuthor() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="captureDate">Data de captura:</label>
+                        </td>
+                        <td>
+                            <input type="date" id="captureDate" name="captureDate" value="<%= imatge.getCaptureDateISO() %>" required style="width: 200px;">
+                        </td>
+                    </tr>
+                </table>
                 <p>
                     <% 
                        out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
