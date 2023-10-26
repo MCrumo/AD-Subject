@@ -175,10 +175,6 @@ public class Database {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identificador); //Identificador
             
-            preparedStatement.setString(1, identificador); //Identificador
-            
-            ResultSet rs = preparedStatement.executeQuery();
-            
             int rowsAffected = preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
             if (rowsAffected == 0) {
                 //No s'ha eliminat cap fila perque no existia el id
