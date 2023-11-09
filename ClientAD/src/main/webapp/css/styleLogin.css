@@ -1,0 +1,39 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 15 oct 2023, 18:18:14
+    Author     : alumne
+*/
+
+html {
+    font-family: Verdana, Arial;
+    background-color: #f0f0f0;
+    background-image: url("./imgs/wallMap.jpg");
+    /*background-size: 100% 220%;*/
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat; 
+    background-attachment: fixed;
+}
+
+/*h1 {
+    font-weight: bold; 
+    text-shadow: 
+        -1px -1px 0 #fff, 
+        1px -1px 0 #fff,  
+        -1px 1px 0 #fff,  
+        1px 1px 0 #fff;   
+}*/
+
+body {
+    width: 600px;
+    padding: 35px 10px 10px;
+    /*font-weight: bold;*/
+    text-shadow: 
+        -2px -2px 0 #fff, 
+        2px -2px 0 #fff,  
+        -2px 2px 0 #fff,  
+        2px 2px 0 #fff;  
+}
