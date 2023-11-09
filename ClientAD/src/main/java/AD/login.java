@@ -13,11 +13,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpSession;
+import java.io.OutputStream;
 
-//importamos la classe Database
-import DB.Database;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URL;
+import java.net.HttpURLConnection;
 
 /**
  *
@@ -36,37 +35,37 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet login</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet login at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-            
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        
+        URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/login");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
 
-            Database db = new Database();
-            if (db.validUser(username, password)) {
+        // Estem a post, permetem la sortida de dades
+        connection.setDoOutput(true);
 
-                HttpSession sessio = request.getSession(true);
-                sessio.setAttribute("username", username);
-
-                response.sendRedirect("menu.jsp");
-            }
-            else {
-                request.setAttribute("tipus_error", "login");
-                request.setAttribute("msg_error", "El nom d'usuari o la contrasenya son incorrectes.");
-                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                rd.forward(request, response);
-            }
+        String postData = "username=" + username + "&password=" + password;
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = postData.getBytes("utf-8");
+            os.write(input, 0, input.length);
         }
+        
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+
+            HttpSession sessio = request.getSession(true);
+            sessio.setAttribute("username", username);
+
+            response.sendRedirect("menu.jsp");
+        }
+        else {
+            request.setAttribute("tipus_error", "login");
+            request.setAttribute("msg_error", "El nom d'usuari o la contrasenya son incorrectes.");
+            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+            rd.forward(request, response);
+        }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

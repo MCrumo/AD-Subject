@@ -42,7 +42,7 @@ public class JakartaEE91Resource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@FormParam("username") String username, @FormParam("password") String password) {
-
+            return Response.ok().build();
     }
 
     /**
@@ -62,7 +62,7 @@ public class JakartaEE91Resource {
     public Response registerImage (@FormParam("title") String title, @FormParam("description") String description,
                                    @FormParam("keywords") String keywords, @FormParam("author") String author,
                                    @FormParam("creator") String creator, @FormParam("capture") String capt_date) {
-
+return Response.ok().build();
     }
 
     /**
@@ -83,7 +83,7 @@ public class JakartaEE91Resource {
     public Response modifyImage (@FormParam("id") String id, @FormParam("title") String title, @FormParam("description") String description,
                                  @FormParam("keywords") String keywords, @FormParam("author") String author, @FormParam("creator") String creator,
                                  @FormParam("capture") String capt_date) {
-
+        return Response.ok().build();
     }
 
     /**
@@ -96,7 +96,7 @@ public class JakartaEE91Resource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteImage (@FormParam("id") String id) {
-        
+            return Response.ok().build();
     }
 
     /**
@@ -107,7 +107,7 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listImages () {
-
+return Response.ok().build();
     }
 
     /**
@@ -119,7 +119,7 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByID (@PathParam("id") int id) {
-
+return Response.ok().build();
     }
 
     /**
@@ -131,7 +131,7 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByTitle (@PathParam("title") String title) {
-
+return Response.ok().build();
     }
 
     /**
@@ -144,7 +144,7 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByCreationDate (@PathParam("date") String date) {
-
+return Response.ok().build();
     }
 
     /**
@@ -156,7 +156,7 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByAuthor (@PathParam("author") String author) {
-
+return Response.ok().build();
     }
 
     /**
@@ -168,6 +168,7 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByKeywords (@PathParam("keywords") String keywords) {
+return Response.ok().build();
 
     }
 }

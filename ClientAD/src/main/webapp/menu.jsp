@@ -8,13 +8,13 @@
 <!DOCTYPE html>
 <html>
     <!-- Verificació de la sessio HTTP-->
-    <%@ page import="DB.Database" %>
+    <!--%@ page import="DB.Database" %-->
     <%@ page import="jakarta.servlet.http.HttpSession" %>
 
     
     <%
         // Obté la HttpSession
-        HttpSession sessio = request.getSession(false);
+        /*HttpSession sessio = request.getSession(false);
 
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
         if (sessio != null && sessio.getAttribute("username") != null) {
@@ -39,7 +39,7 @@
             request.setAttribute("msg_error", "La sessió no està iniciada.");
             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
             rd.forward(request, response);
-        }
+        }*/
     %>
     
     <head>
@@ -53,11 +53,16 @@
         <div align="center">
         <h1>Menú principal</h1>
         
-        <%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");%>
+        <!--%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");--%>
         
+        <!--
         <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
         <p><a href="list.jsp" class="enllaçMenu">Llistar Imatges</a></p>
         <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
+        -->
+        <p><a class="enllaçMenu">Registrar Imatge</a></p>
+        <p><a class="enllaçMenu">Llistar Imatges</a></p>
+        <p><a class="enllaçMenu">Buscar Imatges</a></p>
         
         <br>    
         <form action="logout.jsp" method = "POST">
