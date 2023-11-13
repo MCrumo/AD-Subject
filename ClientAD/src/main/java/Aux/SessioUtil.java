@@ -55,6 +55,8 @@ public class SessioUtil {
                     return -1;
                 }
                 
+                connection.disconnect();
+                
             } catch (MalformedURLException ex) {
                 Logger.getLogger(SessioUtil.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ProtocolException ex) {

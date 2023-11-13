@@ -4,6 +4,7 @@
  */
 package DB;
 
+import jakarta.json.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -22,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 
 //import Aux.Imatge;
 
@@ -135,57 +139,46 @@ public class Database {
         return id + 1;
     } 
     
-    /*
-    public Imatge getImatgeAmbId(String identificador) {
+    
+    public JsonObject getImatgeAmbId(String identificador) throws SQLException {
         openConnection();
-        
-        Imatge imatge = null; 
-        
-        String sql = "SELECT TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE,FILENAME FROM PR2.IMAGE WHERE ID = ?";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, identificador); //Identificador
-            
-            ResultSet rs = preparedStatement.executeQuery();
-            
-            if (rs.next()) {
-                String title = rs.getString("TITLE");
-                String description = rs.getString("DESCRIPTION");
-                String keywords = rs.getString("KEYWORDS");
-                String author = rs.getString("AUTHOR");
-                String creator = rs.getString("CREATOR");
-                String captureDate = rs.getString("CAPTURE_DATE");
-                String storageDate = rs.getString("STORAGE_DATE");
-                String filename = rs.getString("FILENAME");
+    
+        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
 
-                // Crea l'objecte imatge
-                imatge = new Imatge(identificador, title, description, keywords, author, creator, captureDate, storageDate, filename, null);
-            }
-        } catch (SQLException ex) {
-            System.err.println(ex.getMessage());
-            closeConnection();
+        String sql = "SELECT TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE,FILENAME FROM PR2.IMAGE WHERE ID = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, identificador);
+
+        ResultSet rs = preparedStatement.executeQuery();
+
+        if (rs.next()) {
+            jsonBuilder
+                .add("title", rs.getString("TITLE"))
+                .add("description", rs.getString("DESCRIPTION"))
+                .add("keywords", rs.getString("KEYWORDS"))
+                .add("author", rs.getString("AUTHOR"))
+                .add("creator", rs.getString("CREATOR"))
+                .add("captureDate", rs.getString("CAPTURE_DATE"))
+                .add("storageDate", rs.getString("STORAGE_DATE"))
+                .add("filename", rs.getString("FILENAME"));
         }
-        
+            
         closeConnection();
-        return imatge;
+        return jsonBuilder.build();
     }
     
-    public boolean eliminaImatge (String identificador) {
+    public boolean eliminaImatge (String identificador) throws SQLException {
         openConnection();
         
         String sql = "DELETE FROM PR2.IMAGE WHERE ID = ?";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, identificador); //Identificador
-            
-            int rowsAffected = preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
-            if (rowsAffected == 0) {
-                //No s'ha eliminat cap fila perque no existia el id
-                return false;
-            }
-        } catch (SQLException ex) {
-            System.err.println(ex.getMessage());
-            closeConnection();
+        
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, identificador); //Identificador
+
+        int rowsAffected = preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
+        if (rowsAffected == 0) {
+            //No s'ha eliminat cap fila perque no existia el id
             return false;
         }
         
@@ -193,6 +186,7 @@ public class Database {
         return true;
     }
     
+    /*
     public ArrayList<Imatge> getAllImatges(){
         openConnection();
         ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
@@ -370,32 +364,25 @@ public class Database {
     */
     
     
-    public void registrarImatge(String title, String description, String keywords, String author, String creator, String capt_date, String filename) {
+    public void registrarImatge(String title, String description, String keywords, String author, String creator, String capt_date, String filename) throws SQLException {
         openConnection();
-                
-        try {
-            String sql = "INSERT INTO PR2.IMAGE (TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PR2.IMAGE (TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-            LocalDate data = LocalDate.now();
-            DateTimeFormatter formatData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            String storage_date = data.format(formatData);
-            
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, title);
-            preparedStatement.setString(2, description);
-            preparedStatement.setString(3, keywords);
-            preparedStatement.setString(4, author);
-            preparedStatement.setString(5, creator);
-            preparedStatement.setString(6, capt_date);
-            preparedStatement.setString(7, storage_date);
-            preparedStatement.setString(8, filename);
-            
-            preparedStatement.executeUpdate();        
+        LocalDate data = LocalDate.now();
+        DateTimeFormatter formatData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String storage_date = data.format(formatData);
 
-        } catch (SQLException e) {
-            // connection close failed.
-            System.err.println(e.getMessage());
-        }
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, title);
+        preparedStatement.setString(2, description);
+        preparedStatement.setString(3, keywords);
+        preparedStatement.setString(4, author);
+        preparedStatement.setString(5, creator);
+        preparedStatement.setString(6, capt_date);
+        preparedStatement.setString(7, storage_date);
+        preparedStatement.setString(8, filename);
+
+        preparedStatement.executeUpdate();
         
         closeConnection();
     }

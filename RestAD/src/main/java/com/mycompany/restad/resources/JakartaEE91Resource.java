@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response;
 import DB.Database;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import java.sql.SQLException;
 
 /**
  *
@@ -99,8 +100,6 @@ public class JakartaEE91Resource {
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        
-        //NO ES GUARDA BÉ A LA DB I GUARDA MALAMENT EL NOM DE LARXIU, NO ACCEDEIXO AL JSON XDDD
     }
 
     /**
@@ -134,7 +133,14 @@ public class JakartaEE91Resource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteImage (@FormParam("id") String id) {
+        try {
+            Database db = new Database();
+            db.eliminaImatge(id);
+
             return Response.ok().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -152,12 +158,41 @@ return Response.ok().build();
     * GET method to search images by id
     * @param id
     * @return
-    */
+    *
     @Path("searchID/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByID (@PathParam("id") int id) {
-return Response.ok().build();
+        try {
+            Database db = new Database();
+            db.getImatgeAmbId(String.valueOf(id));
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }*/
+    
+    /**
+    * GET method to search images by id
+    * @param id
+    * @return
+    */
+    @Path("searchID/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchByID(@PathParam("id") int id) {
+        try {
+            Database db = new Database();
+            JsonObject imageJson = db.getImatgeAmbId(String.valueOf(id));
+
+            if (imageJson != null) {
+                return Response.ok(imageJson).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -223,7 +258,7 @@ return Response.ok().build();
         
         // Creem un JSON amb el valor de nextId
         JsonObject jsonResponse = Json.createObjectBuilder()
-            .add("nextId", nextId)
+            .add("nextId", String.valueOf(nextId))
             .build();
 
         // Retornem el JSON en la resposta

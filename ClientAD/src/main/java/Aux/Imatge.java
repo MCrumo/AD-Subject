@@ -4,6 +4,7 @@
  */
 package Aux;
 
+import jakarta.json.JsonObject;
 import jakarta.mail.internet.ParseException;
 import jakarta.servlet.http.Part;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class Imatge {
     private String author = "";
     private String creator = "";
     private String captureDate = null;
+    private String storageDate = null;
     private String filename = "";
 
     
@@ -68,6 +70,22 @@ public class Imatge {
         this.creator = creator;
         this.captureDate = validaFormatStringData(captureDate);
         this.filename = filename;
+    }
+    
+    public static Imatge jsonToImatge(JsonObject jsonObject) {
+        Imatge imatge = new Imatge();
+
+        imatge.setId(jsonObject.getString("id", ""));
+        imatge.setTitle(jsonObject.getString("title", ""));
+        imatge.setDescription(jsonObject.getString("description", ""));
+        imatge.setKeywords(jsonObject.getString("keywords", ""));
+        imatge.setAuthor(jsonObject.getString("author", ""));
+        imatge.setCreator(jsonObject.getString("creator", ""));
+        imatge.setCaptureDate(jsonObject.getString("captureDate", null));
+        imatge.setStorageDate(jsonObject.getString("storageDate", null));
+        imatge.setFilename(jsonObject.getString("filename", ""));
+
+        return imatge;
     }
 
     public static String getPath() {
@@ -143,7 +161,15 @@ public class Imatge {
     public void setCaptureDate(LocalDate captureDate) {
         this.captureDate = formataDataAString(captureDate);
     }
-
+    
+    public void setStorageDate(String storageDate) {
+        this.storageDate = storageDate;
+    }
+    
+    public String getStorageDate() {
+        return this.storageDate;
+    }
+    
     public String getFilename() {
         return filename;
     }

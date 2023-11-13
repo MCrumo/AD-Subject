@@ -74,6 +74,20 @@ Tipus d'error possibles:
             
             out.println("<br><div align='center'><a href='menu.jsp'>Tornar al menu principal</a></div>");                
         }
+        else if (tipus_error.equals("connexio-login")) {
+            if(msg_error != null) {
+                out.println(msg_error);
+            } else out.println("S'ha produït un error en connectar-se amb el servei REST");
+            
+            out.println("<br><div align='center'><a href='login.jsp'>Tornar a la pagina de login</a></div>"); 
+        }
+        else if (tipus_error.equals("connexio")) {
+            if(msg_error != null) {
+                out.println(msg_error);
+            } else out.println("S'ha produït un error en connectar-se amb el servei REST");
+            
+            out.println("<br><div align='center'><a href='menu.jsp'>Tornar al menu principal</a></div>");                
+        }
         else if (tipus_error.equals("modificar")) {
             if(msg_error != null) {
                 out.println(msg_error);

@@ -38,34 +38,40 @@ public class login extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
-        URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/login");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
+        try {
+            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/login");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
 
-        // Estem a post, permetem la sortida de dades
-        connection.setDoOutput(true);
+            // Estem a post, permetem la sortida de dades
+            connection.setDoOutput(true);
 
-        String postData = "username=" + username + "&password=" + password;
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = postData.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-        
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
+            String postData = "username=" + username + "&password=" + password;
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = postData.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
 
-            HttpSession sessio = request.getSession(true);
-            sessio.setAttribute("username", username);
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
 
-            response.sendRedirect("menu.jsp");
-        }
-        else {
-            request.setAttribute("tipus_error", "login");
-            request.setAttribute("msg_error", "El nom d'usuari o la contrasenya son incorrectes.");
+                HttpSession sessio = request.getSession(true);
+                sessio.setAttribute("username", username);
+
+                response.sendRedirect("menu.jsp");
+            } else {
+                request.setAttribute("tipus_error", "login");
+                request.setAttribute("msg_error", "El nom d'usuari o la contrasenya son incorrectes.");
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
+            }
+            
+            connection.disconnect();
+        } catch (Exception e) {
+            request.setAttribute("tipus_error", "connexio-login");
             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
             rd.forward(request, response);
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

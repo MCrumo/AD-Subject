@@ -16,6 +16,9 @@ import jakarta.servlet.http.HttpSession;
 
 import Aux.Imatge;
 import Aux.SessioUtil;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
@@ -77,35 +80,40 @@ public class registrarImagen extends HttpServlet {
             errors.add("El títol no pot contenir espais");
         }
         
-        //guardem el id de la foto
-        URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/getNextId");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-
-        int responseCode = connection.getResponseCode();
-
         String nextId = "0";
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                StringBuilder res = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    res.append(line);
-                }
+        try {
+            //guardem el id de la foto
+            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/getNextId");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
 
-                // res conte nextId en format JSON
-                nextId = res.toString();
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
+                    JsonObject jsonResponse = jsonReader.readObject();
+                    nextId = jsonResponse.getString("nextId");
+                }
+            } else {
+                request.setAttribute("tipus_error", "connexio");
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
             }
+            
+            connection.disconnect();
+        } catch (Exception e) {
+            request.setAttribute("tipus_error", "connexio");
+            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+            rd.forward(request, response);
         }
-        
+
         //guardem el nom d'usuari
         HttpSession sessio = request.getSession(false);
         String username = (String) sessio.getAttribute("username");
         
-        //guardem la data
-        LocalDate storageDate = LocalDate.now();
         
         //Verifico que la data introduida no és posterior a la data d'avui
+        LocalDate storageDate = LocalDate.now();
         LocalDate dataFormulari = LocalDate.parse(captureDate);
         if (dataFormulari.isAfter(storageDate)) {
             errors.add("La imatge que vols penjar no s'ha pogut prendre en el futur!");
@@ -140,7 +148,7 @@ public class registrarImagen extends HttpServlet {
             return false;
         }
         
-        imatge = new Imatge(String.valueOf(nextId), title, description, keywords, author, username, captureDate, filename);
+        imatge = new Imatge(nextId, title, description, keywords, author, username, captureDate, filename);
         
         return true;
     }
@@ -177,39 +185,44 @@ public class registrarImagen extends HttpServlet {
                         rd.forward(request, response);
                     }
 
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/register");
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
+                    try {
+                        URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/register");
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setRequestMethod("POST");
 
-                    // Estem a post, permetem la sortida de dades
-                    connection.setDoOutput(true);
+                        // Estem a post, permetem la sortida de dades
+                        connection.setDoOutput(true);
 
-                    //String postData = "username=" + username + "&password=" + password;
-                    String postData = "title=" + imatge.getTitle() +
-                                      "&description=" + imatge.getDescription() +
-                                      "&keywords=" + imatge.getKeywords() +
-                                      "&author=" + imatge.getAuthor() +
-                                      "&creator=" + imatge.getCreator() +
-                                      "&capt_date=" + imatge.getCaptureDate() +
-                                      "&filename=" + imatge.getFilename();
-                    try (OutputStream os = connection.getOutputStream()) {
-                        byte[] input = postData.getBytes("utf-8");
-                        os.write(input, 0, input.length);
-                    }
+                        //String postData = "username=" + username + "&password=" + password;
+                        String postData = "title=" + imatge.getTitle() +
+                                          "&description=" + imatge.getDescription() +
+                                          "&keywords=" + imatge.getKeywords() +
+                                          "&author=" + imatge.getAuthor() +
+                                          "&creator=" + imatge.getCreator() +
+                                          "&capture=" + imatge.getCaptureDate() +
+                                          "&filename=" + imatge.getFilename();
+                        try (OutputStream os = connection.getOutputStream()) {
+                            byte[] input = postData.getBytes("utf-8");
+                            os.write(input, 0, input.length);
+                        }
 
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                        response.sendRedirect("registreOk.jsp");
-                    } else {
-                        //request.setAttribute("tipus_error", "login");
-                        request.setAttribute("msg_error", "Error en connectar amb el servei REST");
+                        int responseCode = connection.getResponseCode();
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            response.sendRedirect("registreOk.jsp");
+                        } else {
+                            request.setAttribute("tipus_error", "connexio");
+                            request.setAttribute("msg_error", "Error en connectar amb el servei REST");
+                            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                            rd.forward(request, response);
+                        }
+                    }  catch (Exception e) {
+                        request.setAttribute("tipus_error", "connexio");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
                     }
                 }
             } catch (Exception e) {
                 request.setAttribute("tipus_error", "registrar");
-                //System.out.println(e.getMessage());
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
             }
