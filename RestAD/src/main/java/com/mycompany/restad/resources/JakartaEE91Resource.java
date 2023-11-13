@@ -229,4 +229,6 @@ return Response.ok().build();
         // Retornem el JSON en la resposta
         return Response.ok(jsonResponse.toString(), MediaType.APPLICATION_JSON).build();
     }
+    
+    //PROVA GIT MERGE TOCAT PER MQUEL I NACHO
 }
