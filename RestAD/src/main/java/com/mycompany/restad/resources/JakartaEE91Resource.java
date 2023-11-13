@@ -63,7 +63,7 @@ public class JakartaEE91Resource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@FormParam("username") String username) {
+    public Response userExists(@FormParam("username") String username) {
         Database db = new Database();
         if (db.checkUsername(username)) {
             return Response.ok().build();
