@@ -24,9 +24,7 @@ public class Imatge {
     private String author = "";
     private String creator = "";
     private String captureDate = null;
-    private String storageDate = null;
     private String filename = "";
-    private Part part;
 
     
     //Retorna la data en el format adequat per guardar yyyy/MM/dd
@@ -61,7 +59,7 @@ public class Imatge {
     }
 
     public Imatge(String id, String title, String description, String keywords, String author,
-                  String creator, String captureDate, String storageDate, String filename, Part part) {
+                  String creator, String captureDate , String filename) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -69,23 +67,7 @@ public class Imatge {
         this.author = author;
         this.creator = creator;
         this.captureDate = validaFormatStringData(captureDate);
-        this.storageDate = validaFormatStringData(storageDate);
         this.filename = filename;
-        this.part = part;
-    }
-    
-    public Imatge(String id, String title, String description, String keywords, String author,
-                  String creator, String captureDate, LocalDate storageDate, String filename, Part part) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.keywords = reemplasaEspais(keywords);
-        this.author = author;
-        this.creator = creator;
-        this.captureDate = validaFormatStringData(captureDate);
-        this.storageDate = formataDataAString(storageDate);
-        this.filename = filename;
-        this.part = part;
     }
 
     public static String getPath() {
@@ -154,24 +136,12 @@ public class Imatge {
         return dataPropia.format(formatISO);
     }
     
-    public String getStorageDate() {
-        return storageDate;
-    }
-    
     public void setCaptureDate(String captureDate) {
         this.captureDate = captureDate;
-    }
-
-    public void setStorageDate(String storageDate) {
-        this.storageDate = storageDate;        
     }
     
     public void setCaptureDate(LocalDate captureDate) {
         this.captureDate = formataDataAString(captureDate);
-    }
-    
-    public void setStorageDate(LocalDate storageDate) {
-        this.captureDate = formataDataAString(storageDate);;
     }
 
     public String getFilename() {
@@ -180,14 +150,6 @@ public class Imatge {
 
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-    
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(Part part) {
-        this.part = part;
     }
 }
 

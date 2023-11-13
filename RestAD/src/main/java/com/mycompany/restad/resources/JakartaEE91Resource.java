@@ -1,4 +1,5 @@
-package ad.restad.resources;
+//package ad.restad.resources;
+package com.mycompany.restad.resources;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
@@ -10,8 +11,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.net.URL;
-import java.net.HttpURLConnection;
+
+//Añadidos
+import DB.Database;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 /**
  *
@@ -42,7 +46,30 @@ public class JakartaEE91Resource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@FormParam("username") String username, @FormParam("password") String password) {
+        Database db = new Database();
+        if (db.validUser(username, password)) {
             return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+    
+    /**
+    * POST method to check username existence
+    * @param username
+    * @return
+    */
+    @Path("userExists")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(@FormParam("username") String username) {
+        Database db = new Database();
+        if (db.checkUsername(username)) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     /**
@@ -53,6 +80,7 @@ public class JakartaEE91Resource {
     * @param author
     * @param creator
     * @param capt_date
+    * @param filename
     * @return
     */
     @Path("register")
@@ -61,8 +89,18 @@ public class JakartaEE91Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response registerImage (@FormParam("title") String title, @FormParam("description") String description,
                                    @FormParam("keywords") String keywords, @FormParam("author") String author,
-                                   @FormParam("creator") String creator, @FormParam("capture") String capt_date) {
-return Response.ok().build();
+                                   @FormParam("creator") String creator, @FormParam("capture") String capt_date,
+                                   @FormParam("filename") String filename) {
+        try {
+            Database db = new Database();
+            db.registrarImatge(title, description, keywords, author, creator, capt_date, filename);
+            
+            return Response.ok().build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        
+        //NO ES GUARDA BÉ A LA DB I GUARDA MALAMENT EL NOM DE LARXIU, NO ACCEDEIXO AL JSON XDDD
     }
 
     /**
@@ -170,5 +208,25 @@ return Response.ok().build();
     public Response searchByKeywords (@PathParam("keywords") String keywords) {
 return Response.ok().build();
 
+    }
+    
+    /**
+    * GET method to get the last used id
+    * @return
+    */
+    @Path("getNextId")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchByKeywords () {
+        Database db = new Database();
+        int nextId = db.getNextId();
+        
+        // Creem un JSON amb el valor de nextId
+        JsonObject jsonResponse = Json.createObjectBuilder()
+            .add("nextId", nextId)
+            .build();
+
+        // Retornem el JSON en la resposta
+        return Response.ok(jsonResponse.toString(), MediaType.APPLICATION_JSON).build();
     }
 }

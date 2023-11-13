@@ -1,12 +1,13 @@
 <%-- 
-    Document   : menu
-    Created on : 5 oct 2023, 12:41:30
-    Author     : alumne
+    Document   : registreOk
+    Created on : Oct 22, 2023, 6:37:12 PM
+    Author     : nacho
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+    
     <!-- Verificació de la sessio HTTP-->
     <%@ page import="jakarta.servlet.http.HttpSession" %>
     <%@ page import="Aux.SessioUtil" %>
@@ -14,9 +15,9 @@
     
     <%
         // Obté la HttpSession
-        HttpSession sessio = request.getSession(false);
+        //HttpSession sessio = request.getSession(false);
         
-        int res = SessioUtil.validaSessio(sessio);
+        int res = SessioUtil.validaSessio(request.getSession(false));
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
         if (res != 0) {
             if (res == -2) { //Si no hi ha una sessió Http en peu, envia a la pàgina d'error pertinent
@@ -35,30 +36,18 @@
     
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Menú:</title>
+        <title>Registre Correcte</title>
         <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
         <link rel="stylesheet" type="text/css" href="./css/styleMenu.css">
         <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
     </head>
     <body>
         <div align="center">
-        <h1>Menú principal</h1>
-        
-        <%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");%>
-        
-        
-        <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
-        <!--
-        <p><a href="list.jsp" class="enllaçMenu">Llistar Imatges</a></p>
-        <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
-        -->
-        <p><a class="enllaçMenu">Llistar Imatges</a></p>
-        <p><a class="enllaçMenu">Buscar Imatges</a></p>
-        
-        <br>    
-        <form action="logout.jsp" method = "POST">
-            <button type="submit" class="boto"> Tancar Sessió </button>
-        </form>
+            <h1>Imatge registrada correctament</h1>
+            <p>Què vols fer a continuació?</p>
+            <br>
+            <p align='center'><a href='registrarImagen.jsp' class="enllaçMenu">Registrar una altra imatge</a></p>
+            <p align='center'><a href='menu.jsp' class="enllaçMenu">Tornar al menu principal</a></p>
         </div>
     </body>
 </html>
