@@ -177,7 +177,7 @@ public class registrarImagen extends HttpServlet {
                         rd.forward(request, response);
                     }
 
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/login");
+                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/register");
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
 
