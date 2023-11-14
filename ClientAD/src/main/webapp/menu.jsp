@@ -49,11 +49,11 @@
         
         <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
         <!--
-        <p><a href="list.jsp" class="enllaçMenu">Llistar Imatges</a></p>
+        <p><a href="list.jsp" class="enllaçMenu">Llistar Imatges</a></p>        -->
         <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
-        -->
-        <p><a class="enllaçMenu">Llistar Imatges</a></p>
-        <p><a class="enllaçMenu">Buscar Imatges</a></p>
+        
+        <p><a class="enllaçMenu">Llistar Imatges</a></p> 
+        <!-- <p><a class="enllaçMenu">Buscar Imatges</a></p> -->
         
         <br>    
         <form action="logout.jsp" method = "POST">

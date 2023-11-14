@@ -14,11 +14,16 @@
 
 <html>
     <!-- Verificació de la sessio HTTP-->
-    <%@ page import="DB.Database" %>
-    <%@ page import="jakarta.servlet.http.HttpSession" %>
-    <%@ page import="Aux.Imatge" %>
     <%@ page import="java.util.List" %>
     <%@ page import="java.util.ListIterator" %>
+    <%@ page import="jakarta.servlet.http.HttpSession" %>
+    <%//@ page import="jakarta.json.Json"%>
+    <%//@ page import="jakarta.json.JsonObject"%>
+    <%//@ page import="jakarta.json.JsonReader"%>
+    <%@ page import="Aux.SessioUtil" %>
+    <%@ page import="Aux.Imatge"%>
+    <%@ page import="java.net.HttpURLConnection"%>
+    <%@ page import="java.net.URL"%>
 
 
     
