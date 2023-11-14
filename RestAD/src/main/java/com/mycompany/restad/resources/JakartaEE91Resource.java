@@ -170,24 +170,6 @@ public class JakartaEE91Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-    * GET method to search images by id
-    * @param id
-    * @return
-    *
-    @Path("searchID/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response searchByID (@PathParam("id") int id) {
-        try {
-            Database db = new Database();
-            db.getImatgeAmbId(String.valueOf(id));
-            return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }*/
     
     /**
     * GET method to search images by id
@@ -297,7 +279,7 @@ public class JakartaEE91Resource {
     @Path("getNextId")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response searchByKeywords () {
+    public Response getNextId () {
         Database db = new Database();
         int nextId = db.getNextId();
         
