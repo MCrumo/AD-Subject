@@ -4,7 +4,6 @@
  */
 package DB;
 
-import jakarta.json.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -24,7 +23,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jakarta.json.JsonObject;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 
 //import Aux.Imatge;
@@ -186,65 +188,30 @@ public class Database {
         return true;
     }
     
-    /*
-    public ArrayList<Imatge> getAllImatges(){
+    public JsonArray getImatgesByTitle(String titol){
         openConnection();
-        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
-        String stringSQL = "SELECT * FROM PR2.image ORDER BY STORAGE_DATE DESC";
-        try {
-            PreparedStatement statement = connection.prepareStatement(stringSQL);
-            ResultSet rs = statement.executeQuery();      
-                           
-            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
-            while(rs.next()) {
-                String id = rs.getString("ID");
-                String title = rs.getString("TITLE");
-                String description = rs.getString("DESCRIPTION");
-                String keywords = rs.getString("KEYWORDS");
-                String author = rs.getString("AUTHOR");
-                String creator = rs.getString("CREATOR");
-                String cdate = rs.getString("CAPTURE_DATE");
-                String sdate = rs.getString("STORAGE_DATE");
-                String filename = rs.getString("FILENAME");
-                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
-                setImatges.add(img);
-            }                
-            closeConnection();  
-            return setImatges;
-                
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            closeConnection();
-        }
-        return null;
-    }
-    
-    public ArrayList<Imatge> getImatgesByTitle(String titol){
-        openConnection();
-        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();    
         String stringSQL = "SELECT * FROM PR2.image WHERE TITLE LIKE ? ORDER BY STORAGE_DATE DESC";
         try {
             PreparedStatement statement = connection.prepareStatement(stringSQL);
             statement.setString(1, "%" +titol+ "%");
             ResultSet rs = statement.executeQuery();      
-                           
             // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
             while(rs.next()) {
-                String id = rs.getString("ID");
-                String title = rs.getString("TITLE");
-                String description = rs.getString("DESCRIPTION");
-                String keywords = rs.getString("KEYWORDS");
-                String author = rs.getString("AUTHOR");
-                String creator = rs.getString("CREATOR");
-                String cdate = rs.getString("CAPTURE_DATE");
-                String sdate = rs.getString("STORAGE_DATE");
-                String filename = rs.getString("FILENAME");
-                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
-                setImatges.add(img);
+                JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+                    .add("title", rs.getString("TITLE"))
+                    .add("description", rs.getString("DESCRIPTION"))
+                    .add("keywords", rs.getString("KEYWORDS"))
+                    .add("author", rs.getString("AUTHOR"))
+                    .add("creator", rs.getString("CREATOR"))
+                    .add("captureDate", rs.getString("CAPTURE_DATE"))
+                    .add("storageDate", rs.getString("STORAGE_DATE"))
+                    .add("filename", rs.getString("FILENAME"))
+                    .add("id", rs.getString("ID"));
+                jsonArrayBuilder.add(jsonBuilder.build());
             }                
             closeConnection();  
-            return setImatges;
-                
+            return jsonArrayBuilder.build();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             closeConnection();
@@ -252,9 +219,9 @@ public class Database {
         return null;
     }
     
-    public ArrayList<Imatge> getImatgesByAuthor(String autor){
+    public JsonArray getImatgesByAuthor(String autor){
         openConnection();
-        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         String stringSQL = "SELECT * FROM PR2.image WHERE AUTHOR LIKE ? ORDER BY STORAGE_DATE DESC";
         try {
             PreparedStatement statement = connection.prepareStatement(stringSQL);
@@ -263,20 +230,20 @@ public class Database {
                            
             // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
             while(rs.next()) {
-                String id = rs.getString("ID");
-                String title = rs.getString("TITLE");
-                String description = rs.getString("DESCRIPTION");
-                String keywords = rs.getString("KEYWORDS");
-                String author = rs.getString("AUTHOR");
-                String creator = rs.getString("CREATOR");
-                String cdate = rs.getString("CAPTURE_DATE");
-                String sdate = rs.getString("STORAGE_DATE");
-                String filename = rs.getString("FILENAME");
-                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
-                setImatges.add(img);
+                JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+                    .add("title", rs.getString("TITLE"))
+                    .add("description", rs.getString("DESCRIPTION"))
+                    .add("keywords", rs.getString("KEYWORDS"))
+                    .add("author", rs.getString("AUTHOR"))
+                    .add("creator", rs.getString("CREATOR"))
+                    .add("captureDate", rs.getString("CAPTURE_DATE"))
+                    .add("storageDate", rs.getString("STORAGE_DATE"))
+                    .add("filename", rs.getString("FILENAME"))
+                    .add("id", rs.getString("ID"));
+                jsonArrayBuilder.add(jsonBuilder.build());
             }                
             closeConnection();  
-            return setImatges;
+            return jsonArrayBuilder.build();
                 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -285,9 +252,10 @@ public class Database {
         return null;
     }
     
-    public ArrayList<Imatge> getImatgesByKeyword(String keyword){
+    public JsonArray getImatgesByKeyword(String keyword){
         openConnection();
-        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
         String stringSQL = "SELECT * FROM PR2.image WHERE KEYWORDS LIKE ? ORDER BY STORAGE_DATE DESC";
         try {
             PreparedStatement statement = connection.prepareStatement(stringSQL);
@@ -296,20 +264,55 @@ public class Database {
                            
             // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
             while(rs.next()) {
-                String id = rs.getString("ID");
-                String title = rs.getString("TITLE");
-                String description = rs.getString("DESCRIPTION");
-                String keywords = rs.getString("KEYWORDS");
-                String author = rs.getString("AUTHOR");
-                String creator = rs.getString("CREATOR");
-                String cdate = rs.getString("CAPTURE_DATE");
-                String sdate = rs.getString("STORAGE_DATE");
-                String filename = rs.getString("FILENAME");
-                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
-                setImatges.add(img);
+                JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+                    .add("title", rs.getString("TITLE"))
+                    .add("description", rs.getString("DESCRIPTION"))
+                    .add("keywords", rs.getString("KEYWORDS"))
+                    .add("author", rs.getString("AUTHOR"))
+                    .add("creator", rs.getString("CREATOR"))
+                    .add("captureDate", rs.getString("CAPTURE_DATE"))
+                    .add("storageDate", rs.getString("STORAGE_DATE"))
+                    .add("filename", rs.getString("FILENAME"))
+                    .add("id", rs.getString("ID"));
+                jsonArrayBuilder.add(jsonBuilder.build());
             }                
             closeConnection();  
-            return setImatges;
+            return jsonArrayBuilder.build();
+                
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            closeConnection();
+        }
+        return null;
+    }
+    
+    public JsonArray getImatgesByCreationDate(String creationDate){
+        openConnection();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        String stringSQL = "SELECT * FROM PR2.image WHERE CAPTURE_DATE LIKE ? ORDER BY STORAGE_DATE DESC";
+        try {
+            PreparedStatement statement = connection.prepareStatement(stringSQL);
+            //statement.setString(1, "%" +creationDate+ "%");
+            statement.setString(1, creationDate);
+            ResultSet rs = statement.executeQuery();      
+                           
+            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+            while(rs.next()) {
+                JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+                    .add("title", rs.getString("TITLE"))
+                    .add("description", rs.getString("DESCRIPTION"))
+                    .add("keywords", rs.getString("KEYWORDS"))
+                    .add("author", rs.getString("AUTHOR"))
+                    .add("creator", rs.getString("CREATOR"))
+                    .add("captureDate", rs.getString("CAPTURE_DATE"))
+                    .add("storageDate", rs.getString("STORAGE_DATE"))
+                    .add("filename", rs.getString("FILENAME"))
+                    .add("id", rs.getString("ID"));
+                jsonArrayBuilder.add(jsonBuilder.build());
+            }                
+            closeConnection();  
+            return jsonArrayBuilder.build();
                 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -319,49 +322,77 @@ public class Database {
     }
     
     //Retorna la informació de les fotos que quadren amb alfun dels tags de "references"
-    public ArrayList<Imatge> getSetImatges(String reference){
+    public JsonArray getImatgesByCoincidence(String reference){
         openConnection();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
         String sql = "SELECT ID,TITLE,DESCRIPTION,KEYWORDS,AUTHOR,CREATOR,CAPTURE_DATE,STORAGE_DATE,FILENAME FROM PR2.image WHERE TITLE LIKE ? OR DESCRIPTION LIKE ? OR AUTHOR LIKE ? OR CAPTURE_DATE LIKE ? OR KEYWORDS LIKE ? ORDER BY STORAGE_DATE DESC";
-        
-        ArrayList<Imatge> setImatges = new ArrayList<Imatge>();
        
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            
             String referencia = '%' + reference + '%';
             preparedStatement.setString(1, referencia); // TITLE
             preparedStatement.setString(2, referencia); // DESCRIPTION
             preparedStatement.setString(3, referencia); // AUTHOR
             preparedStatement.setString(4, referencia); // CAPTURE_DATE
             preparedStatement.setString(5, referencia); // KEYWORDS
-            
             ResultSet rs = preparedStatement.executeQuery();
             
             while(rs.next()) {
-                String id = rs.getString("ID");
-                String title = rs.getString("TITLE");
-                String description = rs.getString("DESCRIPTION");
-                String keywords = rs.getString("KEYWORDS");
-                String author = rs.getString("AUTHOR");
-                String creator = rs.getString("CREATOR");
-                String cdate = rs.getString("CAPTURE_DATE");
-                String sdate = rs.getString("STORAGE_DATE");
-                String filename = rs.getString("FILENAME");
-                Imatge img = new Imatge(id, title, description, keywords, author, creator, cdate, sdate, filename, null);           
-                setImatges.add(img);
-            }  
-        }
-        
-        catch (Exception e){
+                JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+                    .add("title", rs.getString("TITLE"))
+                    .add("description", rs.getString("DESCRIPTION"))
+                    .add("keywords", rs.getString("KEYWORDS"))
+                    .add("author", rs.getString("AUTHOR"))
+                    .add("creator", rs.getString("CREATOR"))
+                    .add("captureDate", rs.getString("CAPTURE_DATE"))
+                    .add("storageDate", rs.getString("STORAGE_DATE"))
+                    .add("filename", rs.getString("FILENAME"))
+                    .add("id", rs.getString("ID"));
+                jsonArrayBuilder.add(jsonBuilder.build());
+            }                
+            closeConnection();  
+            return jsonArrayBuilder.build();
+              
+        } catch (SQLException e) {
             System.err.println(e.getMessage());
-            //response.sendRedirect("menu.jsp");
+            closeConnection();
         }
-        
-        closeConnection();
-        return setImatges;
+        return null;
     }
-    */
+    
+    
+    public JsonArray getAllImatges(){
+        openConnection();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        String stringSQL = "SELECT * FROM PR2.image ORDER BY STORAGE_DATE DESC";
+        try {
+            PreparedStatement statement = connection.prepareStatement(stringSQL);
+            ResultSet rs = statement.executeQuery();      
+                           
+            // indexs: ID, TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME
+            while(rs.next()) {
+                JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+                    .add("title", rs.getString("TITLE"))
+                    .add("description", rs.getString("DESCRIPTION"))
+                    .add("keywords", rs.getString("KEYWORDS"))
+                    .add("author", rs.getString("AUTHOR"))
+                    .add("creator", rs.getString("CREATOR"))
+                    .add("captureDate", rs.getString("CAPTURE_DATE"))
+                    .add("storageDate", rs.getString("STORAGE_DATE"))
+                    .add("filename", rs.getString("FILENAME"))
+                    .add("id", rs.getString("ID"));
+                jsonArrayBuilder.add(jsonBuilder.build());
+            }                
+            closeConnection();  
+            return jsonArrayBuilder.build();
+                
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            closeConnection();
+        }
+        return null;
+    }
     
     
     public void registrarImatge(String title, String description, String keywords, String author, String creator, String capt_date, String filename) throws SQLException {
