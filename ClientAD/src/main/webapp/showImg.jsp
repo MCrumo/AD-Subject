@@ -42,40 +42,50 @@
 
     // Verifica que 'id' no sigui nul
     if (id != null) {
+        HttpURLConnection connection  = null;
         try {
             //CONNEXIO GET IMATGE AMB ID
             URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/" + id);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-
+            
             int responseCode = connection.getResponseCode();
-
-            // Permetem la sortida de dades
-            connection.setDoOutput(true);
+            
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
                     JsonObject jsonImatge = jsonReader.readObject();
                     imatge = Imatge.jsonToImatge(jsonImatge);
+                    
+                    connection.disconnect(); //tanquem connexio
+                    if (imatge == null){
+                        connection.disconnect();
+                        response.sendRedirect("menu.jsp");
+                        return;
+                    }
                 }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                connection.disconnect();    
+                request.setAttribute("tipus_error", "connexio");
+                request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id);
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
+                return;
             } else {
+                connection.disconnect();
                 request.setAttribute("tipus_error", "connexio");
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
+                return;
             }
-
-            connection.disconnect();
-
         } catch (Exception e) {
+            if (connection != null) connection.disconnect();
+            System.out.println("error:");System.out.println(e.getMessage());
             request.setAttribute("tipus_error", "connexio");
             request.setAttribute("msg_error", "No s'ha pogut establir connexió amb el servei REST, torna-ho a intentar més tard");
             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
             rd.forward(request, response);
+            return;
         }
-    }
-    
-    if (imatge == null){
-        response.sendRedirect("menu.jsp");
-        return;
     }
 %>
 

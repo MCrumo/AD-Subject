@@ -154,6 +154,7 @@ public class Database {
 
         if (rs.next()) {
             jsonBuilder
+                .add("id", identificador)
                 .add("title", rs.getString("TITLE"))
                 .add("description", rs.getString("DESCRIPTION"))
                 .add("keywords", rs.getString("KEYWORDS"))

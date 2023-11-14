@@ -34,9 +34,10 @@ public class SessioUtil {
             
             // Crida al mètode userExists para verificar si nom d'usuari existeix en la base de dades            
             URL url;
+            HttpURLConnection connection = null;
             try {
                 url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/userExists");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
 
                 // Estem a post, permetem la sortida de dades
@@ -51,18 +52,18 @@ public class SessioUtil {
                 }
 
                 int responseCode = connection.getResponseCode();
+                connection.disconnect();
+                
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     return -1;
                 }
                 
-                connection.disconnect();
+                //connection.disconnect();
                 
-            } catch (MalformedURLException ex) {
+            } catch (Exception ex) {
+                if (connection != null) connection.disconnect();
                 Logger.getLogger(SessioUtil.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ProtocolException ex) {
-                Logger.getLogger(SessioUtil.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(SessioUtil.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
             }
         } else { //Si no hi ha una sessió Http en peu, envia a la pàgina d'error pertinent
            return -2;

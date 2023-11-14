@@ -185,7 +185,7 @@ return Response.ok().build();
             Database db = new Database();
             JsonObject imageJson = db.getImatgeAmbId(String.valueOf(id));
 
-            if (imageJson != null) {
+            if (imageJson != null && !imageJson.isEmpty()) {
                 return Response.ok(imageJson).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();

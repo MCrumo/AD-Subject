@@ -65,20 +65,26 @@ eliminar. -->
 
                     int responseCode = connection.getResponseCode();
                     
-                    // Permetem la sortida de dades
-                    connection.setDoOutput(true);
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
                             JsonObject jsonImatge = jsonReader.readObject();
                             imatge = Imatge.jsonToImatge(jsonImatge);
                         }
+                        connection.disconnect();
+                    } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                        connection.disconnect();    
+                        request.setAttribute("tipus_error", "connexio");
+                        request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id);
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+                        return;
                     } else {
+                        connection.disconnect();
                         request.setAttribute("tipus_error", "connexio");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
+                        return;
                     }
-                    
-                    connection.disconnect();
                     
                 } catch (Exception e) {
                     request.setAttribute("tipus_error", "connexio");
