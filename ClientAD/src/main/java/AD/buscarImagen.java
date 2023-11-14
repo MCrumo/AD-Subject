@@ -64,8 +64,9 @@ public class buscarImagen extends HttpServlet {
                 List<Imatge> setImatges = new ArrayList();
                 if (!description.isEmpty()){
                     //String[] keyWords = description.split(",");
-                    String[] keyWords = description.split("\\s+");
-                    
+                    String[] keyWordsMalicious = description.split("\\s+");
+                    String[] keyWords = purgeArray(keyWordsMalicious);
+                     
                     for(int i = 0; i < keyWords.length; ++i){ 
                         /* ------------------------------------------------------------ 
                          * -----SEARCH-BY-KEYWORD-------------------------------------- 
@@ -264,6 +265,18 @@ public class buscarImagen extends HttpServlet {
         
         
     }
+    
+    
+    static String[] purgeArray(String[] potencialMaliciosa) {
+        List<String> purgedList = new ArrayList<>();
+        for (String palabra : potencialMaliciosa) {
+            // Remove: punto y coma, comillas simples y comillas dobles
+            String purgedString = palabra.replaceAll("[;'\"]", "");
+            purgedList.add(purgedString);
+        }
+        return purgedList.toArray(new String[0]);
+    }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
