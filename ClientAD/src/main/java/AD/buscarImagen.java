@@ -53,16 +53,6 @@ public class buscarImagen extends HttpServlet {
         if (SessioUtil.validaSessio(request.getSession(false)) == 0) {
             response.setContentType("text/html;charset=UTF-8");
             try (PrintWriter out = response.getWriter()) {
-                /* TODO output your page here. You may use following sample code. */
-                out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet buscarImagen</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet buscarImagen at " + request.getContextPath() + "</h1>");
-                out.println("</body>");
-                out.println("</html>");
 
                 String modeBusqueda = request.getParameter("modeBusqueda"); //keyword, title, author
                 String description = request.getParameter("descripcio");
