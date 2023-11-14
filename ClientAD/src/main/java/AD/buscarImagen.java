@@ -67,7 +67,7 @@ public class buscarImagen extends HttpServlet {
                     String[] keyWordsMalicious = description.split("\\s+");
                     String[] keyWords = purgeArray(keyWordsMalicious);
                      
-                    for(int i = 0; i < keyWords.length; ++i){ 
+                    for(int i = 0; i < keyWords.length && (i < 16); ++i){ 
                         /* ------------------------------------------------------------ 
                          * -----SEARCH-BY-KEYWORD-------------------------------------- 
                          * ------------------------------------------------------------ 
