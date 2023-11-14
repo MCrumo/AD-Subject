@@ -74,9 +74,10 @@ public class buscarImagen extends HttpServlet {
                          */
                         if (modeBusqueda.equals("keyword")){
                             String keywords = keyWords[i];
+                            HttpURLConnection connection = null;
                             try {
                                 URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchKeywords/"+keywords);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -100,6 +101,7 @@ public class buscarImagen extends HttpServlet {
                                 request.setAttribute("tipus_error", "connexio-login");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
+                                connection.disconnect();
                             }
                         }
                         /* ------------------------------------------------------------ 
@@ -108,9 +110,10 @@ public class buscarImagen extends HttpServlet {
                          */
                         else if (modeBusqueda.equals("title")){
                             String title = keyWords[i];
+                            HttpURLConnection connection = null;
                             try {
                                 URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchTitle/"+title);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -134,6 +137,7 @@ public class buscarImagen extends HttpServlet {
                                 request.setAttribute("tipus_error", "connexio-login");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
+                                connection.disconnect();
                             }
                         }
                         /* ------------------------------------------------------------ 
@@ -142,9 +146,10 @@ public class buscarImagen extends HttpServlet {
                          */
                         else if (modeBusqueda.equals("author")){
                             String author = keyWords[i];
+                            HttpURLConnection connection = null;
                             try {
                                 URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchAuthor/"+author);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -168,6 +173,7 @@ public class buscarImagen extends HttpServlet {
                                 request.setAttribute("tipus_error", "connexio-login");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
+                                connection.disconnect();
                             }
                         }
                         /* ------------------------------------------------------------ 
@@ -176,9 +182,10 @@ public class buscarImagen extends HttpServlet {
                          */
                         else if (modeBusqueda.equals("creationDate")){
                             String date = keyWords[i];
+                            HttpURLConnection connection = null;
                             try {
                                 URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchCreationDate/"+date);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -202,6 +209,7 @@ public class buscarImagen extends HttpServlet {
                                 request.setAttribute("tipus_error", "connexio-login");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
+                                connection.disconnect();
                             }
                         }
                         /* ------------------------------------------------------------ 
@@ -210,9 +218,10 @@ public class buscarImagen extends HttpServlet {
                          */
                         else { // .equals("all")
                             String coincidence = keyWords[i];
+                            HttpURLConnection connection = null;
                             try {
                                 URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchCoincidence/"+coincidence);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -236,6 +245,7 @@ public class buscarImagen extends HttpServlet {
                                 request.setAttribute("tipus_error", "connexio-login");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
+                                connection.disconnect();
                             }
                         }
                         
