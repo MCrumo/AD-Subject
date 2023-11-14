@@ -78,36 +78,39 @@ public class eliminarImagen extends HttpServlet {
             String id = request.getParameter("id");
             
             if (id == null) {
-                response.sendRedirect("login.jsp");
+                response.sendRedirect("menu.jsp");
             } else {
                 Imatge imatge = null;
-                
+                HttpURLConnection connection = null;
                 try {
                     //CONNEXIO GET IMATGE AMB ID
                     URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/"+id);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
-
                     int responseCode = connection.getResponseCode();
                     
-                    // Permetem la sortida de dades
-                    connection.setDoOutput(true);
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
                             JsonObject jsonImatge = jsonReader.readObject();
                             imatge = Imatge.jsonToImatge(jsonImatge);
                         }
+                        
+                        connection.disconnect();
                     } else {
+                        connection.disconnect();
                         request.setAttribute("tipus_error", "connexio");
+                        request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id + ". Error intern del servidor");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
+                        return;
                     }
-                    
                 } catch (Exception e) {
+                    if (connection != null) connection.disconnect();
                     request.setAttribute("tipus_error", "connexio");
                     request.setAttribute("msg_error", "No s'ha pogut establir connexió amb el servei REST, torna-ho a intentar més tard");
                     RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                     rd.forward(request, response);
+                    return;
                 }
                 
                 
@@ -115,14 +118,13 @@ public class eliminarImagen extends HttpServlet {
                     HttpSession sessio = request.getSession(false);
                     String username = (String) sessio.getAttribute("username");
                     if (imatge.getCreator().equals(username)) {
+                        connection = null;
                         try {
 
                             //CONNEXIO GET IMATGE AMB ID
                             URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/delete/");
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection = (HttpURLConnection) url.openConnection();
                             connection.setRequestMethod("POST");
-
-                            int responseCode = connection.getResponseCode();
 
                             // Permetem la sortida de dades
                             connection.setDoOutput(true);
@@ -132,6 +134,9 @@ public class eliminarImagen extends HttpServlet {
                                 byte[] input = postData.getBytes("utf-8");
                                 os.write(input, 0, input.length);
                             }
+                            
+                            int responseCode = connection.getResponseCode();
+                            connection.disconnect();
                             
                             if (responseCode == HttpURLConnection.HTTP_OK) {
                                 if (elimina(imatge.getFilename())) {
@@ -150,7 +155,10 @@ public class eliminarImagen extends HttpServlet {
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
                             }
+                            
                         } catch (Exception e) {
+                            if (connection != null) connection.disconnect();
+                            System.out.println("ERROR: " + e.getMessage());
                             request.setAttribute("tipus_error", "connexio");
                             request.setAttribute("msg_error", "No s'ha pogut establir connexió amb el servei rest, torna-ho a intentar més tard");
                             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
@@ -158,7 +166,7 @@ public class eliminarImagen extends HttpServlet {
                         }
                     } else {
                         request.setAttribute("tipus_error", "eliminar");
-                        request.setAttribute("msg_error", "Has intentat eliminar una imatgte que no era teva o no s'ha pogut eliminar de disc, torna-ho a intentar més tard");
+                        request.setAttribute("msg_error", "Has intentat eliminar una imatge que no era teva...");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
                     }

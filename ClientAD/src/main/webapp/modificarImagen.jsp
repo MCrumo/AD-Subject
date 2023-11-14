@@ -1,16 +1,15 @@
 <%-- 
-    Document   : eliminarImagen
-    Created on : 14 oct 2023, 19:22:19
+    Document   : modificarImagen
+    Created on : 14 oct 2023, 19:20:06
     Author     : alumne
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
-<!-- Página para eliminar una imagen del sistema. A esta página se
-puede llegar desde las páginas de listado o búsqueda, que se explican más adelante.
-El fichero asociado a los datos que hay en la base de datos también se tiene que
-eliminar. -->
+<!-- Página que permite modificar los datos de una imagen
+registrada por un usuario en el sistema. A esta página se puede llegar desde las
+páginas de listado o búsqueda, que se explican más adelante. -->
 
 <html>
     
@@ -23,7 +22,7 @@ eliminar. -->
     <%@ page import="Aux.Imatge"%>
     <%@ page import="java.net.HttpURLConnection"%>
     <%@ page import="java.net.URL"%>
-    
+    <%@ page import="java.util.List" %>
 
     
     <%
@@ -53,7 +52,7 @@ eliminar. -->
         //Guardo la imatge amb id en un objecte imatge i verifico que l'autor és qui la intenta eliminar
         String id = request.getParameter("id");
         Imatge imatge = null;
-        
+
         // Verifica que 'id' no sigui nul
         if (id != null) {
             try {
@@ -93,10 +92,11 @@ eliminar. -->
                     rd.forward(request, response);
                 }
                 
+                
                 if (imatge != null) {
                     if (!imatge.getCreator().equals(username)) {
                         request.setAttribute("tipus_error", "eliminar");
-                        request.setAttribute("msg_error", "Estas intentant eliminar una imatge que no és teva...");
+                        request.setAttribute("msg_error", "Estas intentant modificar una imatge que no és teva...");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
                     }
@@ -113,63 +113,97 @@ eliminar. -->
                 rd.forward(request, response);
             }
         }
-        
     %>
     
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Eliminar Imatge</title>
-        <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
+        <title>Modificar Imatge</title>
         <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
+        <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
         <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
     </head>
-    <body>
+    <body style="max-width: 800px;">
         <div align="center">
-            <h1>Eliminar Imatge:</h1>
+            <h1>Modificar Imatge</h1>
             <button onclick="goBack()" class='boto'>Enrere</button>
-            <p></p>
-            <table class='table'>
-                <tr>
-                    <th>Id</th>
-                    <th>Títol</th>
-                    <th>Descripció</th>
-                    <th>Paraules clau</th>
-                    <th>Autor</th>
-                    <th>Creador</th>
-                    <th>Data de pujada</th>
-                    <th>Data de captura</th>
-                    <th>Nom de l'arxiu</th>
-                </tr>
-                <tr>
-                    <% if (imatge != null) { %>
-                        <td><%= imatge.getId() %></td>
-                        <td><%= imatge.getTitle() %></td>
-                        <td><%= imatge.getDescription() %></td>
-                        <td><%= imatge.getKeywords() %></td>
-                        <td><%= imatge.getAuthor() %></td>
-                        <td><%= imatge.getCreator() %></td>
-                        <td><%= imatge.getStorageDate() %></td>
-                        <td><%= imatge.getCaptureDate() %></td>
-                        <td><%= imatge.getFilename() %></td>
-                    <% } %>
-                </tr>
-                <tr>
-                    <% if (imatge != null) {
-                              out.println("<td colspan='9' style='text-align:center;'>"); 
-                              out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
-                              out.println("<img src='images/"+imatge.getFilename()+" 'style='max-width:300px; max-height: 300px'  ></a></td>");
-                    } %>
-                </tr>   
-                <tr>
-                    <td colspan="9" style="text-align:center;">
-                        <form action="eliminarImagen" method="POST">
-                            <input type="hidden" name="id" value="<%= imatge.getId() %>">
-                            <button type="submit" class="boto"> Eliminar imatge </button>
-                        </form>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        
+            <br>
+            <%-- Mostrar missatges d'error si existeixen --%>
+            <% List<String> errors = (List<String>)request.getAttribute("errors"); %>
+            <% if (errors != null && !errors.isEmpty()) { %>
+                <div style="color: red;">
+                    <ul>
+                        <% for (String error : errors) { %>
+                            <p><%= error %></p>
+                        <% } %>
+                    </ul>
+                    <p><a href='menu.jsp' class="enllaçMenu">Tornar al menu principal</a></p>
+                </div>
+            <% } %>
+            <%
+                Boolean okObject = (Boolean) request.getAttribute("ok");
+                if (okObject != null && okObject.booleanValue()) {
+            %>
+                <div style="color: green;">
+                    <p>
+                        Les modificacions s'han enregistrat correctament
+                        <p><a href='menu.jsp' class="enllaçMenu">Tornar al menu principal</a></p>
+                    </p>
+                </div>
+            <% } %>
+            <form action="modificarImagen" method="POST">
+                <table>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="title">Títol:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="title" name="title" placeholder="Introdueix el títol" value="<%= imatge.getTitle() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="description">Descripció:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="description" name="description" placeholder="Introdueix la descripció" value="<%= imatge.getDescription() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="keywords">Paraules clau:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="keywords" name="keywords" placeholder="Introdueix les paraules clau" value="<%= imatge.getKeywords() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="author">Autor:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="author" name="author" placeholder="Introdueix l'usuari autor" value="<%= imatge.getAuthor() %>" required style="width: 300px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">
+                            <label for="captureDate">Data de captura:</label>
+                        </td>
+                        <td>
+                            <input type="date" id="captureDate" name="captureDate" value="<%= imatge.getCaptureDateISO() %>" required style="width: 200px;">
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    <% 
+                       out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
+                       out.println("<img src='images/"+imatge.getFilename()+" 'style='max-width:300px; max-height: 300px'></a>"); %>
+                </p>
+                
+                <input type="hidden" name="id" value="<%= imatge.getId() %>">
+                <input type="submit" class='boto' value="Modificar detalls">
+            </form>
+    </div>
         <script>
         function goBack() {
             // Utiliza window.history par retrocedir una pàgina en el navegador

@@ -112,6 +112,7 @@ public class JakartaEE91Resource {
     * @param author
     * @param creator, used for checking image ownership
     * @param capt_date
+    * @param filename
     * @return
     */
     @Path("modify")
@@ -120,8 +121,16 @@ public class JakartaEE91Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response modifyImage (@FormParam("id") String id, @FormParam("title") String title, @FormParam("description") String description,
                                  @FormParam("keywords") String keywords, @FormParam("author") String author, @FormParam("creator") String creator,
-                                 @FormParam("capture") String capt_date) {
-        return Response.ok().build();
+                                 @FormParam("capture") String capt_date, @FormParam("filename") String filename) {
+        try {
+            Database db = new Database();
+            db.modificaImatge(id, title, description, keywords, creator, capt_date, filename);
+
+            return Response.ok().build();
+        } catch (Exception e) {
+            // Cualquier otra excepción, devuelve 500 Internal Server Error
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -161,24 +170,6 @@ public class JakartaEE91Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-    * GET method to search images by id
-    * @param id
-    * @return
-    *
-    @Path("searchID/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response searchByID (@PathParam("id") int id) {
-        try {
-            Database db = new Database();
-            db.getImatgeAmbId(String.valueOf(id));
-            return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }*/
     
     /**
     * GET method to search images by id
@@ -193,7 +184,7 @@ public class JakartaEE91Resource {
             Database db = new Database();
             JsonObject imageJson = db.getImatgeAmbId(String.valueOf(id));
 
-            if (imageJson != null) {
+            if (imageJson != null && !imageJson.isEmpty()) {
                 return Response.ok(imageJson).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
@@ -288,7 +279,7 @@ public class JakartaEE91Resource {
     @Path("getNextId")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response searchByKeywords () {
+    public Response getNextId () {
         Database db = new Database();
         int nextId = db.getNextId();
         
