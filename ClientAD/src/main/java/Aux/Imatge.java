@@ -148,14 +148,14 @@ public class Imatge {
     public String getCaptureDateISO() {
         DateTimeFormatter formatPropi = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter formatISO = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
+
         LocalDate dataPropia = LocalDate.parse(captureDate, formatPropi);
-        
+
         return dataPropia.format(formatISO);
     }
     
     public void setCaptureDate(String captureDate) {
-        this.captureDate = captureDate;
+        this.captureDate = validaFormatStringData(captureDate);
     }
     
     public void setCaptureDate(LocalDate captureDate) {

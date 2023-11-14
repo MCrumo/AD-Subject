@@ -112,6 +112,7 @@ public class JakartaEE91Resource {
     * @param author
     * @param creator, used for checking image ownership
     * @param capt_date
+    * @param filename
     * @return
     */
     @Path("modify")
@@ -120,8 +121,16 @@ public class JakartaEE91Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response modifyImage (@FormParam("id") String id, @FormParam("title") String title, @FormParam("description") String description,
                                  @FormParam("keywords") String keywords, @FormParam("author") String author, @FormParam("creator") String creator,
-                                 @FormParam("capture") String capt_date) {
-        return Response.ok().build();
+                                 @FormParam("capture") String capt_date, @FormParam("filename") String filename) {
+        try {
+            Database db = new Database();
+            db.modificaImatge(id, title, description, keywords, creator, capt_date, filename);
+
+            return Response.ok().build();
+        } catch (Exception e) {
+            // Cualquier otra excepción, devuelve 500 Internal Server Error
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**

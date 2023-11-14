@@ -418,31 +418,25 @@ public class Database {
         
         closeConnection();
     }
-    /*
-    public boolean modificaImatge(Imatge imatge) {
+    
+    public void modificaImatge(String id, String title, String description, String keywords, String creator,
+                              String capt_date, String filename) throws SQLException {
         openConnection();
         
-        try {
-            String sql = "UPDATE PR2.IMAGE SET TITLE = ?, DESCRIPTION = ?, KEYWORDS = ?, CREATOR = ?, CAPTURE_DATE = ?, FILENAME = ? WHERE ID = ?";
-            
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, imatge.getTitle());
-            preparedStatement.setString(2, imatge.getDescription());
-            preparedStatement.setString(3, imatge.getKeywords());
-            preparedStatement.setString(4, imatge.getCreator());
-            preparedStatement.setString(5, imatge.getCaptureDate());
-            preparedStatement.setString(6, imatge.getFilename());
-            preparedStatement.setString(7, imatge.getId());
-            
-            preparedStatement.executeUpdate();
-            System.out.println("es fa el update");
-        } catch (SQLException e) {
-            // connection close failed.
-            System.err.println(e.getMessage());
-            return false;
-        }
+        String sql = "UPDATE PR2.IMAGE SET TITLE = ?, DESCRIPTION = ?, KEYWORDS = ?, CREATOR = ?, CAPTURE_DATE = ?, FILENAME = ? WHERE ID = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        
+        preparedStatement.setString(1, title);
+        preparedStatement.setString(2, description);
+        preparedStatement.setString(3, keywords);
+        preparedStatement.setString(4, creator);
+        preparedStatement.setString(5, capt_date);
+        preparedStatement.setString(6, filename);
+        preparedStatement.setString(7, id);
+
+        preparedStatement.executeUpdate();
         
         closeConnection();
-        return true;
-    }*/
+    }
 }
