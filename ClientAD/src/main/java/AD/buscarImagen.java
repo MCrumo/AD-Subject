@@ -73,28 +73,21 @@ public class buscarImagen extends HttpServlet {
                 }
                 List<Imatge> setImatges = new ArrayList();
                 if (!description.isEmpty()){
-                    String[] keyWords = description.split(",");
+                    //String[] keyWords = description.split(",");
+                    String[] keyWords = description.split("\\s+");
                     
                     for(int i = 0; i < keyWords.length; ++i){ 
-                        //Database db = new Database();
-                        //-----SEARCH-BY-KEYWORD------------------------------
+                        /* ------------------------------------------------------------ 
+                         * -----SEARCH-BY-KEYWORD-------------------------------------- 
+                         * ------------------------------------------------------------ 
+                         */
                         if (modeBusqueda.equals("keyword")){
-                            //List<Imatge> imgsInfo = db.getImatgesByKeyword(keyWords[i]);
-                            //setImatges.addAll(imgsInfo);
-                        }
-                        //-----SEARCH-BY-TITLE------------------------------
-                        else if (modeBusqueda.equals("title")){
-                            String title = keyWords[i];
+                            String keywords = keyWords[i];
                             try {
-                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchTitle"+title);
+                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchKeywords/"+keywords);
                                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                                connection.setRequestMethod("POST");
+                                connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
-                                String postData = "title=" + title;
-                                try (OutputStream os = connection.getOutputStream()) {
-                                    byte[] input = postData.getBytes("utf-8");
-                                    os.write(input, 0, input.length);
-                                }
                                 int responseCode = connection.getResponseCode();
                                 if (responseCode == HttpURLConnection.HTTP_OK) {
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
@@ -102,7 +95,8 @@ public class buscarImagen extends HttpServlet {
                                         for(JsonValue jsonValue : jsonImatges){
                                             JsonObject jsonImatge = (JsonObject) jsonValue;
                                             Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                            setImatges.add(imatge);
+                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                            if (!idExist) setImatges.add(imatge);
                                         }
                                     }
                                 } else {
@@ -117,18 +111,146 @@ public class buscarImagen extends HttpServlet {
                                 rd.forward(request, response);
                             }
                         }
-                        /*else if (modeBusqueda.equals("author")){
-                            List<Imatge> imgsInfo = db.getImatgesByAuthor(keyWords[i]);
-                            setImatges.addAll(imgsInfo);
+                        /* ------------------------------------------------------------ 
+                         * -----SEARCH-BY-TITLE---------------------------------------- 
+                         * ------------------------------------------------------------ 
+                         */
+                        else if (modeBusqueda.equals("title")){
+                            String title = keyWords[i];
+                            try {
+                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchTitle/"+title);
+                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection.setRequestMethod("GET");
+                                connection.setDoOutput(true);
+                                int responseCode = connection.getResponseCode();
+                                if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
+                                        JsonArray jsonImatges = jsonReader.readArray();
+                                        for(JsonValue jsonValue : jsonImatges){
+                                            JsonObject jsonImatge = (JsonObject) jsonValue;
+                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                            if (!idExist) setImatges.add(imatge);
+                                        }
+                                    }
+                                } else {
+                                    request.setAttribute("tipus_error", "connexio");
+                                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                    rd.forward(request, response);
+                                }
+                                connection.disconnect();
+                            } catch (Exception e) {
+                                request.setAttribute("tipus_error", "connexio-login");
+                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                rd.forward(request, response);
+                            }
                         }
+                        /* ------------------------------------------------------------ 
+                         * -----SEARCH-BY-AUTHOR--------------------------------------- 
+                         * ------------------------------------------------------------ 
+                         */
+                        else if (modeBusqueda.equals("author")){
+                            String author = keyWords[i];
+                            try {
+                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchAuthor/"+author);
+                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection.setRequestMethod("GET");
+                                connection.setDoOutput(true);
+                                int responseCode = connection.getResponseCode();
+                                if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
+                                        JsonArray jsonImatges = jsonReader.readArray();
+                                        for(JsonValue jsonValue : jsonImatges){
+                                            JsonObject jsonImatge = (JsonObject) jsonValue;
+                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                            if (!idExist) setImatges.add(imatge);
+                                        }
+                                    }
+                                } else {
+                                    request.setAttribute("tipus_error", "connexio");
+                                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                    rd.forward(request, response);
+                                }
+                                connection.disconnect();
+                            } catch (Exception e) {
+                                request.setAttribute("tipus_error", "connexio-login");
+                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                rd.forward(request, response);
+                            }
+                        }
+                        /* ------------------------------------------------------------ 
+                         * -----SEARCH-BY-CREATION_DATE-------------------------------- 
+                         * ------------------------------------------------------------ 
+                         */
                         else if (modeBusqueda.equals("creationDate")){
-                            List<Imatge> imgsInfo = db.getImatgesByCreationDate(keyWords[i]);
-                            setImatges.addAll(imgsInfo);
-                        }*/
-                        else { // .equals("all")
-                            //List<Imatge> imgsInfo = db.getImatgesByCoincidence(keyWords[i]);
-                            //setImatges.addAll(imgsInfo);
+                            String date = keyWords[i];
+                            try {
+                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchCreationDate/"+date);
+                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection.setRequestMethod("GET");
+                                connection.setDoOutput(true);
+                                int responseCode = connection.getResponseCode();
+                                if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
+                                        JsonArray jsonImatges = jsonReader.readArray();
+                                        for(JsonValue jsonValue : jsonImatges){
+                                            JsonObject jsonImatge = (JsonObject) jsonValue;
+                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                            if (!idExist) setImatges.add(imatge);
+                                        }
+                                    }
+                                } else {
+                                    request.setAttribute("tipus_error", "connexio");
+                                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                    rd.forward(request, response);
+                                }
+                                connection.disconnect();
+                            } catch (Exception e) {
+                                request.setAttribute("tipus_error", "connexio-login");
+                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                rd.forward(request, response);
+                            }
                         }
+                        /* ------------------------------------------------------------ 
+                         * -----SEARCH-BY-COINCIDENCES--------------------------------- 
+                         * ------------------------------------------------------------ 
+                         */
+                        else { // .equals("all")
+                            String coincidence = keyWords[i];
+                            try {
+                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchCoincidence/"+coincidence);
+                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection.setRequestMethod("GET");
+                                connection.setDoOutput(true);
+                                int responseCode = connection.getResponseCode();
+                                if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
+                                        JsonArray jsonImatges = jsonReader.readArray();
+                                        for(JsonValue jsonValue : jsonImatges){
+                                            JsonObject jsonImatge = (JsonObject) jsonValue;
+                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                            if (!idExist) setImatges.add(imatge);
+                                        }
+                                    }
+                                } else {
+                                    request.setAttribute("tipus_error", "connexio");
+                                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                    rd.forward(request, response);
+                                }
+                                connection.disconnect();
+                            } catch (Exception e) {
+                                request.setAttribute("tipus_error", "connexio-login");
+                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                rd.forward(request, response);
+                            }
+                        }
+                        
+                        
+                        
+                        
                     }
                     if(setImatges.isEmpty()) request.setAttribute("busquedaBuida", 1);
                     request.setAttribute("setImatges", setImatges);
