@@ -12,6 +12,7 @@
     <%@ page import="java.util.List"%>
     <%@ page import="Aux.Imatge" %>
     <%@ page import="java.util.ArrayList" %>
+    <%@ page import="Aux.SessioUtil" %>
     <%@ page import="jakarta.servlet.http.HttpSession" %>
     
     <%
@@ -45,6 +46,7 @@
         <link rel="icon" type="image/x-icon" href="./css/imgs/camera-circle.png">
         <link rel="stylesheet" type="text/css" href="./css/styleGeneral.css">
         <link rel="stylesheet" type="text/css" href="./css/styleOpcions.css">
+        
     </head>
     <body>
         <div align="center">
@@ -68,27 +70,28 @@
                 </tr>
             </thread>
         <%  
-            Database db = new Database();
-            List<Imatge> setImatges = db.getAllImatges();
-            ListIterator<Imatge> listIterator = setImatges.listIterator();
+            List<Imatge> setImatges =  (List<Imatge>) request.getAttribute("setImatges");
             out.println("<tbody>");
-            while(listIterator.hasNext()) {
-                Imatge i = listIterator.next();
-                out.println("<tr>");
-                out.println("<td>"+i.getId()+"</td>");
-                out.println("<td>"+i.getTitle()+"</td>");
-                out.println("<td>"+i.getDescription()+"</td>");
-                out.println("<td>"+i.getKeywords()+"</td>");
-                out.println("<td>"+i.getAuthor()+"</td>");
-                out.println("<td>"+i.getCreator()+"</td>");
-                out.println("<td>"+i.getStorageDate()+"</td>");
-                out.println("<td>"+i.getCaptureDate()+"</td>");
-                out.println("<td>"+i.getFilename()+"</td>");
-                out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='images/"+i.getFilename()+"'width='75' height='50'></a></td>");
-                if (username.equals(i.getCreator())) {
-                    out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
+            if (setImatges != null && !setImatges.isEmpty()) {
+                ListIterator<Imatge> listIterator = setImatges.listIterator();
+                while(listIterator.hasNext()) {
+                    Imatge i = listIterator.next();
+                    out.println("<tr>");
+                    out.println("<td>"+i.getId()+"</td>");
+                    out.println("<td>"+i.getTitle()+"</td>");
+                    out.println("<td>"+i.getDescription()+"</td>");
+                    out.println("<td>"+i.getKeywords()+"</td>");
+                    out.println("<td>"+i.getAuthor()+"</td>");
+                    out.println("<td>"+i.getCreator()+"</td>");
+                    out.println("<td>"+i.getStorageDate()+"</td>");
+                    out.println("<td>"+i.getCaptureDate()+"</td>");
+                    out.println("<td>"+i.getFilename()+"</td>");
+                    out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='images/"+i.getFilename()+"'width='75' height='50'></a></td>");
+                    if (username.equals(i.getCreator())) {
+                        out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
+                    }
+                    out.println("</tr>");
                 }
-                out.println("</tr>");
             }
             out.println("</tbody>");
             out.println("</table>");
