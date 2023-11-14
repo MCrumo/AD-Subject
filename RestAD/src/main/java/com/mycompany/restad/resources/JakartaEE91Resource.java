@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 //Añadidos
 import DB.Database;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import java.sql.SQLException;
 
@@ -151,7 +152,14 @@ public class JakartaEE91Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listImages () {
-return Response.ok().build();
+        try {
+            Database db = new Database();
+            JsonArray jsonArray =  db.getAllImatges();
+            // Retornem el JSON en la resposta
+            return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -204,7 +212,14 @@ return Response.ok().build();
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByTitle (@PathParam("title") String title) {
-return Response.ok().build();
+        try {
+            Database db = new Database();
+            JsonArray jsonArray =  db.getImatgesByTitle(title);
+            // Retornem el JSON en la resposta
+            return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -217,7 +232,14 @@ return Response.ok().build();
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByCreationDate (@PathParam("date") String date) {
-return Response.ok().build();
+        try {
+            Database db = new Database();
+            JsonArray jsonArray =  db.getImatgesByCreationDate(date);
+            // Retornem el JSON en la resposta
+            return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -229,7 +251,14 @@ return Response.ok().build();
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByAuthor (@PathParam("author") String author) {
-return Response.ok().build();
+        try {
+            Database db = new Database();
+            JsonArray jsonArray =  db.getImatgesByAuthor(author);
+            // Retornem el JSON en la resposta
+            return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -241,7 +270,14 @@ return Response.ok().build();
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByKeywords (@PathParam("keywords") String keywords) {
-return Response.ok().build();
+        try {
+            Database db = new Database();
+            JsonArray jsonArray =  db.getImatgesByKeyword(keywords);
+            // Retornem el JSON en la resposta
+            return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
 
     }
     
@@ -265,5 +301,25 @@ return Response.ok().build();
         return Response.ok(jsonResponse.toString(), MediaType.APPLICATION_JSON).build();
     }
     
-    //PROVA GIT MERGE TOCAT PER MQUEL I NACHO
+    
+     /**
+    * GET method to search images by coincidence on: title, description, author, keywords and captureDate 
+    * @param coincidence
+    * @return
+    */
+    @Path("searchCoincidence/{coincidence}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchByKeyCoincidence (@PathParam("coincidence") String coincidence) {
+        try {
+            Database db = new Database();
+            JsonArray jsonArray =  db.getImatgesByCoincidence(coincidence);
+            // Retornem el JSON en la resposta
+            return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+    }
+    
 }
