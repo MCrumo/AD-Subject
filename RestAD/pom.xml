@@ -15,6 +15,18 @@
         <jakartaee>9.1.0</jakartaee>
     </properties>
     
+    <repositories>
+        <repository>
+            <id>Maven Central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        
+        <repository>
+            <id>oss.sonatype.org</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
             <groupId>jakarta.platform</groupId>
@@ -22,7 +34,14 @@
             <version>${jakartaee}</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>3.0.3</version>
+        </dependency>
     </dependencies>
+    
     
     <build>
         <plugins>

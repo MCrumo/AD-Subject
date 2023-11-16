@@ -1,0 +1,10 @@
+com/mycompany/clientad/JakartaRestConfiguration.class
+Aux/SessioUtil.class
+AD/login.class
+AD/modificarImagen.class
+AD/eliminarImagen.class
+AD/registrarImagen.class
+AD/buscarImagen.class
+Aux/Imatge.class
+.netbeans_automatic_build
+com/mycompany/clientad/resources/JakartaEE91Resource.class
