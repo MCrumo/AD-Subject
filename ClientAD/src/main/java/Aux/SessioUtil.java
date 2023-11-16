@@ -29,6 +29,7 @@ public class SessioUtil {
     public static int validaSessio(HttpSession sessio) {
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
         if (sessio != null && sessio.getAttribute("username") != null) {
+            String addr = ConnectionUtil.getServerAddr();
             // Obté el nom d'usuari de la sessió
             String username = (String) sessio.getAttribute("username");
             
@@ -36,7 +37,7 @@ public class SessioUtil {
             URL url;
             HttpURLConnection connection = null;
             try {
-                url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/userExists");
+                url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/userExists");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
 

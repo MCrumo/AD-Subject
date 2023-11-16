@@ -19,6 +19,7 @@ eliminar. -->
     <%@ page import="jakarta.json.Json"%>
     <%@ page import="jakarta.json.JsonObject"%>
     <%@ page import="jakarta.json.JsonReader"%>
+    <%@ page import="Aux.ConnectionUtil" %>
     <%@ page import="Aux.SessioUtil" %>
     <%@ page import="Aux.Imatge"%>
     <%@ page import="java.net.HttpURLConnection"%>
@@ -27,6 +28,8 @@ eliminar. -->
 
     
     <%
+        String addr = ConnectionUtil.getServerAddr();
+            
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
         String username = "";
@@ -59,7 +62,7 @@ eliminar. -->
             try {
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/" + id);
+                    URL url = new URL("http://" + addr + "/RestAD/resources/jakartaee9/searchID/" + id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
 

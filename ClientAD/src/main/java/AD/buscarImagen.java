@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.ConnectionUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -51,6 +52,9 @@ public class buscarImagen extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (SessioUtil.validaSessio(request.getSession(false)) == 0) {
+            
+            String addr = ConnectionUtil.getServerAddr();
+    
             response.setContentType("text/html;charset=UTF-8");
             try (PrintWriter out = response.getWriter()) {
 
@@ -76,7 +80,7 @@ public class buscarImagen extends HttpServlet {
                             String keywords = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchKeywords/"+keywords);
+                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchKeywords/"+keywords);
                                 connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
@@ -112,7 +116,7 @@ public class buscarImagen extends HttpServlet {
                             String title = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchTitle/"+title);
+                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchTitle/"+title);
                                 connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
@@ -148,7 +152,7 @@ public class buscarImagen extends HttpServlet {
                             String author = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchAuthor/"+author);
+                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchAuthor/"+author);
                                 connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
@@ -184,7 +188,7 @@ public class buscarImagen extends HttpServlet {
                             String date = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchCreationDate/"+date);
+                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchCreationDate/"+date);
                                 connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
@@ -220,7 +224,7 @@ public class buscarImagen extends HttpServlet {
                             String coincidence = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchCoincidence/"+coincidence);
+                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchCoincidence/"+coincidence);
                                 connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);

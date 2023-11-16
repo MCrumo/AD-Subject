@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.ConnectionUtil;
 import Aux.Imatge;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -91,6 +92,7 @@ public class modificarImagen extends HttpServlet {
             String captureDateMod = request.getParameter("captureDate");
             
             String id = request.getParameter("id");
+            String addr = ConnectionUtil.getServerAddr();
             
             if (id == null) {
                 response.sendRedirect("menu.jsp");
@@ -99,7 +101,7 @@ public class modificarImagen extends HttpServlet {
                 Imatge imatge = null;
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/" + id);
+                    URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchID/" + id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
 
@@ -189,7 +191,7 @@ public class modificarImagen extends HttpServlet {
                         
 
                         try {
-                            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/modify");
+                            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/modify");
                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                             connection.setRequestMethod("POST");

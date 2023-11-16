@@ -11,12 +11,16 @@
 <%@ page import="jakarta.json.JsonReader"%>
 <%@ page import="Aux.SessioUtil" %>
 <%@ page import="Aux.Imatge"%>
+<%@ page import="Aux.ConnectionUtil" %>
 <%@ page import="java.net.HttpURLConnection"%>
 <%@ page import="java.net.URL"%>
 
 <!DOCTYPE html>
 
 <%
+    
+    String addr = ConnectionUtil.getServerAddr();
+    
     // Obté la HttpSession
     HttpSession sessio = request.getSession(false);
 
@@ -45,7 +49,7 @@
         HttpURLConnection connection  = null;
         try {
             //CONNEXIO GET IMATGE AMB ID
-            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/" + id);
+            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchID/" + id);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             

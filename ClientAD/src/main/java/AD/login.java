@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.ConnectionUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -37,9 +38,10 @@ public class login extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String addr = ConnectionUtil.getServerAddr();
         
         try {
-            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/login");
+            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/login");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
 

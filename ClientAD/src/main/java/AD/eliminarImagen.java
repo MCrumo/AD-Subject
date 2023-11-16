@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.ConnectionUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -75,6 +76,7 @@ public class eliminarImagen extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         if (SessioUtil.validaSessio(request.getSession(false)) == 0) {
+            String addr = ConnectionUtil.getServerAddr();
             String id = request.getParameter("id");
             
             if (id == null) {
@@ -84,7 +86,7 @@ public class eliminarImagen extends HttpServlet {
                 HttpURLConnection connection = null;
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/"+id);
+                    URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchID/"+id);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     int responseCode = connection.getResponseCode();
@@ -122,7 +124,7 @@ public class eliminarImagen extends HttpServlet {
                         try {
 
                             //CONNEXIO GET IMATGE AMB ID
-                            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/delete/");
+                            URL url = new URL("http://"+ addr +"RestAD/resources/jakartaee9/delete/");
                             connection = (HttpURLConnection) url.openConnection();
                             connection.setRequestMethod("POST");
 

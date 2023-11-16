@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.ConnectionUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -60,6 +61,7 @@ public class registrarImagen extends HttpServlet {
     
     //private final String path = "/var/webapp/Practica_2/images";
     private Imatge imatge = null;    
+    private String addr = ConnectionUtil.getServerAddr();
         
     //Crea un objecte Imatge i inicialitza els seus atributs
     boolean guardaAuxImatge (HttpServletRequest request, HttpServletResponse response)
@@ -83,7 +85,7 @@ public class registrarImagen extends HttpServlet {
         String nextId = "0";
         try {
             //guardem el id de la foto
-            URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/getNextId");
+            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/getNextId");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
@@ -186,7 +188,7 @@ public class registrarImagen extends HttpServlet {
                     }
 
                     try {
-                        URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/register");
+                        URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/register");
                         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                         connection.setRequestMethod("POST");
 

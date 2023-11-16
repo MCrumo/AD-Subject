@@ -4,6 +4,7 @@
  */
 package AD;
 
+import Aux.ConnectionUtil;
 import Aux.Imatge;
 import Aux.SessioUtil;
 import jakarta.json.Json;
@@ -43,12 +44,13 @@ public class list extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (SessioUtil.validaSessio(request.getSession(false)) == 0) {
+            String addr = ConnectionUtil.getServerAddr();
             response.setContentType("text/html;charset=UTF-8");
             try (PrintWriter out = response.getWriter()) {
                 HttpURLConnection connection = null;
                 List<Imatge> setImatges = new ArrayList();
                 try {
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/list");
+                    URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/list");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setDoOutput(true);
