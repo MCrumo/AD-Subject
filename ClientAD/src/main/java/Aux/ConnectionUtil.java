@@ -9,45 +9,12 @@ package Aux;
  * @author alumne
  */
 public class ConnectionUtil {
-    private String address = "localhost";
-    private String port = "8080";
-    
-    /*
-     *  CREATORS
-     */
-    public ConnectionUtil() {
-    }
-    
-    public ConnectionUtil(String addres, String port){
-        this.address = address;
-        this.port = port;
-    }
-    
-    
-    /*
-     *  SETTERS
-     */
-    public void setPort(String port) {
-        this.port = port;
-    }
-    
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    
-    /*
-     *  GETTERS
-     */
-    public String getConnection() {
+    private static String address = "localhost";
+    private static String port = "8080";
+  
+    public static String getServerAddr() {
         String connection = address + ":" + port;
         return connection;
     }
     
-    public String getPort() {
-        return this.port;
-    }
-    
-    public String getAddress() {
-        return this.address;
-    }
 }
