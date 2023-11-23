@@ -1,6 +1,7 @@
 //package ad.restad.resources;
 package com.mycompany.restad.resources;
 
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
@@ -19,11 +20,12 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.StreamingOutput;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
+import java.nio.file.StandardCopyOption;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -34,6 +36,8 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
  */
 @Path("jakartaee9")
 public class JakartaEE91Resource {
+    
+    final public static String uploadDir = "/var/webapp/Practica_2/Images/";
     
     @GET
     public Response ping(){
@@ -93,7 +97,7 @@ public class JakartaEE91Resource {
     * @param capt_date
     * @param filename
     * @return
-    */
+    *
     @Path("register")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -110,7 +114,118 @@ public class JakartaEE91Resource {
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }*/
+    
+    /*******************************************************************
+     **                                                               **
+     **                          CODI SILVIA                          **
+     **                                                               **
+     *******************************************************************/
+    
+    /** 
+    * POST method to register a new image 
+    * @param title 
+    * @param description 
+    * @param keywords      
+    * @param author 
+    * @param creator 
+    * @param capt_date     
+    * @param filename     
+    * @param fileInputStream     
+    * @param fileMetaData     
+    * @return 
+    */ 
+    @Path("register") 
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA) 
+    @Produces(MediaType.APPLICATION_JSON) 
+    public Response registerImage ( @FormDataParam("title") String title, 
+                                    @FormDataParam("description") String description, 
+                                    @FormDataParam("keywords") String keywords, 
+                                    @FormDataParam("author") String author, 
+                                    @FormDataParam("creator") String creator, 
+                                    @FormDataParam("capture") String capt_date,
+                                    @FormDataParam("filename") String filename,
+                                    @FormDataParam("file") InputStream fileInputStream,
+                                    @FormDataParam("file") FormDataContentDisposition fileMetaData) {
+        
+        Integer StatusCode = 201;   
+        
+        try {
+            Database db = new Database();
+            db.registrarImatge(title, description, keywords, author, creator, capt_date, filename);
+            
+            if (!writeImage(filename, fileInputStream)) { //no sha pogut guardar la imatge            
+                StatusCode = 500; //fallada server
+            }
+            
+        } catch (Exception ex) {
+            StatusCode = 500;
+        }
+   
+        return Response.status(StatusCode).build();
     }
+    
+    public static Boolean writeImage(String file_name, Part part) 
+        throws IOException {
+        makeDirIfNotExists();
+        
+        InputStream content = part.getInputStream();
+        
+        File targetfile = new File(uploadDir + file_name);
+        
+        java.nio.file.Files.copy(
+                content,
+                targetfile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+        );
+        
+        return true;
+    }
+    public static Boolean writeImage(String file_name, InputStream fileInputStream)  {
+        try{
+            makeDirIfNotExists();
+            File targetfile = new File(uploadDir + file_name);
+        
+            java.nio.file.Files.copy(
+                    fileInputStream,
+                    targetfile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+            );  
+        } catch (IOException e){
+            return false;
+        }
+        return true; 
+    }
+    
+    public static Boolean deleteImage(String file_name) 
+    {
+        makeDirIfNotExists();
+        
+        File targetfile = new File(uploadDir + file_name);
+        if(! targetfile.delete()) {
+            System.out.println("ERROR: Failed to delete " + targetfile.getAbsolutePath());
+            return false;
+        }
+       
+        System.out.println("SUCCESS: deleted " + targetfile.getAbsolutePath());
+        return true;
+    }    
+    
+    private static void makeDirIfNotExists() {
+        File dir = new File(uploadDir);
+        // Creamos directorio si no existe.
+        if (! dir.exists() ) {
+           dir.mkdirs();
+        }
+    }
+    
+    
+     /*********************************************************************
+     **                                                                  **
+     **                          FI CODI SILVIA                          **
+     **                                                                  **
+     **********************************************************************/
 
     /**
     * POST method to modify an existing image
@@ -128,12 +243,19 @@ public class JakartaEE91Resource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response modifyImage (@FormParam("id") String id, @FormParam("title") String title, @FormParam("description") String description,
-                                 @FormParam("keywords") String keywords, @FormParam("author") String author, @FormParam("creator") String creator,
-                                 @FormParam("capture") String capt_date, @FormParam("filename") String filename) {
+    public Response modifyImage (@FormParam("id") String id,
+                                 @FormParam("title") String title,
+                                 @FormParam("description") String description,
+                                 @FormParam("keywords") String keywords,
+                                 @FormParam("author") String author,
+                                 @FormParam("creator") String creator,
+                                 @FormParam("capture") String capt_date,
+                                 @FormParam("filename") String filename) {
         try {
             Database db = new Database();
             db.modificaImatge(id, title, description, keywords, creator, capt_date, filename);
+            
+            // FALTA CODI PER CANVIAR EL NOM DE L'ARXIU
 
             return Response.ok().build();
         } catch (Exception e) {
@@ -146,7 +268,7 @@ public class JakartaEE91Resource {
     * POST method to delete an existing image
     * @param id
     * @return
-    */
+    *
     @Path("delete")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -160,7 +282,7 @@ public class JakartaEE91Resource {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
     /**
     * GET method to list images
@@ -328,7 +450,7 @@ public class JakartaEE91Resource {
     * @param fileDetail
     * @param id
     * @return
-    */
+    *
     @Path("uploadImage/")
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -339,13 +461,13 @@ public class JakartaEE91Resource {
         // Lógica para guardar la imagen en disco y registrar la información en la base de datos
         // Retorna la respuesta apropiada
         return Response.ok().build();
-    }
+    }*/
 
     /**
     * GET method to download an image
     * @param id
     * @return Part image que corresponde con el id
-    */
+    *
     @Path("downloadImage/{id}")
     @GET
     @Produces("image/*")
@@ -370,6 +492,6 @@ public class JakartaEE91Resource {
         };
 
         return Response.ok(stream).build();
-    }
+    }*/
     
 }
