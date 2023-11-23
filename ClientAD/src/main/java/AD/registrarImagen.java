@@ -23,6 +23,12 @@ import jakarta.json.JsonReader;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -34,6 +40,11 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.glassfish.jersey.media.multipart.*;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 
 
 /**
@@ -161,7 +172,54 @@ public class registrarImagen extends HttpServlet {
         if (res == 0) {
             try { //Intentem guardar la imatge
                 if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
-                    File directori = new File(Imatge.getPath());
+                    
+                    final Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+                    StreamDataBodyPart filePart = new StreamDataBodyPart("file", fileP.getInputStream());
+                    FormDataMultiPart formDataMultiPart = new FormDataMultiPart();
+                    final FormDataMultiPart multipart = (FormDataMultiPart) formDataMultiPart
+                            .field("title", title, MediaType.TEXT_PLAIN_TYPE)
+                            .field("description", description, MediaType.TEXT_PLAIN_TYPE)
+                            .field("keywords", keywords, MediaType.TEXT_PLAIN_TYPE)
+                            .field("author", author, MediaType.TEXT_PLAIN_TYPE)
+                            .field("creator", author, MediaType.TEXT_PLAIN_TYPE)
+                            .field("capture", cr_date, MediaType.TEXT_PLAIN_TYPE)
+                            .field("filename", file_name, MediaType.TEXT_PLAIN_TYPE)
+                            .bodyPart(filePart);
+                    
+                    String postData = "title=" + imatge.getTitle() +
+                                          "&description=" + imatge.getDescription() +
+                                          "&keywords=" + imatge.getKeywords() +
+                                          "&author=" + imatge.getAuthor() +
+                                          "&creator=" + imatge.getCreator() +
+                                          "&capture=" + imatge.getCaptureDate() +
+                                          "&filename=" + imatge.getFilename();
+
+                    final WebTarget target = client.target("http://localhost:8080/test/resources/jakartaee9/register");
+                    final Response resp = target.request().post(Entity.entity(multipart, multipart.getMediaType()));
+                    int status = resp.getStatus();
+
+                    formDataMultiPart.close();
+                    multipart.close();
+
+                    switch (status) {
+                        case 201:
+                            response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/success?id=PhotoOk"));
+                            break;
+                        case 409:
+                            response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/error?err=imageExists"));
+                            break;
+                        case 406:
+                            response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/error?err=invalidFormat"));
+                            break;
+                        case 500:
+                            response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/error?err=general"));
+                            break;
+                        default:
+                            break;
+                    } 
+                    
+                    
+                    /*File directori = new File(Imatge.getPath());
                     if (!directori.exists()) {
                         try {
                             directori.mkdirs();
@@ -173,7 +231,7 @@ public class registrarImagen extends HttpServlet {
                             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                             rd.forward(request, response);
                         }
-                    }
+                    }*
 
                     Part imagePart = request.getPart("image");
                     File file = new File(Imatge.getPath(), imatge.getFilename());
@@ -221,7 +279,7 @@ public class registrarImagen extends HttpServlet {
                         request.setAttribute("tipus_error", "connexio");
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
-                    }
+                    }*/
                 }
             } catch (Exception e) {
                 request.setAttribute("tipus_error", "registrar");
