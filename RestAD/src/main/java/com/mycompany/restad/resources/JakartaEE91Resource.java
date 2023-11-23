@@ -17,7 +17,16 @@ import DB.Database;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.StreamingOutput;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *
@@ -311,6 +320,56 @@ public class JakartaEE91Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
 
+    }
+    
+    /**
+    * POST method to upload an image
+    * @param fileInputStream
+    * @param fileDetail
+    * @param id
+    * @return
+    */
+    @Path("uploadImage/")
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response uploadImage(@FormDataParam("file") InputStream fileInputStream,
+                                @FormDataParam("file") FormDataContentDisposition fileDetail,
+                                @FormDataParam("id") String id) {
+        // Lógica para guardar la imagen en disco y registrar la información en la base de datos
+        // Retorna la respuesta apropiada
+        return Response.ok().build();
+    }
+
+    /**
+    * GET method to download an image
+    * @param id
+    * @return Part image que corresponde con el id
+    */
+    @Path("downloadImage/{id}")
+    @GET
+    @Produces("image/*")
+    public Response downloadImage(@PathParam("id") String id) {
+        //DUMMY CODE, FALTA IMPLEMENTACIÓ COMPLETA!!!
+
+        // Lógica para recuperar la imagen del disco (reemplaza "ruta/a/tu/imagen.jpg" con la ruta real)
+        final String imagePath = "var/webapp/images/filename.jpg";
+
+        StreamingOutput stream;
+        stream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try (FileInputStream fis = new FileInputStream(imagePath)) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        output.write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+        };
+
+        return Response.ok(stream).build();
     }
     
 }
