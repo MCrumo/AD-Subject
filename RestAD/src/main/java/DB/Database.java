@@ -171,22 +171,28 @@ public class Database {
         return jsonBuilder.build();
     }
     
-    public boolean eliminaImatge (String identificador) throws SQLException {
+    public String eliminaImatge (String identificador) throws SQLException {
         openConnection();
-        
-        String sql = "DELETE FROM PR2.IMAGE WHERE ID = ?";
-        
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, identificador); //Identificador
+        String sql = "SELECT FILENAME FROM PR2.IMAGE WHERE ID = ?";
 
-        int rowsAffected = preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
-        if (rowsAffected == 0) {
-            //No s'ha eliminat cap fila perque no existia el id
-            return false;
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, identificador);
+        ResultSet rs = preparedStatement.executeQuery();
+        String filename;
+        try {
+            filename = rs.getString("FILENAME");
+        } catch (SQLException e) {
+            filename = "";
         }
         
+        sql = "DELETE FROM PR2.IMAGE WHERE ID = ?";
+        
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, identificador); //Identificador
+        preparedStatement.executeUpdate(); // Utilitzem executeUpdate() per DELETE
+        
         closeConnection();
-        return true;
+        return filename;
     }
     
     public JsonArray getImatgesByTitle(String titol){

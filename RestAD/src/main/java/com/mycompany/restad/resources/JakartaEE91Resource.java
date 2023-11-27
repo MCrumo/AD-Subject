@@ -15,10 +15,12 @@ import jakarta.ws.rs.core.Response;
 
 //Añadidos
 import DB.Database;
+import jakarta.activation.MimetypesFileTypeMap;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +39,10 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 @Path("jakartaee9")
 public class JakartaEE91Resource {
     
-    final public static String uploadDir = "/var/webapp/Practica_2/Images/";
+    //final public static String uploadDir = "/var/webapp/Practica_2/images/";
+    //final public static String uploadDir = "../images/";
+    final public static String uploadDir = "/home/nacho/NetBeansProjects/AD-Subject/RestAD/src/main/webapp/images/";
+
     
     @GET
     public Response ping(){
@@ -198,7 +203,31 @@ public class JakartaEE91Resource {
         return true; 
     }
     
-    public static Boolean deleteImage(String file_name) 
+    /**
+    * POST method to delete an existing image
+    * @param id
+    * @return
+    *
+    @Path("delete")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    */
+    public Response deleteImage (@FormParam("id") String id) {
+        try {
+            Database db = new Database();
+            String file_name = db.eliminaImatge(id);
+            if (!"".equals(file_name) && deleteImageDisc(file_name)) {
+                return Response.ok().build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    public static Boolean deleteImageDisc(String file_name) 
     {
         makeDirIfNotExists();
         
@@ -442,6 +471,20 @@ public class JakartaEE91Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
 
+    }
+    
+    @Path("getImage/{filename}")
+    @GET
+    @Produces("image/*")
+    public Response getImage(@PathParam("filename") String filename) {
+        try {
+            File f = new File(uploadDir + filename);
+            if (!f.exists()) return Response.status(Response.Status.FORBIDDEN).build();
+            String mt = new MimetypesFileTypeMap().getContentType(f);
+            return Response.ok(f, mt).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+filename).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
     
     /**
