@@ -46,6 +46,26 @@
         
         <%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");%>
         
+        <%-- Mostrar missatge ok si s'ha eliminat una imatge correctament --%>
+        <%
+            int eliminatOk = 0;
+            String okParam = request.getParameter("ok");
+
+            if (okParam != null) {
+                try {
+                    eliminatOk = Integer.parseInt(okParam);
+                } catch (NumberFormatException e) {
+                    // Handle the case where the parameter is not a valid integer
+                    eliminatOk = 0;
+                }
+            }
+        %>
+        
+        <% if (eliminatOk == 1) { %>
+                <br>
+                <p style="color: green;">Imatge eliminada correctament!</p>
+                <br>
+        <% } %>
         
         <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
         <p><a href="list" class="enllaçMenu">Llistar Imatges</a></p>  

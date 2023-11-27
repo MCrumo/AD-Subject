@@ -23,9 +23,12 @@ páginas de listado o búsqueda, que se explican más adelante. -->
     <%@ page import="java.net.HttpURLConnection"%>
     <%@ page import="java.net.URL"%>
     <%@ page import="java.util.List" %>
+    <%@ page import="Aux.ConnectionUtil" %>
 
     
     <%
+        String addr = ConnectionUtil.getServerAddr();
+        
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
         String username = "";
@@ -58,7 +61,7 @@ páginas de listado o búsqueda, que se explican más adelante. -->
             try {
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://localhost:8080/RestAD/resources/jakartaee9/searchID/" + id);
+                    URL url = new URL("http://" + addr + "/RestAD/resources/jakartaee9/searchID/" + id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
 
@@ -197,7 +200,7 @@ páginas de listado o búsqueda, que se explican más adelante. -->
                 <p>
                     <% 
                        out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
-                       out.println("<img src='images/"+imatge.getFilename()+" 'style='max-width:300px; max-height: 300px'></a>"); %>
+                       out.println("<img img src='http://"+ addr + "/RestAD/images/" + imatge.getFilename()+"' style='max-width:300px; max-height: 300px'></a>"); %>
                 </p>
                 
                 <input type="hidden" name="id" value="<%= imatge.getId() %>">

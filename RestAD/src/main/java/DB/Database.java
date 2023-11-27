@@ -179,9 +179,11 @@ public class Database {
         preparedStatement.setString(1, identificador);
         ResultSet rs = preparedStatement.executeQuery();
         String filename;
-        try {
-            filename = rs.getString("FILENAME");
-        } catch (SQLException e) {
+        
+        if (rs.next()) {
+                filename = rs.getString("FILENAME");
+        } else {
+            // No se encontraron filas con el ID proporcionado
             filename = "";
         }
         
@@ -194,6 +196,45 @@ public class Database {
         closeConnection();
         return filename;
     }
+    
+    /*public String getFilenameById (String identificador) throws SQLException {
+        openConnection();
+        String sql = "SELECT FILENAME FROM PR2.IMAGE WHERE ID = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, identificador);
+        ResultSet rs = preparedStatement.executeQuery();
+        
+        String filename;
+        try {
+            filename = rs.getString("FILENAME");
+        } catch (SQLException e) {
+            filename = "";
+        }
+        
+        closeConnection();
+        return filename;
+    }*/
+    public String getFilenameById(String identificador) throws SQLException {
+        openConnection();
+        String sql = "SELECT FILENAME FROM PR2.IMAGE WHERE ID = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, identificador);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("FILENAME");
+                } else {
+                    // No se encontraron filas con el ID proporcionado
+                    return "";
+                }
+            }
+        } finally {
+            closeConnection();
+        }
+    }
+
+    
     
     public JsonArray getImatgesByTitle(String titol){
         openConnection();

@@ -49,7 +49,7 @@ public class eliminarImagen extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    private boolean elimina(String filename) {
+    /*private boolean elimina(String filename) {
 
         // Concatenem el path general i el nom de l'arxiu
         String fullPath = Imatge.getPath() + File.separator + filename;
@@ -70,7 +70,7 @@ public class eliminarImagen extends HttpServlet {
         }
         
         return true;
-    }
+    }*/
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -124,7 +124,7 @@ public class eliminarImagen extends HttpServlet {
                         try {
 
                             //CONNEXIO GET IMATGE AMB ID
-                            URL url = new URL("http://"+ addr +"RestAD/resources/jakartaee9/delete/");
+                            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/delete/");
                             connection = (HttpURLConnection) url.openConnection();
                             connection.setRequestMethod("POST");
 
@@ -141,17 +141,20 @@ public class eliminarImagen extends HttpServlet {
                             connection.disconnect();
                             
                             if (responseCode == HttpURLConnection.HTTP_OK) {
-                                if (elimina(imatge.getFilename())) {
-                                    request.setAttribute("ok", true);
-                                    RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
-                                    dispatcher.forward(request, response);
-                                } else {
-                                    request.setAttribute("tipus_error", "eliminar");
-                                    request.setAttribute("msg_error", "No s'ha pogut eliminar la imatge de disc, torna-ho a intentar més tard");
-                                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                                    rd.forward(request, response);
-                                }
+                                /*request.setAttribute("ok", 1);
+                                RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
+                                dispatcher.forward(request, response);*/
+                                
+                                /*request.setAttribute("ok", 1);
+                                response.setStatus(HttpServletResponse.SC_FOUND);
+                                response.setHeader("Location", "menu.jsp");
+                                response.sendRedirect("menu.jsp");*/
+                                
+                                request.setAttribute("ok", 1);
+                                String encodedURL = response.encodeRedirectURL("menu.jsp?ok=1");
+                                response.sendRedirect(encodedURL);
                             } else {
+                                System.out.println("resp: "+responseCode);
                                 request.setAttribute("tipus_error", "eliminar");
                                 request.setAttribute("msg_error", "No s'ha pogut eliminar la imatge de la base de dades, torna-ho a intentar més tard");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");

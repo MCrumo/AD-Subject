@@ -24,6 +24,7 @@
     <%@ page import="Aux.Imatge"%>
     <%@ page import="java.net.HttpURLConnection"%>
     <%@ page import="java.net.URL"%>
+    <%@ page import="Aux.ConnectionUtil"%>
 
 
     
@@ -77,6 +78,8 @@
             </form>     -->
         
             <%
+                String addr = ConnectionUtil.getServerAddr();
+                
                 List<Imatge> imatges = (List<Imatge>) request.getAttribute("setImatges");
                 Integer estatBusqueda = (Integer) request.getAttribute("busquedaBuida");
                 if (estatBusqueda != null && estatBusqueda == 1) out.println("<h2>Ho sentim, no hem trobat cap imatge</h2>");
@@ -127,7 +130,7 @@
                         out.println("<td>"+i.getStorageDate()+"</td>");
                         out.println("<td>"+i.getCaptureDate()+"</td>");
                         out.println("<td>"+i.getFilename()+"</td>");
-                        out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='images/"+i.getFilename()+"'width='75' height='50'></a></td>");                        
+                        out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='http://"+ addr + "/RestAD/images/" + i.getFilename()+"' width='75' height='50'></a></td>");                        
                         if (username.equals(i.getCreator())) {
                             out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
                         }

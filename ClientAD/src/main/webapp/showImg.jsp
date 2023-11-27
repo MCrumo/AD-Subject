@@ -14,11 +14,11 @@
 <%@ page import="Aux.ConnectionUtil" %>
 <%@ page import="java.net.HttpURLConnection"%>
 <%@ page import="java.net.URL"%>
+<%@ page import="Aux.ConnectionUtil"%>
 
 <!DOCTYPE html>
 
-<%
-    
+<%  
     String addr = ConnectionUtil.getServerAddr();
     
     // Obté la HttpSession
@@ -108,9 +108,14 @@
             
             <%
                 out.println("<h2>Imatge: "+imatge.getFilename()+"</h2>"); 
-                out.println("<img src='images/"+imatge.getFilename()+"' style='max-width: 650px; max-height: 425px;'>");      
+                out.println("<img src='http://"+ addr + "/RestAD/images/" + imatge.getFilename() + "' style='max-width: 650px; max-height: 425px;'>");      
             %>
             <br>
+            <% out.println("<a href='http://" + addr + "/RestAD/resources/jakartaee9/getImage/" + imatge.getFilename() + "' target='_blank'>"
+                            + "<button class='boto'>Download</button>"
+                         + "</a>"); %>
+
+            <br><br>
             <button onclick="goBack()" class="boto">Enrere</button>
             <br>
             <a href="menu.jsp" class='boto'>Menú</a>

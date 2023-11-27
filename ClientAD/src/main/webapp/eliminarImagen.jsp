@@ -160,7 +160,7 @@ eliminar. -->
                     <% if (imatge != null) {
                               out.println("<td colspan='9' style='text-align:center;'>"); 
                               out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
-                              out.println("<img src='images/"+imatge.getFilename()+" 'style='max-width:300px; max-height: 300px'  ></a></td>");
+                              out.println("<img img src='http://"+ addr + "/RestAD/images/" + imatge.getFilename()+"'style='max-width:300px; max-height: 300px'  ></a></td>");
                     } %>
                 </tr>   
                 <tr>

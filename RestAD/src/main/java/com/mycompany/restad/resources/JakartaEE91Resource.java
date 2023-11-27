@@ -207,23 +207,25 @@ public class JakartaEE91Resource {
     * POST method to delete an existing image
     * @param id
     * @return
-    *
+    */
     @Path("delete")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    */
+    
     public Response deleteImage (@FormParam("id") String id) {
         try {
             Database db = new Database();
             String file_name = db.eliminaImatge(id);
+            System.out.println("filename: "+file_name);
             if (!"".equals(file_name) && deleteImageDisc(file_name)) {
                 return Response.ok().build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
     
@@ -282,9 +284,23 @@ public class JakartaEE91Resource {
                                  @FormParam("filename") String filename) {
         try {
             Database db = new Database();
+            String oldFilename = db.getFilenameById(id);
             db.modificaImatge(id, title, description, keywords, creator, capt_date, filename);
             
-            // FALTA CODI PER CANVIAR EL NOM DE L'ARXIU
+            String oldFilePath = uploadDir + oldFilename; System.out.println("old: " + oldFilePath);
+            String newFilePath = uploadDir + filename; System.out.println("new: " + newFilePath);
+
+            File oldFile = new File(oldFilePath);
+            File newFile = new File(newFilePath);
+
+            if (oldFile.exists()) {
+                boolean success = oldFile.renameTo(newFile);
+                System.out.println("borrada: " + success);
+                if (!success) {
+                    // Maneja el caso en el que no se pudo cambiar el nombre del archivo
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                }
+            }
 
             return Response.ok().build();
         } catch (Exception e) {

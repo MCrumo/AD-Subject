@@ -55,22 +55,23 @@ public class modificarImagen extends HttpServlet {
         String extensio = filename.substring(filename.lastIndexOf('.') + 1); //obte l'extensio de l'arxiu
         String filenameMod = imatge.getId() + "_" + titleMod + "." + extensio;
         
-        String pathAntic = Imatge.getPath() + "/" + filename; System.out.println(pathAntic);
+        /*String pathAntic = Imatge.getPath() + "/" + filename; System.out.println(pathAntic);
         String pathNou = Imatge.getPath() + "/" + filenameMod; System.out.println(pathNou);
         
         File arxiuAntic = new File(pathAntic);
         File arxiuNou = new File(pathNou);
 
         // Renombrar l'arxiu
-        if (arxiuAntic.renameTo(arxiuNou)) {
+        if (arxiuAntic.renameTo(arxiuNou)) {*/
             // Actualizar el nombre en la instancia de Imatge
             imatge.setFilename(filenameMod);
             // Actualizar el título en la instancia de Imatge
             imatge.setTitle(titleMod);
-            return true;
+            /*return true;
         } else {
             return false;
-        }
+        }*/
+        return true;
     }
     
     //Verifica que la data no és més enllà de la data d'avui
