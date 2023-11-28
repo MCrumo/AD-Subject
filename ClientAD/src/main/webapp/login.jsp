@@ -24,7 +24,7 @@
                 <p>
                     <input type="password" name="password" placeholder="Contrasenya" required>
                 </p>
-                <input type="submit" value="Inicia Sesió" class="boto">
+                <input type="submit" value="Inicia Sessió" class="boto">
             </form>  
             <br><br>
             <% 
