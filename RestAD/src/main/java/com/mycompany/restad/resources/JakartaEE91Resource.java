@@ -308,27 +308,7 @@ public class JakartaEE91Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-    * POST method to delete an existing image
-    * @param id
-    * @return
-    *
-    @Path("delete")
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteImage (@FormParam("id") String id) {
-        try {
-            Database db = new Database();
-            db.eliminaImatge(id);
-
-            return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }*/
-
+    
     /**
     * GET method to list images
     * @return
@@ -502,55 +482,4 @@ public class JakartaEE91Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    /**
-    * POST method to upload an image
-    * @param fileInputStream
-    * @param fileDetail
-    * @param id
-    * @return
-    *
-    @Path("uploadImage/")
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadImage(@FormDataParam("file") InputStream fileInputStream,
-                                @FormDataParam("file") FormDataContentDisposition fileDetail,
-                                @FormDataParam("id") String id) {
-        // Lógica para guardar la imagen en disco y registrar la información en la base de datos
-        // Retorna la respuesta apropiada
-        return Response.ok().build();
-    }*/
-
-    /**
-    * GET method to download an image
-    * @param id
-    * @return Part image que corresponde con el id
-    *
-    @Path("downloadImage/{id}")
-    @GET
-    @Produces("image/*")
-    public Response downloadImage(@PathParam("id") String id) {
-        //DUMMY CODE, FALTA IMPLEMENTACIÓ COMPLETA!!!
-
-        // Lógica para recuperar la imagen del disco (reemplaza "ruta/a/tu/imagen.jpg" con la ruta real)
-        final String imagePath = "var/webapp/images/filename.jpg";
-
-        StreamingOutput stream;
-        stream = new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (FileInputStream fis = new FileInputStream(imagePath)) {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = fis.read(buffer)) != -1) {
-                        output.write(buffer, 0, bytesRead);
-                    }
-                }
-            }
-        };
-
-        return Response.ok(stream).build();
-    }*/
-    
 }
