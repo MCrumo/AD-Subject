@@ -44,7 +44,7 @@
         <div align="center">
         <h1>Menú principal</h1>
         
-        <%   out.println("<h3>Benvingut/a " + sessio.getAttribute("username") + "!</h3>");%>
+        <%   out.println("<h3>Benvingut/da " + sessio.getAttribute("username") + "!</h3>");%>
         
         <%-- Mostrar missatge ok si s'ha eliminat una imatge correctament --%>
         <%
@@ -70,7 +70,8 @@
         <p><a href="registrarImagen.jsp" class="enllaçMenu">Registrar Imatge</a></p>
         <p><a href="list" class="enllaçMenu">Llistar Imatges</a></p>  
         <p><a href="buscarImagen.jsp" class="enllaçMenu">Buscar Imatges</a></p>
-        
+        <br>
+        <p><a href="listOtherGroup" class="enllaçMenu">Llistar Imatges (Rest altre grup)</a></p>  
         <br>    
         <form action="logout.jsp" method = "POST">
             <button type="submit" class="boto"> Tancar Sessió </button>

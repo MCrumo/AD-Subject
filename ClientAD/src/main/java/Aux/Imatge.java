@@ -68,7 +68,9 @@ public class Imatge {
         this.keywords = reemplasaEspais(keywords);
         this.author = author;
         this.creator = creator;
-        this.captureDate = validaFormatStringData(captureDate);
+        String aux = null;
+        if (captureDate != null) aux  = validaFormatStringData(captureDate);
+        this.captureDate = aux;
         this.filename = filename;
     }
     
