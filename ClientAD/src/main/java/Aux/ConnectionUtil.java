@@ -9,7 +9,7 @@ package Aux;
  * @author alumne
  */
 public class ConnectionUtil {
-    private static String address = "localhost";
+    private static String address = "192.168.151.239";
     private static String port = "8080";
   
     public static String getServerAddr() {
