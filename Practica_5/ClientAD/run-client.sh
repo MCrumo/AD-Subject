@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+systemctl start tomcat.service
+
 cd ./ClientAD
 
 mvn clean install
