@@ -28,28 +28,28 @@ DELIMITER $$
 -- Procedimientos
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteImage` (IN `i_id` INT)   BEGIN
-    SELECT filename FROM PR2.IMAGE WHERE ID = i_id;
-    DELETE FROM PR2.IMAGE WHERE ID = i_id;
+    SELECT filename FROM pr2.image WHERE ID = i_id;
+    DELETE FROM pr2.image WHERE ID = i_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllImages` ()   BEGIN
-	SELECT * FROM PR2.IMAGE ORDER BY STORAGE_DATE DESC;
+	SELECT * FROM pr2.image ORDER BY STORAGE_DATE DESC;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImageById` (IN `i_id` INT)   BEGIN
-	SELECT * FROM PR2.IMAGE WHERE ID = i_id;
+	SELECT * FROM pr2.image WHERE ID = i_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImageFilename` (IN `i_id` INT)   BEGIN
-	SELECT FILENAME FROM PR2.IMAGE WHERE ID = i_id;
+	SELECT FILENAME FROM pr2.image WHERE ID = i_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImagesByAuthor` (IN `i_author` VARCHAR(256))   BEGIN
-	SELECT * FROM PR2.image WHERE AUTHOR LIKE CONCAT('%', i_author, '%') ORDER BY STORAGE_DATE DESC;
+	SELECT * FROM pr2.image WHERE AUTHOR LIKE CONCAT('%', i_author, '%') ORDER BY STORAGE_DATE DESC;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImagesByCoincidence` (IN `i_coincidence` VARCHAR(256))   BEGIN
-	SELECT * FROM PR2.image WHERE 
+	SELECT * FROM pr2.image WHERE 
     TITLE LIKE CONCAT('%', i_coincidence, '%') OR 
     DESCRIPTION LIKE CONCAT('%', i_coincidence, '%') OR 
     AUTHOR LIKE CONCAT('%', i_coincidence, '%') OR 
@@ -59,38 +59,38 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getImagesByCoincidence` (IN `i_coin
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImagesByCreationDate` (IN `i_creation_date` VARCHAR(10))   BEGIN
-	SELECT * FROM PR2.image WHERE CAPTURE_DATE LIKE i_creation_date ORDER BY STORAGE_DATE DESC;
+	SELECT * FROM pr2.image WHERE CAPTURE_DATE LIKE i_creation_date ORDER BY STORAGE_DATE DESC;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImagesByKeyword` (IN `i_keyword` VARCHAR(256))   BEGIN
-	SELECT * FROM PR2.image WHERE KEYWORDS LIKE CONCAT('%', i_keyword, '%') ORDER BY STORAGE_DATE DESC;
+	SELECT * FROM pr2.image WHERE KEYWORDS LIKE CONCAT('%', i_keyword, '%') ORDER BY STORAGE_DATE DESC;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getImagesByTitle` (IN `i_title` VARCHAR(256))   BEGIN
-	SELECT * FROM PR2.image WHERE TITLE LIKE CONCAT('%', i_title, '%') ORDER BY STORAGE_DATE DESC;
+	SELECT * FROM pr2.image WHERE TITLE LIKE CONCAT('%', i_title, '%') ORDER BY STORAGE_DATE DESC;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getUserById` (IN `u_id` VARCHAR(256))   BEGIN
-	SELECT * FROM PR2.usuarios WHERE id_usuario = u_id;
+	SELECT * FROM pr2.usuarios WHERE id_usuario = u_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertImage` (IN `i_title` VARCHAR(256), IN `i_description` VARCHAR(1024), IN `i_keywords` VARCHAR(256), IN `i_author` VARCHAR(256), IN `i_creator` VARCHAR(256), IN `i_capture_date` VARCHAR(10), IN `i_storage_date` VARCHAR(10), IN `i_filename` VARCHAR(512))   BEGIN
-    INSERT INTO PR2.IMAGE (TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME)
+    INSERT INTO pr2.image (TITLE, DESCRIPTION, KEYWORDS, AUTHOR, CREATOR, CAPTURE_DATE, STORAGE_DATE, FILENAME)
     VALUES (i_title, i_description, i_keywords, i_author, i_creator, i_capture_date, i_storage_date, i_filename);
     SELECT LAST_INSERT_ID();
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertUser` (IN `id_usr` VARCHAR(256), IN `password` VARCHAR(256))   BEGIN
-    INSERT INTO PR2.USUARIOS (ID_USUARIO, PASSWORD)
+    INSERT INTO pr2.usuarios (ID_USUARIO, PASSWORD)
     VALUES (id_usr, password);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateFilename` (IN `i_id` INT, IN `i_filename` VARCHAR(512))   BEGIN
-	UPDATE PR2.IMAGE SET filename = i_filename WHERE ID = i_id;
+	UPDATE pr2.image SET filename = i_filename WHERE ID = i_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateImage` (IN `i_id` INT, IN `i_title` VARCHAR(256), IN `i_description` VARCHAR(1024), IN `i_keywords` VARCHAR(256), IN `i_author` VARCHAR(256), IN `i_capture_date` VARCHAR(10), IN `i_filename` VARCHAR(256))   BEGIN
-	UPDATE PR2.IMAGE SET TITLE = i_title, DESCRIPTION = i_description, KEYWORDS = i_keywords, AUTHOR = i_author, CAPTURE_DATE = i_capture_date, FILENAME = i_filename WHERE ID = i_id;
+	UPDATE pr2.image SET TITLE = i_title, DESCRIPTION = i_description, KEYWORDS = i_keywords, AUTHOR = i_author, CAPTURE_DATE = i_capture_date, FILENAME = i_filename WHERE ID = i_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `validUser` (IN `u_username` VARCHAR(256), IN `u_password` VARCHAR(256), OUT `u_exists` INT)   BEGIN
@@ -98,7 +98,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `validUser` (IN `u_username` VARCHAR
 
     -- Buscar el usuario en la tabla
     SELECT COUNT(*) INTO v_count
-    FROM PR2.USUARIOS
+    FROM pr2.usuarios
     WHERE ID_USUARIO = u_username AND PASSWORD = u_password;
 
     -- Asignar el resultado al parámetro de salida
@@ -135,7 +135,7 @@ INSERT INTO `image` (`id`, `title`, `description`, `keywords`, `author`, `creato
 (3, 'gruñón', 'mi gato es muy gruñón', 'gato,gruñón,precios,bonito', 'ofelia', 'ofelia', '2023-12-10', '2023-12-15', '3_gruñón.jpg'),
 (4, 'persa', 'us presento a un gat persa', 'gat,maco,precios,persa', 'pepito', 'pepito', '2023-12-11', '2023-12-15', '4_persa.jpg'),
 (5, 'suplicant', 'el gat de la meva avia suplicant', 'gat,maco,bonic,suplicant', 'avia', 'pepito', '2023-12-10', '2023-12-15', '5_suplicant.gif'),
-(6, 'caiguda', 's\'ha desequilibrat!', 'gat,gatet,bonic,equilibri', 'artur', 'ofelia', '2023-12-11', '2023-12-15', '6_caiguda.gif');
+(6, 'caiguda', 'sha desequilibrat!', 'gat,gatet,bonic,equilibri', 'artur', 'ofelia', '2023-12-11', '2023-12-15', '6_caiguda.gif');
 
 -- --------------------------------------------------------
 

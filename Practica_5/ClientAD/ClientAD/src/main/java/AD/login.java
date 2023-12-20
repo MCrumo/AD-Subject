@@ -41,7 +41,8 @@ public class login extends HttpServlet {
         String addr = ConnectionUtil.getServerAddr();
         
         try {
-            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/login");
+            //URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/login");
+            URL url = new URL("http://"+ addr + "/login/" + user "/" + password);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
 
