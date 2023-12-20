@@ -61,6 +61,12 @@
             <version>0.11.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version> <!-- Usa la versión más reciente -->
+        </dependency>
+
     </dependencies>
     
     <build>
