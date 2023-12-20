@@ -15,6 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpSession;
 import java.io.OutputStream;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -36,30 +39,62 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
+        String user = request.getParameter("username");
         String password = request.getParameter("password");
         String addr = ConnectionUtil.getServerAddr();
         
         try {
             //URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/login");
-            URL url = new URL("http://"+ addr + "/login/" + user "/" + password);
+            URL url = new URL("http://" + addr + "/login/" + user + "/" + password);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("GET");
 
-            // Estem a post, permetem la sortida de dades
-            connection.setDoOutput(true);
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Leer el JSON de la respuesta del backend
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder responseStringBuilder = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        responseStringBuilder.append(line);
+                    }
 
-            String postData = "username=" + username + "&password=" + password;
+                    // Parsear el JSON
+                    JSONObject jsonResponse = new JSONObject(responseStringBuilder.toString());
+                    
+                    // Obtener el id y el token del JSON
+                    String id = jsonResponse.getJSONObject("data").getString("id");
+                    String token = jsonResponse.getJSONObject("data").getString("token");
+
+                    // Almacenar el id y el token en la sesión del usuario
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("username", id); // o puedes usar "username" según lo que necesites
+                    session.setAttribute("tokenJWT", token);
+
+                    response.sendRedirect("menu.jsp");
+                }
+            } else {
+                request.setAttribute("tipus_error", "login");
+                request.setAttribute("msg_error", "El nom d'usuari o la contrasenya son incorrectes.");
+                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                rd.forward(request, response);
+            }
+
+            // Estem a GET, permetem la sortida de dades
+            //connection.setDoOutput(true);
+
+            /*String postData = "user=" + username + "&password=" + password;
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = postData.getBytes("utf-8");
                 os.write(input, 0, input.length);
-            }
+            }*
 
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
 
                 HttpSession sessio = request.getSession(true);
                 sessio.setAttribute("username", username);
+                sessio.setAttribute("tokenJWT", username);
 
                 response.sendRedirect("menu.jsp");
             } else {
@@ -69,7 +104,7 @@ public class login extends HttpServlet {
                 rd.forward(request, response);
             }
             
-            connection.disconnect();
+            connection.disconnect();*/
         } catch (Exception e) {
             request.setAttribute("tipus_error", "connexio-login");
             RequestDispatcher rd = request.getRequestDispatcher("error.jsp");

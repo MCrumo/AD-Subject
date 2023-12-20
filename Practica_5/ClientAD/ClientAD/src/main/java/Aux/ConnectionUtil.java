@@ -9,12 +9,12 @@ package Aux;
  * @author alumne
  */
 public class ConnectionUtil {
-    private static String address = "localhost";
-    private static String port = "8080";
+    private static String address = "ad-node-container";
+    private static String port = "8082";
   
     public static String getServerAddr() {
-        //String connection = address + ":" + port;
-        String connection = "ad-node-container";
+        String connection = address + ":" + port;
+        //String connection = "ad-node-container";
         return connection;
     }
     

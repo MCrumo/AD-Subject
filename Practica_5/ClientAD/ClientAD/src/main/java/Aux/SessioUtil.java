@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import java.io.OutputStream;
 
+
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -28,13 +29,41 @@ import java.util.logging.Logger;
 public class SessioUtil {
     public static int validaSessio(HttpSession sessio) {
         // Verifica si la HttpSession no es nula i si existeix un atribut "username"
-        if (sessio != null && sessio.getAttribute("username") != null) {
+        if (sessio != null && sessio.getAttribute("tokenJWT") != null) {            
             String addr = ConnectionUtil.getServerAddr();
-            // Obté el nom d'usuari de la sessió
-            String username = (String) sessio.getAttribute("username");
-            
+            String token = (String) sessio.getAttribute("tokenJWT");
+
+            try {
+                URL url = new URL("http://" + addr + "/verify-token");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+
+                // Enviar el token al backend
+                try (OutputStream os = connection.getOutputStream()) {
+                    String jsonInputString = "{\"token\": \"" + token + "\"}";
+                    byte[] input = jsonInputString.getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = connection.getResponseCode();
+                System.out.print(responseCode);
+                if(responseCode != HttpURLConnection.HTTP_OK) return -1;
+            } catch (Exception e) {
+                // Manejar excepciones según tus necesidades
+                e.printStackTrace();
+            }
+
+
+
+
+
+
+
+
             // Crida al mètode userExists para verificar si nom d'usuari existeix en la base de dades            
-            URL url;
+            /*URL url;
             HttpURLConnection connection = null;
             try {
                 url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/userExists");
@@ -65,7 +94,7 @@ public class SessioUtil {
                 if (connection != null) connection.disconnect();
                 Logger.getLogger(SessioUtil.class.getName()).log(Level.SEVERE, null, ex);
                 return -1;
-            }
+            }*/
         } else { //Si no hi ha una sessió Http en peu, envia a la pàgina d'error pertinent
            return -2;
        }

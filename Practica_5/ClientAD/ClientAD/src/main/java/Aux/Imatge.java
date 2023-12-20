@@ -74,15 +74,15 @@ public class Imatge {
     
     public static Imatge jsonToImatge(JsonObject jsonObject) {
         Imatge imatge = new Imatge();
-
-        imatge.setId(jsonObject.getString("id", ""));
+        System.out.println("id: " + jsonObject.getInt("id", -1));
+        imatge.setId(jsonObject.getInt("id", -1) + "");
         imatge.setTitle(jsonObject.getString("title", ""));
         imatge.setDescription(jsonObject.getString("description", ""));
         imatge.setKeywords(jsonObject.getString("keywords", ""));
         imatge.setAuthor(jsonObject.getString("author", ""));
         imatge.setCreator(jsonObject.getString("creator", ""));
-        imatge.setCaptureDate(jsonObject.getString("captureDate", null));
-        imatge.setStorageDate(jsonObject.getString("storageDate", null));
+        imatge.setCaptureDate(jsonObject.getString("capture_date", null));
+        imatge.setStorageDate(jsonObject.getString("storage_date", null));
         imatge.setFilename(jsonObject.getString("filename", ""));
 
         return imatge;
