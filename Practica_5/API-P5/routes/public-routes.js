@@ -89,7 +89,7 @@ publicRouter.get('/login/:user/:password',
 /**
  * Verifica el token de sessió
  * 
- * @route GET /verify-token
+ * @route POST /verify-token
  * @param {string} token Bearer token
  * @returns {SuccessResponse} 200 - Login correcte
  * @returns {ErrorResponse} 400 - [-10] Error intern del servidor
@@ -106,9 +106,9 @@ publicRouter.post('/verify-token', (req, res) => {
                 return res.status(400).send({ result: -11, data: { message: 'Token inválido' } });
             }
             req.userData = decoded;
-
+            console.log(decoded);
             // Recull les dades de l'usuari
-            dbConnection.query('SELECT id_usuario FROM usuarios WHERE id_usuario=?', [decoded.id], (err, results, fields) => {
+            dbConnection.query('SELECT id_usuario FROM pr2.usuarios WHERE id_usuario=?', [decoded.id], (err, results, fields) => {
                 if (err) {
                     console.error('Error de la Base de Dades:', err);
                     return res.status(500).send({ result: -20, data: { message: 'Error de la Base de Dades' } });
@@ -117,11 +117,11 @@ publicRouter.post('/verify-token', (req, res) => {
                 if (results[0].length === 0) {
                     return res.status(404).send({ result: -12, data: { message: 'User unknown' } });
                 } else {
-                    console.log({result: 0, data:results[0][0]})
+                    console.log({result: 0, data:results[0]?.id_usuario, token})
                     return res.status(200).send({
                         result: 0,
                         data: {
-                            id: results[0][0].id_usuario,
+                            id: results[0]?.id_usuario,
                             token  
                         }  
                     });

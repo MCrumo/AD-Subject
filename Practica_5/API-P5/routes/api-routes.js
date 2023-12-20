@@ -246,9 +246,11 @@ apiRouter.get('/list', (req, res) => {
                     console.error('Error de la Base de Dades:', err);
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
                 }
-
+                const data = { result: 0, data: result[0] };
+                console.log(data);
                 if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'No hi ha imatges a la base de dades' } });
-                else return res.status(200).json({ result: 0, data: result[0] });
+                else return res.status(200).json(data);
+                //else return res.status(200).json({ result: 0, data: result[0] });
             });
         } catch (error) {
             console.error('Error intern del servidor:', error);
