@@ -1,0 +1,67 @@
+services:
+
+  database:
+    container_name: ad-database-container
+    command: '--default-authentication-plugin=mysql_native_password'
+    image: mysql:8.0.35
+    ports:
+      - 3307:3306
+    expose:
+      - 3306
+    volumes:
+      - ./setupDB.sql:/docker-entrypoint-initdb.d/setupDB.sql
+      - ${PWD}/mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'pr2'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'ji71FoLC04!'
+      MYSQL_ROOT_PASSWORD: 'ji71FoLC04!'
+      MYSQL_TAGS: prod
+      MYSQL_NAME: database
+    restart: unless-stopped
+    networks:
+      - internalnet
+
+  backend:
+    image: backend:1
+    container_name: ad-node-container
+    build:
+      context: ./API-P5
+      dockerfile: dockerfile
+    ports:
+      - 8082:8082
+    expose:
+      - 8082
+    depends_on:
+      - database
+    environment:
+      DB_HOST: 'database'
+      DB_USER: 'user'
+      DB_PASSWORD: 'ji71FoLC04!'
+      DB_NAME: 'pr2'
+      DB_PORT: 3306
+      DB_CONNECTION_LIMIT: 10
+      SERVER_PORT: 8082
+      SERVICE_TAGS: prod
+      SERVICE_NAME: nodeappservice
+    restart: unless-stopped
+    networks:
+      - internalnet
+      
+  frontend:
+    image: frontend:1
+    container_name: ad-tomcat-container
+    build:
+      context: ./ClientAD
+      dockerfile: dockerfile
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - internalnet
+
+networks:
+  internalnet:
+    driver: bridge
