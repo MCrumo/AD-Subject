@@ -1,13 +1,3 @@
-#FROM tomcat:latest
-#RUN apt-get update && apt-get install -y maven
-#COPY ./run-client-docker.sh /usr/local/bin/run-client-docker.sh
-#COPY ./ClientAD /usr/local/tomcat/webapps/ClientAD  
-#WORKDIR /usr/local/bin
-#RUN chmod +x run-client-docker.sh
-#COPY ./ClientAD/target/ClientAD-1.0.war /usr/local/tomcat/webapps/
-#EXPOSE 8080
-#CMD ["sh", "-c", "run-client-docker.sh"]
-
 FROM tomcat:latest
 COPY ./ClientAD /usr/local/tomcat/webapps/ClientAD
 COPY ./ClientAD/target/ClientAD-1.0.war /usr/local/tomcat/webapps/
