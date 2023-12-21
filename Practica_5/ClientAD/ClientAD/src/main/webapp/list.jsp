@@ -72,7 +72,7 @@
             </thread>
         <%  
             String addr = ConnectionUtil.getServerAddr();
-            
+            //String jwtToken = (String) sessio.getAttribute("tokenJWT");
             List<Imatge> setImatges =  (List<Imatge>) request.getAttribute("setImatges");
             out.println("<tbody>");
             if (setImatges != null && !setImatges.isEmpty()) {
@@ -89,7 +89,7 @@
                     out.println("<td>"+i.getStorageDate()+"</td>");
                     out.println("<td>"+i.getCaptureDate()+"</td>");
                     out.println("<td>"+i.getFilename()+"</td>");
-                    out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='http://"+ addr + "/RestAD/images/" + i.getFilename()+"' width='75' height='50'></a></td>");
+                    out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='http://"/*+ addr + */ + "localhost:8082" + "/images/" + i.getFilename()+"' width='75' height='50'></a></td>");
                     if (username.equals(i.getCreator())) {
                         out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
                     }
@@ -98,10 +98,9 @@
             }
             out.println("</tbody>");
             out.println("</table>");
+                    
         %>
-        
-        </table>
-        
+
         <br>
         <a href="menu.jsp"class="boto">Menú</a>
         </div>

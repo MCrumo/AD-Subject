@@ -80,26 +80,12 @@ public class list extends HttpServlet {
                             }
 
 
-                            System.out.println(jsonImatges);
+                            System.out.println("Dades de les imatges rebudes correctament del backend.");
                             // Para que la JSP lo utilice
                             request.setAttribute("setImatges", setImatges);
                             // Redirige al JSP
                             request.getRequestDispatcher("list.jsp").forward(request, response);
                         }
-                        //--------
-                        
-                        /*try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                            JsonArray jsonImatges = jsonReader.readArray();
-                            for (JsonValue jsonValue : jsonImatges) {
-                                JsonObject jsonImatge = (JsonObject) jsonValue;
-                                Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                setImatges.add(imatge);
-                            }
-                            // Para que la JSP lo utilice
-                            request.setAttribute("setImatges", setImatges);
-                            // Redirige al JSP
-                            request.getRequestDispatcher("list.jsp").forward(request, response);
-                        }*/
                     } else {
                         request.setAttribute("tipus_error", "connexio");
                         request.setAttribute("msg_error", "lololololololol");

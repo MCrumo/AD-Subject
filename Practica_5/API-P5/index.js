@@ -41,14 +41,14 @@ const { verificarToken } = require('./middleware/jwt-check');
 
 // APLICAR RUTES I JWT
 app.use('/', publicRouter);
+// Middleware para servir arxius estàtics des de la carpeta de images
+const imagesFolder = path.join(__dirname, 'images');
+app.use('/images', express.static(imagesFolder));
 
 // Apliquem middleware JWT a les rutes per sota d'aquest punt
 app.use(verificarToken);
 app.use('/api', apiRouter);
 
-// Middleware para servir arxius estàtics des de la carpeta de images
-const imagesFolder = path.join(__dirname, 'images');
-app.use('/images', express.static(imagesFolder));
 
 
 app.listen(port, () => {

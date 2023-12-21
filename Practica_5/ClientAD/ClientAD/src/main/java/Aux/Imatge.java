@@ -74,7 +74,7 @@ public class Imatge {
     
     public static Imatge jsonToImatge(JsonObject jsonObject) {
         Imatge imatge = new Imatge();
-        System.out.println("id: " + jsonObject.getInt("id", -1));
+        System.out.println("Creat objecte Imatge amb id: " + jsonObject.getInt("id", -1));
         imatge.setId(jsonObject.getInt("id", -1) + "");
         imatge.setTitle(jsonObject.getString("title", ""));
         imatge.setDescription(jsonObject.getString("description", ""));
