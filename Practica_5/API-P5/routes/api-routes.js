@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
+const { filePath } = require('../config/config');
 const { validationResult, param, body } = require('express-validator');
 const { validateFileUpload } = require('../middleware/upload-utils');
 
@@ -141,6 +142,7 @@ apiRouter.post('/delete',
 
 /**
 * POST method to modify an existing image
+* @param {int} id 
 * @param {string} title 
 * @param {string} description 
 * @param {string} keywords      
@@ -181,7 +183,7 @@ apiRouter.post('/modify',
             const { id, title, description, keywords, author, capt_date } = req.body;
 
             // Obtén el nom de l'arxiu en cas que existeixi a la base de dades
-            dbConnection.execute('SELECT filename, creator FROM PR2.IMAGE WHERE ID = ?', [id], (err, result, fields) => {
+            dbConnection.execute('SELECT filename, creator FROM pr2.image WHERE ID = ?', [id], (err, result, fields) => {
                 if (err) {
                     console.error('Error de la Base de Dades:', err);
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
@@ -196,7 +198,7 @@ apiRouter.post('/modify',
                 if (result[0]?.creator != req.userData.id) {
                     return res.status(403).json({ result: -12, data: { message: 'No ets el propietari de la imatge' } });
                 }
-
+                
                 const existingFilename = result[0]?.filename;
                 const extension = path.extname(existingFilename);
                 const newFilename = id + '_' + title + extension;
