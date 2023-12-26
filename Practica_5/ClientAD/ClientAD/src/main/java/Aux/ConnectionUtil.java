@@ -17,5 +17,11 @@ public class ConnectionUtil {
         //String connection = "ad-node-container";
         return connection;
     }
+
+    public static String getServerAddrFrontend() {
+        String connection = "localhost:" + port;
+        //String connection = "ad-node-container";
+        return connection;
+    }
     
 }

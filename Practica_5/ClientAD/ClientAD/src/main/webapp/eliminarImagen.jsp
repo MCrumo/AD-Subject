@@ -19,6 +19,7 @@ eliminar. -->
     <%@ page import="jakarta.json.Json"%>
     <%@ page import="jakarta.json.JsonObject"%>
     <%@ page import="jakarta.json.JsonReader"%>
+    <%@ page import="jakarta.json.JsonArray" %>
     <%@ page import="Aux.ConnectionUtil" %>
     <%@ page import="Aux.SessioUtil" %>
     <%@ page import="Aux.Imatge"%>
@@ -29,6 +30,7 @@ eliminar. -->
     
     <%
         String addr = ConnectionUtil.getServerAddr();
+        String addrFront = ConnectionUtil.getServerAddrFrontend();
             
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
@@ -62,19 +64,22 @@ eliminar. -->
             try {
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://" + addr + "/RestAD/resources/jakartaee9/searchID/" + id);
+                    URL url = new URL("http://" + addr + "/api/searchID/" + id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    String token = (String) sessio.getAttribute("tokenJWT");
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
                     connection.setRequestMethod("GET");
+                    connection.setDoOutput(true);
 
                     int responseCode = connection.getResponseCode();
-                    
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                    if (responseCode == 200) {
                         try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                            JsonObject jsonImatge = jsonReader.readObject();
+                            JsonObject jsonResponse = jsonReader.readObject();
+                            JsonObject jsonImatge = jsonResponse.getJsonObject("data");
                             imatge = Imatge.jsonToImatge(jsonImatge);
                         }
                         connection.disconnect();
-                    } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    } else if (responseCode == 404) {
                         connection.disconnect();    
                         request.setAttribute("tipus_error", "connexio");
                         request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id);
@@ -90,8 +95,9 @@ eliminar. -->
                     }
                     
                 } catch (Exception e) {
+                    System.out.println(e.getMessage());
                     request.setAttribute("tipus_error", "connexio");
-                    request.setAttribute("msg_error", "No s'ha pogut establir connexió amb el servei REST, torna-ho a intentar més tard");
+                    request.setAttribute("msg_error", "S'ha produït un error en connectar-se amb el servei REST, torna-ho a intentar més tard");
                     RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                     rd.forward(request, response);
                 }
@@ -110,6 +116,7 @@ eliminar. -->
                     rd.forward(request, response);
                 }
             } catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
                 request.setAttribute("tipus_error", "eliminar");
                 request.setAttribute("msg_error", "No existeix cap fitxer amb tal id: " + id);
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
@@ -160,7 +167,7 @@ eliminar. -->
                     <% if (imatge != null) {
                               out.println("<td colspan='9' style='text-align:center;'>"); 
                               out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
-                              out.println("<img img src='http://"+ addr + "/RestAD/images/" + imatge.getFilename()+"'style='max-width:300px; max-height: 300px'  ></a></td>");
+                              out.println("<img src='http://"+ addrFront + "/images/" + imatge.getFilename()+"'style='max-width:300px; max-height: 300px'  ></a></td>");
                     } %>
                 </tr>   
                 <tr>

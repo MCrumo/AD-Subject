@@ -87,7 +87,7 @@ apiRouter.post('/register-image',
             });
         } catch (error) {
             console.error('Error intern del servidor:', error);
-            return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
+            return res.status(500).json({ result: -10, data: { message: 'Error intern del servidor' } });
         }
     } else {
     return res.status(401).json({ result: -1, data: { message: 'No s\'ha iniciat sessió' } });
@@ -129,6 +129,7 @@ apiRouter.post('/delete',
                     });
                 } else {
                     // No existeix l'arxiu
+                    console.log("Eliminat Ok pero arxiu imatge no trobat.")
                     return res.status(201).json({ result: 0, data: { message: 'Imatge eliminada correctament de la Base de Dades, no s\'ha trobat l\'arxiu amb nom: ' + result[0][0]?.filename } });
                 }
             });
@@ -247,7 +248,6 @@ apiRouter.get('/list', (req, res) => {
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
                 }
                 const data = { result: 0, data: result[0] };
-                console.log(data);
                 if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'No hi ha imatges a la base de dades' } });
                 else return res.status(200).json(data);
                 //else return res.status(200).json({ result: 0, data: result[0] });
@@ -287,8 +287,8 @@ apiRouter.get('/searchID/:id',
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
                 }
 
-                if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
-                else return res.status(200).json({ result: 0, data: result[0] });
+                if (result[0].length === 0 ) return res.status(404).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
+                else return res.status(200).json({ result: 0, data: result[0][0] });
             });
         } catch (error) {
             console.error('Error intern del servidor:', error);
