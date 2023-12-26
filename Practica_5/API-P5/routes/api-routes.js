@@ -1,11 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
 const moment = require('moment');
 const { validationResult, param, body } = require('express-validator');
 const { validateFileUpload } = require('../middleware/upload-utils');
-const {filePath} = require('../config/config');
-
 
 const apiRouter = express.Router();
 
@@ -493,42 +490,6 @@ apiRouter.get('/searchCoincidence/:coincidence',
                 if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
                 else return res.status(200).json({ result: 0, data: result[0] });
             });        } catch (error) {
-            console.error('Error intern del servidor:', error);
-            return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
-        }
-    } else {
-        return res.status(401).json({ result: -1, data: { message: 'No s\'ha iniciat sessió' } });
-    }
-});
-
-
-/**
- * GET method to download the image with such filename
- * @route /downloadImage/:filename
- * @param filename
- * @return mimetype descarregable
- */
-
-apiRouter.get('/download-image/:filename', (req, res) => {
-    if (req.userData && req.userData.id) {
-        try {
-            const filename = req.params.filename;
-            const extension = path.extname(filename);
-            const imagePath = path.join(filePath, filename);
-
-            // Verifica que existeix l'arxiu
-            if (!fs.existsSync(imagePath)) {
-                return res.status(403).json({ result: -10, data: { message: 'Arxiu no trobat' } });
-            }
-
-            const contentType = mime.lookup(extension) || 'application/octet-stream';
-
-            res.setHeader('Content-Type', contentType);
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-
-            const fileStream = fs.createReadStream(imagePath);
-            fileStream.pipe(res);
-        } catch (error) {
             console.error('Error intern del servidor:', error);
             return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
         }

@@ -6,7 +6,7 @@ const path = require('path');
 const { validationResult, param, body } = require('express-validator');
 const publicRouter = express.Router();
 const secretKey = config.jwtKey;
-
+const mime = require('mime-types');
 
 /***** GET *****/
 
@@ -219,6 +219,37 @@ publicRouter.post('/register-user',
             console.error('Error Intern del Servidor:', error);
             return res.status(400).json({ result: -10, data: { message: 'Error Intern del Servidor' } });
         }
+});
+
+/**
+ * GET method to download the image with such filename
+ * @route /downloadImage/:filename
+ * @param filename
+ * @return mimetype descarregable
+ */
+
+publicRouter.get('/download-image/:filename', (req, res) => {
+    try {
+        const filename = req.params.filename;
+        const extension = path.extname(filename);
+        const imagePath = path.join(config.filePath, filename);
+
+        // Verifica que existeix l'arxiu
+        if (!fs.existsSync(imagePath)) {
+            return res.status(403).json({ result: -10, data: { message: 'Arxiu no trobat' } });
+        }
+
+        const contentType = mime.lookup(extension) || 'application/octet-stream';
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+        const fileStream = fs.createReadStream(imagePath);
+        fileStream.pipe(res);
+    } catch (error) {
+        console.error('Error intern del servidor:', error);
+        return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
+    }
 });
 
 
