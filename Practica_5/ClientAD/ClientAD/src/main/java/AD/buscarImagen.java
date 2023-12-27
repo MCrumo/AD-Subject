@@ -51,7 +51,8 @@ public class buscarImagen extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (SessioUtil.validaSessio(request.getSession(false)) == 0) {
+        HttpSession sessio = request.getSession(false);
+        if (SessioUtil.validaSessio(sessio) == 0) {
             
             String addr = ConnectionUtil.getServerAddr();
     
@@ -80,28 +81,47 @@ public class buscarImagen extends HttpServlet {
                             String keywords = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchKeywords/"+keywords);
+                                URL url = new URL("http://"+ addr +"/api/searchKeyword/"+keyWords);
                                 connection = (HttpURLConnection) url.openConnection();
+                                //NOVA IMP
+                                String token = (String) sessio.getAttribute("tokenJWT");
+                                connection.setRequestProperty("Authorization", "Bearer " + token);
+                                //--------
+                                System.out.println("Tocken Enviat");
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
+
+                                System.out.println(responseCode);
                                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    System.out.println("Connexio correcta");
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                                        JsonArray jsonImatges = jsonReader.readArray();
-                                        for(JsonValue jsonValue : jsonImatges){
+                                        JsonObject jsonResponse = jsonReader.readObject();
+                                        JsonArray jsonImatges = jsonResponse.getJsonArray("data");
+                                        System.out.println("Entrant al bucle");
+                                        for (JsonValue jsonValue : jsonImatges) {
                                             JsonObject jsonImatge = (JsonObject) jsonValue;
                                             Imatge imatge = Imatge.jsonToImatge(jsonImatge);
                                             boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
                                             if (!idExist) setImatges.add(imatge);
                                         }
+                                    //    JsonArray jsonImatges = jsonReader.readArray();
+                                    //    for(JsonValue jsonValue : jsonImatges){
+                                    //        JsonObject jsonImatge = (JsonObject) jsonValue;
+                                    //        Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                    //        boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                    //        if (!idExist) setImatges.add(imatge);
+                                    //    }
                                     }
                                 } else {
+                                    System.out.println("Response code: "+responseCode);
                                     request.setAttribute("tipus_error", "connexio");
                                     RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                     rd.forward(request, response);
                                 }
                                 connection.disconnect();
                             } catch (Exception e) {
+                                System.out.println("Error connexio");
                                 request.setAttribute("tipus_error", "connexio-login");
                                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                                 rd.forward(request, response);
@@ -116,8 +136,12 @@ public class buscarImagen extends HttpServlet {
                             String title = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchTitle/"+title);
+                                URL url = new URL("http://"+ addr +"/api/searchTitle/"+title);
                                 connection = (HttpURLConnection) url.openConnection();
+                                //NOVA IMP
+                                String token = (String) sessio.getAttribute("tokenJWT");
+                                connection.setRequestProperty("Authorization", "Bearer " + token);
+                                //--------
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -152,8 +176,12 @@ public class buscarImagen extends HttpServlet {
                             String author = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchAuthor/"+author);
+                                URL url = new URL("http://"+ addr +"/api/searchAuthor/"+author);
                                 connection = (HttpURLConnection) url.openConnection();
+                                //NOVA IMP
+                                String token = (String) sessio.getAttribute("tokenJWT");
+                                connection.setRequestProperty("Authorization", "Bearer " + token);
+                                //--------
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -188,8 +216,12 @@ public class buscarImagen extends HttpServlet {
                             String date = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchCreationDate/"+date);
+                                URL url = new URL("http://"+ addr +"/api/searchCaptureDate/"+date);
                                 connection = (HttpURLConnection) url.openConnection();
+                                //NOVA IMP
+                                String token = (String) sessio.getAttribute("tokenJWT");
+                                connection.setRequestProperty("Authorization", "Bearer " + token);
+                                //--------
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
@@ -224,8 +256,12 @@ public class buscarImagen extends HttpServlet {
                             String coincidence = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchCoincidence/"+coincidence);
+                                URL url = new URL("http://"+ addr +"/api/searchCoincidence/"+coincidence);
                                 connection = (HttpURLConnection) url.openConnection();
+                                //NOVA IMP
+                                String token = (String) sessio.getAttribute("tokenJWT");
+                                connection.setRequestProperty("Authorization", "Bearer " + token);
+                                //--------
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
