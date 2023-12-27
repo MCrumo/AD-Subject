@@ -41,6 +41,7 @@ const { verificarToken } = require('./middleware/jwt-check');
 
 // APLICAR RUTES I JWT
 app.use('/', publicRouter);
+
 // Middleware para servir arxius estàtics des de la carpeta de images
 const imagesFolder = path.join(__dirname, 'images');
 app.use('/images', express.static(imagesFolder));

@@ -1,13 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package AD;
 
 import Aux.ConnectionUtil;
 import Aux.Imatge;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,12 +11,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpSession;
 
-//importamos la classe Database
 import Aux.SessioUtil;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import java.io.File;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -49,31 +42,6 @@ public class modificarImagen extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     
-    private boolean modificaTitol(Imatge imatge, String titleMod) {
-        String filename = imatge.getFilename(); //es de la forma "1_nombre.png"
-        
-        String extensio = filename.substring(filename.lastIndexOf('.') + 1); //obte l'extensio de l'arxiu
-        String filenameMod = imatge.getId() + "_" + titleMod + "." + extensio;
-        
-        /*String pathAntic = Imatge.getPath() + "/" + filename; System.out.println(pathAntic);
-        String pathNou = Imatge.getPath() + "/" + filenameMod; System.out.println(pathNou);
-        
-        File arxiuAntic = new File(pathAntic);
-        File arxiuNou = new File(pathNou);
-
-        // Renombrar l'arxiu
-        if (arxiuAntic.renameTo(arxiuNou)) {*/
-            // Actualizar el nombre en la instancia de Imatge
-            imatge.setFilename(filenameMod);
-            // Actualizar el título en la instancia de Imatge
-            imatge.setTitle(titleMod);
-            /*return true;
-        } else {
-            return false;
-        }*/
-        return true;
-    }
-    
     //Verifica que la data no és més enllà de la data d'avui
     private boolean verificaData(String captureDate) {
         LocalDate storageDate = LocalDate.now();
@@ -86,6 +54,9 @@ public class modificarImagen extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (SessioUtil.validaSessio(request.getSession(false)) == 0) {
+            HttpSession sessio = request.getSession(false);
+            String token = (String) sessio.getAttribute("tokenJWT");
+            
             String titleMod = request.getParameter("title");
             String descriptionMod = request.getParameter("description");
             String keywordsMod = request.getParameter("keywords");
@@ -102,19 +73,21 @@ public class modificarImagen extends HttpServlet {
                 Imatge imatge = null;
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchID/" + id);
+                    URL url = new URL("http://" + addr + "/api/searchID/" + id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
                     connection.setRequestMethod("GET");
+                    connection.setDoOutput(true);
 
                     int responseCode = connection.getResponseCode();
-                    
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                    if (responseCode == 200) {
                         try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                            JsonObject jsonImatge = jsonReader.readObject();
+                            JsonObject jsonResponse = jsonReader.readObject();
+                            JsonObject jsonImatge = jsonResponse.getJsonObject("data");
                             imatge = Imatge.jsonToImatge(jsonImatge);
                         }
                         connection.disconnect();
-                    } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    } else if (responseCode == 404) {
                         connection.disconnect();    
                         request.setAttribute("tipus_error", "connexio");
                         request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id);
@@ -137,25 +110,18 @@ public class modificarImagen extends HttpServlet {
                     return;
                 }
                 
-                HttpSession sessio = request.getSession(false);
                 String username = (String) sessio.getAttribute("username");
                 
                 boolean modified = false;
                 if (imatge.getCreator().equals(username)) {
                     List<String> errors = new ArrayList<>();
                     
-                    //Si s'ha modificat el titol i és valid, actualitzem també el nom de l'arxiu
+                    //Si s'ha modificat el titol i és valid, ho actualitzem a l'objecte imatge
                     if (!titleMod.equals(imatge.getTitle())) {
                         if (titleMod.contains(" ")) {
                             errors.add("El títol no pot contenir espais");
                         } else {
-                            if (modificaTitol(imatge, titleMod)) modified = true;
-                            else {
-                                request.setAttribute("tipus_error", "modificar");
-                                request.setAttribute("msg_error", "Hi ha hagut un error en modificar el titol de la imatge, torna-ho a provar més tard");
-                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                                rd.forward(request, response);
-                            }
+                            imatge.setTitle(titleMod);
                         }
                     }
                     //Si ha canviat la desccripció, ho actualitzem a l'objecte imatge
@@ -189,18 +155,16 @@ public class modificarImagen extends HttpServlet {
                         RequestDispatcher dispatcher = request.getRequestDispatcher("modificarImagen.jsp?id=" + id);
                         dispatcher.forward(request, response);
                     } else if (modified) { //sinó, modifiquem tots els valors a la base de dades.
-                        
-
                         try {
-                            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/modify");
+                            URL url = new URL("http://"+ addr +"/api/modify");
                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
+                            connection.setRequestProperty("Authorization", "Bearer " + token);
                             connection.setRequestMethod("POST");
                             connection.setDoOutput(true);
 
-                            String postData = String.format("id=%s&title=%s&description=%s&keywords=%s&author=%s&creator=%s&capture=%s&filename=%s",
+                            String postData = String.format("id=%s&title=%s&description=%s&keywords=%s&author=%s&capt_date=%s",
                                     imatge.getId(), imatge.getTitle(), imatge.getDescription(), imatge.getKeywords(),
-                                    imatge.getAuthor(), imatge.getCreator(), imatge.getCaptureDate(), imatge.getFilename());
+                                    imatge.getAuthor(), imatge.getCaptureDate());
 
                             try (OutputStream os = connection.getOutputStream()) {
                                 byte[] input = postData.getBytes(StandardCharsets.UTF_8);
@@ -210,15 +174,33 @@ public class modificarImagen extends HttpServlet {
                             int responseCode = connection.getResponseCode();
                             connection.disconnect();
                             
-                            if (responseCode == HttpURLConnection.HTTP_OK) {
-                                request.setAttribute("ok", true);
-                                RequestDispatcher dispatcher = request.getRequestDispatcher("modificarImagen.jsp?id=" + id);
-                                dispatcher.forward(request, response);
-                            } else {
-                                request.setAttribute("tipus_error", "modificar");
-                                request.setAttribute("msg_error", "Hi ha hagut un error en modificar les dades a la base de dades al servei REST");
-                                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                                rd.forward(request, response);
+                            switch (responseCode) {
+                                case 200:
+                                    request.setAttribute("ok", true);
+                                    RequestDispatcher dispatcher = request.getRequestDispatcher("modificarImagen.jsp?id=" + id);
+                                    dispatcher.forward(request, response);
+                                    break;
+                                
+                                case 404:
+                                    request.setAttribute("tipus_error", "modificar");
+                                    request.setAttribute("msg_error", "No existeix la imatge amb tal id");
+                                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                                    rd.forward(request, response);
+                                    break;
+                            
+                                case 403:
+                                    request.setAttribute("tipus_error", "modificar");
+                                    request.setAttribute("msg_error", "No ets el propietari de la imatge!");
+                                    RequestDispatcher rd1 = request.getRequestDispatcher("error.jsp");
+                                    rd1.forward(request, response);
+                                    break;
+                                
+                                default:
+                                    request.setAttribute("tipus_error", "modificar");
+                                    request.setAttribute("msg_error", "Hi ha hagut un error en modificar les dades a la base de dades al servei REST");
+                                    RequestDispatcher rd2 = request.getRequestDispatcher("error.jsp");
+                                    rd2.forward(request, response);
+                                    break;
                             }
                         } catch (Exception e) {
                             request.setAttribute("tipus_error", "connection");

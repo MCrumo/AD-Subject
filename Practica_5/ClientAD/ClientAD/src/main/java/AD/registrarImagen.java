@@ -1,12 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package AD;
 
 import Aux.ConnectionUtil;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import Aux.Imatge;
 import Aux.SessioUtil;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 
@@ -28,15 +24,8 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,38 +81,6 @@ public class registrarImagen extends HttpServlet {
             errors.add("El títol no pot contenir espais");
         }
         
-        String nextId = "0";
-        try {
-            //guardem el id de la foto
-            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/getNextId");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                    JsonObject jsonResponse = jsonReader.readObject();
-                    nextId = jsonResponse.getString("nextId");
-                }
-            } else {
-                request.setAttribute("tipus_error", "connexio");
-                RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                rd.forward(request, response);
-            }
-            
-            connection.disconnect();
-        } catch (Exception e) {
-            request.setAttribute("tipus_error", "connexio");
-            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-            rd.forward(request, response);
-        }
-
-        //guardem el nom d'usuari
-        HttpSession sessio = request.getSession(false);
-        String username = (String) sessio.getAttribute("username");
-        
-        
         //Verifico que la data introduida no és posterior a la data d'avui
         LocalDate storageDate = LocalDate.now();
         LocalDate dataFormulari = LocalDate.parse(captureDate);
@@ -134,23 +91,8 @@ public class registrarImagen extends HttpServlet {
         //Verifiquem que la imatge es png, jpeg o gif
         String contentType = imagePart.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
-            errors.add("El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .png i .gif");
+            errors.add("El tipus d'arxiu no es vàlid. Només es poden pujar arxius .jpeg, .jpg, .png i .gif");
         }
-
-        String extensio;
-        switch (contentType) {
-            case "image/gif":
-                extensio = "gif";
-                break;
-            case "image/png":
-                extensio = "png";
-                break;
-            default:
-                extensio = "jpeg";
-                break;
-        }
-
-        String filename = nextId + "_" + title + "." + extensio;
         
         //Si hi ha errors, sortim i retornem false. Els printarem a la pàgina web
         if (!errors.isEmpty()) {
@@ -160,7 +102,7 @@ public class registrarImagen extends HttpServlet {
             return false;
         }
         
-        imatge = new Imatge(nextId, title, description, keywords, author, username, captureDate, filename);
+        imatge = new Imatge("-1", title, description, keywords, author, "", captureDate, "");
         
         return true;
     }
@@ -173,10 +115,13 @@ public class registrarImagen extends HttpServlet {
                 if (guardaAuxImatge(request, response)) { //si hem pogut guardar l'objecte imatge
                     
                     final Part fileP = request.getPart("image");
-                    //String file_name = fileP.getSubmittedFileName();
                     
                     final Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
-                    StreamDataBodyPart filePart = new StreamDataBodyPart("file", fileP.getInputStream());
+                    /*ClientConfig clientConfig = new ClientConfig();
+                    clientConfig.register(MultiPartFeature.class);
+                    
+                    Client client = ClientBuilder.newClient(clientConfig);*/
+                    StreamDataBodyPart filePart = new StreamDataBodyPart("image", fileP.getInputStream(), request.getPart("image").getContentType());
                     
                     FormDataMultiPart formDataMultiPart = new FormDataMultiPart();
                     final FormDataMultiPart multipart = (FormDataMultiPart) formDataMultiPart
@@ -184,47 +129,75 @@ public class registrarImagen extends HttpServlet {
                             .field("description", imatge.getDescription(), MediaType.TEXT_PLAIN_TYPE)
                             .field("keywords", imatge.getKeywords(), MediaType.TEXT_PLAIN_TYPE)
                             .field("author", imatge.getAuthor(), MediaType.TEXT_PLAIN_TYPE)
-                            .field("creator", imatge.getCreator(), MediaType.TEXT_PLAIN_TYPE)
-                            .field("capture", imatge.getCaptureDate(), MediaType.TEXT_PLAIN_TYPE)
-                            .field("filename", imatge.getFilename(), MediaType.TEXT_PLAIN_TYPE)
+                            .field("capt_date", imatge.getCaptureDate(), MediaType.TEXT_PLAIN_TYPE)
                             .bodyPart(filePart);
                     
 
-                    final WebTarget target = client.target("http://" + addr + "/RestAD/resources/jakartaee9/register");
-                    final Response resp = target.request().post(Entity.entity(multipart, multipart.getMediaType()));
+                    final WebTarget target = client.target("http://" + addr + "/api/register-image");
+
+                    HttpSession sessio = request.getSession(false);
+                    String token = (String) sessio.getAttribute("tokenJWT");
+
+                    final Response resp = target.request().header("Authorization", "Bearer " + token)
+                                                          .post(Entity.entity(multipart, multipart.getMediaType()));
+
                     int status = resp.getStatus();
-
-                    formDataMultiPart.close();
-                    multipart.close();
-
+                    System.out.println("status:" + status);
                     switch (status) {
                         case 201:
                             response.sendRedirect("registreOk.jsp");
                             break;
-                        case 409:
-                            request.setAttribute("tipus_error", "registrar");
-                            request.setAttribute("msg_error", "La imatge ja existeix.");
-                            RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                            rd.forward(request, response);
+                        case 400:
+                            String message1 = "";
+                            try (InputStream inputStream = resp.readEntity(InputStream.class);
+                                JsonReader jsonReader = Json.createReader(inputStream)) {
+                                JsonObject jsonResponse = jsonReader.readObject();
+                                JsonObject jsonData = jsonResponse.getJsonObject("data");
+                                JsonArray messagesArray = jsonData.getJsonArray("message");
+
+                                // Convertir el array de mensajes en un solo String
+                                for (Object jsonValue : messagesArray) {
+                                    message1 += jsonValue.toString() + ", ";
+                                }
+                            
+                                // Eliminar la última coma y espacio si existen
+                                if (message1.endsWith(", ")) {
+                                    message1 = message1.substring(0, message1.length() - 2);
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (!message1.isEmpty()) {
+                                request.setAttribute("msg_error", message1);
+                                request.setAttribute("msg_error", "prueba en response");
+                            }
+                            //RequestDispatcher rd1 = request.getRequestDispatcher("error.jsp");
+                            //rd1.forward(request, response);
+                            response.sendRedirect("error.jsp");
+
                             break;
-                        case 406:
-                            request.setAttribute("tipus_error", "registrar");
-                            request.setAttribute("msg_error", "Format invàlid.");
-                            RequestDispatcher rd1 = request.getRequestDispatcher("error.jsp");
-                            rd1.forward(request, response);
-                            break;
-                        case 500:
-                            request.setAttribute("tipus_error", "registrar");
-                            request.setAttribute("msg_error", "Error en registrar la imatge.");
+                        default:
+                            request.setAttribute("tipus_error", "error");
+                            String message2 = "";
+                            try (InputStream inputStream = resp.readEntity(InputStream.class);
+                                JsonReader jsonReader = Json.createReader(inputStream)) {
+                                JsonObject jsonResponse = jsonReader.readObject();
+                                JsonObject jsonData = jsonResponse.getJsonObject("data");
+                                message2 = jsonData.getString("message");
+                            } 
+                            if (message2 != "") request.setAttribute("msg_error", message2);
                             RequestDispatcher rd2 = request.getRequestDispatcher("error.jsp");
                             rd2.forward(request, response);
                             break;
-                        default:
-                            break;
-                    } 
+                    }
+
+                    formDataMultiPart.close();
+                    multipart.close();
                 }
             } catch (Exception e) {
                 request.setAttribute("tipus_error", "registrar");
+                System.out.println(e.getMessage());
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
             }

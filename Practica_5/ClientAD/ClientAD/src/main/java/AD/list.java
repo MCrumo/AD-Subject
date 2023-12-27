@@ -81,17 +81,23 @@ public class list extends HttpServlet {
 
 
                             System.out.println("Dades de les imatges rebudes correctament del backend.");
-                            // Para que la JSP lo utilice
+
                             request.setAttribute("setImatges", setImatges);
-                            // Redirige al JSP
                             request.getRequestDispatcher("list.jsp").forward(request, response);
                         }
-                    } else {
-                        request.setAttribute("tipus_error", "connexio");
-                        request.setAttribute("msg_error", "lololololololol");
+                    } else { // NOVA IMP: Si el backend no retorna un 200 OK, mostrem l'error específic que ha tornat
+                        request.setAttribute("tipus_error", "error");
+                        String message = "";
+                        try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
+                            JsonObject jsonResponse = jsonReader.readObject();
+                            JsonObject jsonData = jsonResponse.getJsonObject("data");
+                            message = jsonData.getString("message");
+                        } 
+                        if (message != "") request.setAttribute("msg_error", message);
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
                     }
+                    //--------
                     connection.disconnect();
 
 

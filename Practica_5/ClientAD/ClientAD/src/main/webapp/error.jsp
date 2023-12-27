@@ -95,6 +95,13 @@ Tipus d'error possibles:
             
             out.println("<br><div align='center'><a href='menu.jsp'>Tornar al menu principal</a></div>");                
         }
+        else if (tipus_error.equals("error")) {
+            if(msg_error != null) {
+                out.println(msg_error);
+            } else out.println("S'ha produït un error. Torna-ho a intentar més tard.");
+            
+            out.println("<br><div align='center'><a href='menu.jsp'>Tornar al menu principal</a></div>");                
+        }
         else {
             response.sendRedirect("login.jsp");
         }       

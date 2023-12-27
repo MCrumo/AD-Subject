@@ -6,7 +6,7 @@ const path = require('path');
 const { validationResult, param, body } = require('express-validator');
 const publicRouter = express.Router();
 const secretKey = config.jwtKey;
-
+const mime = require('mime-types');
 
 /***** GET *****/
 
@@ -106,7 +106,6 @@ publicRouter.post('/verify-token', (req, res) => {
                 return res.status(400).send({ result: -11, data: { message: 'Token inválido' } });
             }
             req.userData = decoded;
-            console.log(decoded);
             // Recull les dades de l'usuari
             dbConnection.query('SELECT id_usuario FROM pr2.usuarios WHERE id_usuario=?', [decoded.id], (err, results, fields) => {
                 if (err) {
@@ -117,7 +116,7 @@ publicRouter.post('/verify-token', (req, res) => {
                 if (results[0].length === 0) {
                     return res.status(404).send({ result: -12, data: { message: 'User unknown' } });
                 } else {
-                    console.log({result: 0, data:results[0]?.id_usuario, token})
+                    console.log("Token de l'usuari " + results[0]?.id_usuario + " verificat.")
                     return res.status(200).send({
                         result: 0,
                         data: {
@@ -220,6 +219,37 @@ publicRouter.post('/register-user',
             console.error('Error Intern del Servidor:', error);
             return res.status(400).json({ result: -10, data: { message: 'Error Intern del Servidor' } });
         }
+});
+
+/**
+ * GET method to download the image with such filename
+ * @route /downloadImage/:filename
+ * @param filename
+ * @return mimetype descarregable
+ */
+
+publicRouter.get('/download-image/:filename', (req, res) => {
+    try {
+        const filename = req.params.filename;
+        const extension = path.extname(filename);
+        const imagePath = path.join(config.filePath, filename);
+
+        // Verifica que existeix l'arxiu
+        if (!fs.existsSync(imagePath)) {
+            return res.status(403).json({ result: -10, data: { message: 'Arxiu no trobat' } });
+        }
+
+        const contentType = mime.lookup(extension) || 'application/octet-stream';
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+        const fileStream = fs.createReadStream(imagePath);
+        fileStream.pipe(res);
+    } catch (error) {
+        console.error('Error intern del servidor:', error);
+        return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
+    }
 });
 
 

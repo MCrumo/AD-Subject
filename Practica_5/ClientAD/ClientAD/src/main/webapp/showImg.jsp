@@ -20,6 +20,7 @@
 
 <%  
     String addr = ConnectionUtil.getServerAddr();
+    String addrFront = ConnectionUtil.getServerAddrFrontend();
     
     // Obté la HttpSession
     HttpSession sessio = request.getSession(false);
@@ -49,25 +50,22 @@
         HttpURLConnection connection  = null;
         try {
             //CONNEXIO GET IMATGE AMB ID
-            URL url = new URL("http://"+ addr +"/RestAD/resources/jakartaee9/searchID/" + id);
+            URL url = new URL("http://" + addr + "/api/searchID/" + id);
             connection = (HttpURLConnection) url.openConnection();
+            String token = (String) sessio.getAttribute("tokenJWT");
+            connection.setRequestProperty("Authorization", "Bearer " + token);
             connection.setRequestMethod("GET");
-            
+            connection.setDoOutput(true);
+
             int responseCode = connection.getResponseCode();
-            
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            if (responseCode == 200) {
                 try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                    JsonObject jsonImatge = jsonReader.readObject();
+                    JsonObject jsonResponse = jsonReader.readObject();
+                    JsonObject jsonImatge = jsonResponse.getJsonObject("data");
                     imatge = Imatge.jsonToImatge(jsonImatge);
-                    
-                    connection.disconnect(); //tanquem connexio
-                    if (imatge == null){
-                        connection.disconnect();
-                        response.sendRedirect("menu.jsp");
-                        return;
-                    }
                 }
-            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                connection.disconnect();
+            } else if (responseCode == 404) {
                 connection.disconnect();    
                 request.setAttribute("tipus_error", "connexio");
                 request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id);
@@ -108,10 +106,10 @@
             
             <%
                 out.println("<h2>Imatge: "+imatge.getFilename()+"</h2>"); 
-                out.println("<img src='http://"+ addr + "/RestAD/images/" + imatge.getFilename() + "' style='max-width: 650px; max-height: 425px;'>");      
+                out.println("<img src='http://"+ addrFront + "/images/" + imatge.getFilename() + "' style='max-width: 650px; max-height: 425px;'>");      
             %>
             <br>
-            <% out.println("<a href='http://" + addr + "/RestAD/resources/jakartaee9/getImage/" + imatge.getFilename() + "' target='_blank'>"
+            <% out.println("<a href='http://" + addrFront + "/download-image/" + imatge.getFilename() + "' target='_blank'>"
                             + "<button class='boto'>Download</button>"
                          + "</a>"); %>
 

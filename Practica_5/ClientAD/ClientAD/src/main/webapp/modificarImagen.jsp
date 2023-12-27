@@ -28,6 +28,7 @@ páginas de listado o búsqueda, que se explican más adelante. -->
     
     <%
         String addr = ConnectionUtil.getServerAddr();
+        String addrFront = ConnectionUtil.getServerAddrFrontend();
         
         // Obté la HttpSession
         HttpSession sessio = request.getSession(false);
@@ -61,19 +62,22 @@ páginas de listado o búsqueda, que se explican más adelante. -->
             try {
                 try {
                     //CONNEXIO GET IMATGE AMB ID
-                    URL url = new URL("http://" + addr + "/RestAD/resources/jakartaee9/searchID/" + id);
+                    URL url = new URL("http://" + addr + "/api/searchID/" + id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    String token = (String) sessio.getAttribute("tokenJWT");
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
                     connection.setRequestMethod("GET");
+                    connection.setDoOutput(true);
 
                     int responseCode = connection.getResponseCode();
-                    
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                    if (responseCode == 200) {
                         try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                            JsonObject jsonImatge = jsonReader.readObject();
+                            JsonObject jsonResponse = jsonReader.readObject();
+                            JsonObject jsonImatge = jsonResponse.getJsonObject("data");
                             imatge = Imatge.jsonToImatge(jsonImatge);
                         }
                         connection.disconnect();
-                    } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    } else if (responseCode == 404) {
                         connection.disconnect();    
                         request.setAttribute("tipus_error", "connexio");
                         request.setAttribute("msg_error", "No s'ha trobat la imatge amb id: " + id);
@@ -193,14 +197,14 @@ páginas de listado o búsqueda, que se explican más adelante. -->
                             <label for="captureDate">Data de captura:</label>
                         </td>
                         <td>
-                            <input type="date" id="captureDate" name="captureDate" value="<%= imatge.getCaptureDateISO() %>" required style="width: 200px;">
+                            <input type="date" id="captureDate" name="captureDate" value="<%= imatge.getCaptureDate() %>" required style="width: 200px;">
                         </td>
                     </tr>
                 </table>
                 <p>
                     <% 
                        out.println("<a href='showImg.jsp?id="+imatge.getId()+"'>");
-                       out.println("<img img src='http://"+ addr + "/RestAD/images/" + imatge.getFilename()+"' style='max-width:300px; max-height: 300px'></a>"); %>
+                       out.println("<img img src='http://"+ addrFront + "/images/" + imatge.getFilename()+"' style='max-width:300px; max-height: 300px'></a>"); %>
                 </p>
                 
                 <input type="hidden" name="id" value="<%= imatge.getId() %>">

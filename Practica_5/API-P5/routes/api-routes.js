@@ -1,11 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
 const moment = require('moment');
+const { filePath } = require('../config/config');
 const { validationResult, param, body } = require('express-validator');
 const { validateFileUpload } = require('../middleware/upload-utils');
-const {filePath} = require('../config/config');
-
 
 const apiRouter = express.Router();
 
@@ -87,7 +85,7 @@ apiRouter.post('/register-image',
             });
         } catch (error) {
             console.error('Error intern del servidor:', error);
-            return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
+            return res.status(500).json({ result: -10, data: { message: 'Error intern del servidor' } });
         }
     } else {
     return res.status(401).json({ result: -1, data: { message: 'No s\'ha iniciat sessió' } });
@@ -129,6 +127,7 @@ apiRouter.post('/delete',
                     });
                 } else {
                     // No existeix l'arxiu
+                    console.log("Eliminat Ok pero arxiu imatge no trobat.")
                     return res.status(201).json({ result: 0, data: { message: 'Imatge eliminada correctament de la Base de Dades, no s\'ha trobat l\'arxiu amb nom: ' + result[0][0]?.filename } });
                 }
             });
@@ -143,6 +142,7 @@ apiRouter.post('/delete',
 
 /**
 * POST method to modify an existing image
+* @param {int} id 
 * @param {string} title 
 * @param {string} description 
 * @param {string} keywords      
@@ -183,7 +183,7 @@ apiRouter.post('/modify',
             const { id, title, description, keywords, author, capt_date } = req.body;
 
             // Obtén el nom de l'arxiu en cas que existeixi a la base de dades
-            dbConnection.execute('SELECT filename, creator FROM PR2.IMAGE WHERE ID = ?', [id], (err, result, fields) => {
+            dbConnection.execute('SELECT filename, creator FROM pr2.image WHERE ID = ?', [id], (err, result, fields) => {
                 if (err) {
                     console.error('Error de la Base de Dades:', err);
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
@@ -198,7 +198,7 @@ apiRouter.post('/modify',
                 if (result[0]?.creator != req.userData.id) {
                     return res.status(403).json({ result: -12, data: { message: 'No ets el propietari de la imatge' } });
                 }
-
+                
                 const existingFilename = result[0]?.filename;
                 const extension = path.extname(existingFilename);
                 const newFilename = id + '_' + title + extension;
@@ -247,7 +247,6 @@ apiRouter.get('/list', (req, res) => {
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
                 }
                 const data = { result: 0, data: result[0] };
-                console.log(data);
                 if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'No hi ha imatges a la base de dades' } });
                 else return res.status(200).json(data);
                 //else return res.status(200).json({ result: 0, data: result[0] });
@@ -287,8 +286,8 @@ apiRouter.get('/searchID/:id',
                     return res.status(500).json({ result: -20, data: { message: 'Error de la Base de Dades' } });
                 }
 
-                if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
-                else return res.status(200).json({ result: 0, data: result[0] });
+                if (result[0].length === 0 ) return res.status(404).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
+                else return res.status(200).json({ result: 0, data: result[0][0] });
             });
         } catch (error) {
             console.error('Error intern del servidor:', error);
@@ -493,42 +492,6 @@ apiRouter.get('/searchCoincidence/:coincidence',
                 if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
                 else return res.status(200).json({ result: 0, data: result[0] });
             });        } catch (error) {
-            console.error('Error intern del servidor:', error);
-            return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
-        }
-    } else {
-        return res.status(401).json({ result: -1, data: { message: 'No s\'ha iniciat sessió' } });
-    }
-});
-
-
-/**
- * GET method to download the image with such filename
- * @route /downloadImage/:filename
- * @param filename
- * @return mimetype descarregable
- */
-
-apiRouter.get('/download-image/:filename', (req, res) => {
-    if (req.userData && req.userData.id) {
-        try {
-            const filename = req.params.filename;
-            const extension = path.extname(filename);
-            const imagePath = path.join(filePath, filename);
-
-            // Verifica que existeix l'arxiu
-            if (!fs.existsSync(imagePath)) {
-                return res.status(403).json({ result: -10, data: { message: 'Arxiu no trobat' } });
-            }
-
-            const contentType = mime.lookup(extension) || 'application/octet-stream';
-
-            res.setHeader('Content-Type', contentType);
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-
-            const fileStream = fs.createReadStream(imagePath);
-            fileStream.pipe(res);
-        } catch (error) {
             console.error('Error intern del servidor:', error);
             return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
         }

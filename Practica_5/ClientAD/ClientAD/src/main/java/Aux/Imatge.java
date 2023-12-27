@@ -1,12 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Aux;
 
 import jakarta.json.JsonObject;
-import jakarta.mail.internet.ParseException;
-import jakarta.servlet.http.Part;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -15,9 +9,6 @@ import java.time.format.DateTimeFormatter;
  * @author nacho
  */
 public class Imatge {
-    //Path on es guardaran les imatges
-    private static String path = "/var/webapp/Practica_2/images";
-    
     private String id = "";
     private String title = "";
     private String description = "";
@@ -32,11 +23,11 @@ public class Imatge {
     //Retorna la data en el format adequat per guardar yyyy/MM/dd
     private static String validaFormatStringData (String data) {
         String auxData = data;
-        if (data.contains("-")) {
-            DateTimeFormatter formatOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (data.contains("/")) {
+            DateTimeFormatter formatOriginal = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             LocalDate dataLocal = LocalDate.parse(data, formatOriginal);
 
-            DateTimeFormatter nouFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            DateTimeFormatter nouFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             auxData = dataLocal.format(nouFormat);
         }
         
@@ -45,7 +36,7 @@ public class Imatge {
     
     //Converteix de LocalDate a String formatat com yyyy/MM/dd
     private static String formataDataAString (LocalDate data) {
-        DateTimeFormatter formatData = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter formatData = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String dataFormatada = data.format(formatData);        
         return dataFormatada;
     }
@@ -70,11 +61,12 @@ public class Imatge {
         this.creator = creator;
         this.captureDate = validaFormatStringData(captureDate);
         this.filename = filename;
+        System.out.println("data guardada: " + captureDate);
     }
     
     public static Imatge jsonToImatge(JsonObject jsonObject) {
         Imatge imatge = new Imatge();
-        System.out.println("Creat objecte Imatge amb id: " + jsonObject.getInt("id", -1));
+        System.out.println("Creat objecte Imatge a partir de json amb id: " + jsonObject.getInt("id", -1));
         imatge.setId(jsonObject.getInt("id", -1) + "");
         imatge.setTitle(jsonObject.getString("title", ""));
         imatge.setDescription(jsonObject.getString("description", ""));
@@ -86,10 +78,6 @@ public class Imatge {
         imatge.setFilename(jsonObject.getString("filename", ""));
 
         return imatge;
-    }
-
-    public static String getPath() {
-        return path;
     }
     
     public String getId() {
@@ -146,12 +134,12 @@ public class Imatge {
     
     //Retorna la data en format ISO
     public String getCaptureDateISO() {
-        DateTimeFormatter formatPropi = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        /*DateTimeFormatter formatPropi = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter formatISO = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        LocalDate dataPropia = LocalDate.parse(captureDate, formatPropi);
+        LocalDate dataPropia = LocalDate.parse(captureDate, formatPropi);*/
 
-        return dataPropia.format(formatISO);
+        return captureDate;
     }
     
     public void setCaptureDate(String captureDate) {

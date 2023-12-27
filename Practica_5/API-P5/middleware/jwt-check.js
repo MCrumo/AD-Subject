@@ -44,8 +44,3 @@ const verificarToken = (req, res, next) => {
 module.exports = {
   verificarToken,
 };
-
-/*module.exports.verificarToken = function (req, res, next) {
-  // tu código de verificación de token va aquí
-  next();
-};*/
