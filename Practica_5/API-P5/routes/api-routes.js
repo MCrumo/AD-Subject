@@ -452,7 +452,11 @@ apiRouter.get('/searchKeyword/:keyword',
                 }
 
                 if (result[0].length === 0 ) return res.status(200).json({ result: 1, data: { message: 'Cap imatge de la base de dades compleix el criteri de cerca' } });
-                else return res.status(200).json({ result: 0, data: result[0] });
+                else { 
+                    const jsonData = { result: 0, data: result[0] };
+                    console.log('JSON enviado al cliente: ', JSON.stringify(jsonData));
+                    return res.status(200).json(jsonData);
+                }
             });        } catch (error) {
             console.error('Error intern del servidor:', error);
             return res.status(400).json({ result: -10, data: { message: 'Error intern del servidor' } });
