@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 /**
  *
  * @author alumne
@@ -81,7 +83,7 @@ public class buscarImagen extends HttpServlet {
                             String keywords = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
-                                URL url = new URL("http://"+ addr +"/api/searchKeyword/"+keyWords);
+                                URL url = new URL("http://"+ addr +"/api/searchKeyword/"+keywords);
                                 connection = (HttpURLConnection) url.openConnection();
                                 //NOVA IMP
                                 String token = (String) sessio.getAttribute("tokenJWT");
@@ -97,21 +99,16 @@ public class buscarImagen extends HttpServlet {
                                     System.out.println("Connexio correcta");
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
                                         JsonObject jsonResponse = jsonReader.readObject();
-                                        JsonArray jsonImatges = jsonResponse.getJsonArray("data");
-                                        System.out.println("Entrant al bucle");
-                                        for (JsonValue jsonValue : jsonImatges) {
-                                            JsonObject jsonImatge = (JsonObject) jsonValue;
-                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
-                                            if (!idExist) setImatges.add(imatge);
+                                        int resultCode = jsonResponse.getInt("result");
+                                        if (resultCode == 0){
+                                            JsonArray jsonImatges = jsonResponse.getJsonArray("data");
+                                            for (JsonValue jsonValue : jsonImatges) {
+                                                JsonObject jsonImatge = (JsonObject) jsonValue;
+                                                Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                                boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                                if (!idExist) setImatges.add(imatge);
+                                            } 
                                         }
-                                    //    JsonArray jsonImatges = jsonReader.readArray();
-                                    //    for(JsonValue jsonValue : jsonImatges){
-                                    //        JsonObject jsonImatge = (JsonObject) jsonValue;
-                                    //        Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                    //        boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
-                                    //        if (!idExist) setImatges.add(imatge);
-                                    //    }
                                     }
                                 } else {
                                     System.out.println("Response code: "+responseCode);
@@ -142,17 +139,25 @@ public class buscarImagen extends HttpServlet {
                                 String token = (String) sessio.getAttribute("tokenJWT");
                                 connection.setRequestProperty("Authorization", "Bearer " + token);
                                 //--------
+                                System.out.println("Tocken Enviat");
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
+
+                                System.out.println(responseCode);
                                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    System.out.println("Connexio correcta");
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                                        JsonArray jsonImatges = jsonReader.readArray();
-                                        for(JsonValue jsonValue : jsonImatges){
-                                            JsonObject jsonImatge = (JsonObject) jsonValue;
-                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
-                                            if (!idExist) setImatges.add(imatge);
+                                        JsonObject jsonResponse = jsonReader.readObject();
+                                        int resultCode = jsonResponse.getInt("result");
+                                        if (resultCode == 0){
+                                            JsonArray jsonImatges = jsonResponse.getJsonArray("data");
+                                            for (JsonValue jsonValue : jsonImatges) {
+                                                JsonObject jsonImatge = (JsonObject) jsonValue;
+                                                Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                                boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                                if (!idExist) setImatges.add(imatge);
+                                            } 
                                         }
                                     }
                                 } else {
@@ -182,17 +187,25 @@ public class buscarImagen extends HttpServlet {
                                 String token = (String) sessio.getAttribute("tokenJWT");
                                 connection.setRequestProperty("Authorization", "Bearer " + token);
                                 //--------
+                                System.out.println("Tocken Enviat");
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
+
+                                System.out.println(responseCode);
                                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    System.out.println("Connexio correcta");
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                                        JsonArray jsonImatges = jsonReader.readArray();
-                                        for(JsonValue jsonValue : jsonImatges){
-                                            JsonObject jsonImatge = (JsonObject) jsonValue;
-                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
-                                            if (!idExist) setImatges.add(imatge);
+                                        JsonObject jsonResponse = jsonReader.readObject();
+                                        int resultCode = jsonResponse.getInt("result");
+                                        if (resultCode == 0){
+                                            JsonArray jsonImatges = jsonResponse.getJsonArray("data");
+                                            for (JsonValue jsonValue : jsonImatges) {
+                                                JsonObject jsonImatge = (JsonObject) jsonValue;
+                                                Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                                boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                                if (!idExist) setImatges.add(imatge);
+                                            } 
                                         }
                                     }
                                 } else {
@@ -216,23 +229,35 @@ public class buscarImagen extends HttpServlet {
                             String date = keyWords[i];
                             HttpURLConnection connection = null;
                             try {
+                                System.out.println("Connexio correcta");
+                                if (!isValidDateFormat(date)){
+                                    System.out.println(date+" is a VALID format");
+                                    date = "1111-11-11";
+                                } else System.out.println(date+" is a INVALID format");
                                 URL url = new URL("http://"+ addr +"/api/searchCaptureDate/"+date);
                                 connection = (HttpURLConnection) url.openConnection();
                                 //NOVA IMP
                                 String token = (String) sessio.getAttribute("tokenJWT");
                                 connection.setRequestProperty("Authorization", "Bearer " + token);
                                 //--------
+                                System.out.println("Tocken Enviat");
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
+
+                                System.out.println(responseCode);
                                 if (responseCode == HttpURLConnection.HTTP_OK) {
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                                        JsonArray jsonImatges = jsonReader.readArray();
-                                        for(JsonValue jsonValue : jsonImatges){
-                                            JsonObject jsonImatge = (JsonObject) jsonValue;
-                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
-                                            if (!idExist) setImatges.add(imatge);
+                                        JsonObject jsonResponse = jsonReader.readObject();
+                                        int resultCode = jsonResponse.getInt("result");
+                                        if (resultCode == 0){
+                                            JsonArray jsonImatges = jsonResponse.getJsonArray("data");
+                                            for (JsonValue jsonValue : jsonImatges) {
+                                                JsonObject jsonImatge = (JsonObject) jsonValue;
+                                                Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                                boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                                if (!idExist) setImatges.add(imatge);
+                                            } 
                                         }
                                     }
                                 } else {
@@ -262,17 +287,25 @@ public class buscarImagen extends HttpServlet {
                                 String token = (String) sessio.getAttribute("tokenJWT");
                                 connection.setRequestProperty("Authorization", "Bearer " + token);
                                 //--------
+                                System.out.println("Tocken Enviat");
                                 connection.setRequestMethod("GET");
                                 connection.setDoOutput(true);
                                 int responseCode = connection.getResponseCode();
+
+                                System.out.println(responseCode);
                                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                                    System.out.println("Connexio correcta");
                                     try (JsonReader jsonReader = Json.createReader(connection.getInputStream())) {
-                                        JsonArray jsonImatges = jsonReader.readArray();
-                                        for(JsonValue jsonValue : jsonImatges){
-                                            JsonObject jsonImatge = (JsonObject) jsonValue;
-                                            Imatge imatge = Imatge.jsonToImatge(jsonImatge);
-                                            boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
-                                            if (!idExist) setImatges.add(imatge);
+                                        JsonObject jsonResponse = jsonReader.readObject();
+                                        int resultCode = jsonResponse.getInt("result");
+                                        if (resultCode == 0){
+                                            JsonArray jsonImatges = jsonResponse.getJsonArray("data");
+                                            for (JsonValue jsonValue : jsonImatges) {
+                                                JsonObject jsonImatge = (JsonObject) jsonValue;
+                                                Imatge imatge = Imatge.jsonToImatge(jsonImatge);
+                                                boolean idExist = setImatges.stream().anyMatch(img -> img.getId().equals(imatge.getId()));
+                                                if (!idExist) setImatges.add(imatge);
+                                            } 
                                         }
                                     }
                                 } else {
@@ -316,7 +349,23 @@ public class buscarImagen extends HttpServlet {
         
     }
     
-    
+    private static boolean isValidDateFormat(String input) { // yyyy-mm-dd
+        if (input.length() != 10) return false;
+        for (int i = 0; i < 4; ++i) 
+            if (!isNumber(input.charAt(i))) return false;
+        if (input.charAt(4) != '-') return false;
+        for (int i = 5; i < 7; ++i) 
+            if (!isNumber(input.charAt(i))) return false;
+        if (input.charAt(7) != '-') return false;
+        for (int i = 8; i < 10; ++i) 
+            if (!isNumber(input.charAt(i))) return false;
+        return true;
+    }
+
+    private static boolean isNumber(char c) {
+        return c >= '0' && c <= '9';
+    }
+
     static String[] purgeArray(String[] potencialMaliciosa) {
         List<String> purgedList = new ArrayList<>();
         for (String palabra : potencialMaliciosa) {

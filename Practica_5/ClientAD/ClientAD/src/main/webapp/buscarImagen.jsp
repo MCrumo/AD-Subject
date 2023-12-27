@@ -78,6 +78,7 @@
             </form>     -->
         
             <%
+                String addrFront = ConnectionUtil.getServerAddrFrontend();
                 String addr = ConnectionUtil.getServerAddr();
                 
                 List<Imatge> imatges = (List<Imatge>) request.getAttribute("setImatges");
@@ -92,7 +93,7 @@
                     out.println("<option value='keyword'>Paraula clau</option>");
                     out.println("<option value='title'>Títol</option>");
                     out.println("<option value='author'>Autor</option>");
-                    out.println("<option value='creationDate'>Data de creació</option>");
+                    out.println("<option value='creationDate'>Data de creació (yyyy-mm-dd)</option>");
                     out.println("</select>");
                     out.println("<br>");
                     out.println("<input type='submit' class='boto' value='Buscar' />");
@@ -130,7 +131,7 @@
                         out.println("<td>"+i.getStorageDate()+"</td>");
                         out.println("<td>"+i.getCaptureDate()+"</td>");
                         out.println("<td>"+i.getFilename()+"</td>");
-                        out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='http://"+ addr + "/RestAD/images/" + i.getFilename()+"' width='75' height='50'></a></td>");                        
+                        out.println("<td><a href='showImg.jsp?id="+i.getId()+"'><img src='http://"+ addrFront +"/images/" + i.getFilename()+"' width='75' height='50'></a></td>");                        
                         if (username.equals(i.getCreator())) {
                             out.println("<td><a href='modificarImagen.jsp?id="+i.getId()+"'>Modificar</a>/<a href='eliminarImagen.jsp?id="+i.getId()+"'>Eliminar</a></td>");
                         }
